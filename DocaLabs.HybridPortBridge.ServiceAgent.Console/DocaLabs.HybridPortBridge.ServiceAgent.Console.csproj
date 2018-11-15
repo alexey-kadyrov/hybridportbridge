@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="../common.props" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <ProjectGuid>CF7FC5A9-2F17-445C-A49B-A9DF8233E09B</ProjectGuid>
+    <DebugType>Full</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="_appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DocaLabs.HybridPortBridge.ServiceAgent\DocaLabs.HybridPortBridge.ServiceAgent.csproj" />
+  </ItemGroup>
+
+</Project>

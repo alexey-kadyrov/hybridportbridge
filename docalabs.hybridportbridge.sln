@@ -1,0 +1,67 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2050
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1CDE62C0-15F1-41AA-9C8D-1518CD342A2F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{BD6C7E1C-2E9E-488E-8834-28C78A09FDE9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocaLabs.HybridPortBridge", "DocaLabs.HybridPortBridge\DocaLabs.HybridPortBridge.csproj", "{732FF1CA-37C3-4048-93FB-B64D5835FE47}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocaLabs.HybridPortBridge.ClientAgent", "DocaLabs.HybridPortBridge.ClientAgent\DocaLabs.HybridPortBridge.ClientAgent.csproj", "{2C8E23BD-600F-4F40-83B0-0D4020390E4E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocaLabs.HybridPortBridge.ClientAgent.Console", "DocaLabs.HybridPortBridge.ClientAgent.Console\DocaLabs.HybridPortBridge.ClientAgent.Console.csproj", "{6F57D078-C951-471E-83A8-AFF3BA51DFA0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocaLabs.HybridPortBridge.ServiceAgent", "DocaLabs.HybridPortBridge.ServiceAgent\DocaLabs.HybridPortBridge.ServiceAgent.csproj", "{184252C3-CBAA-468B-A94F-7733386E0EBC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocaLabs.HybridPortBridge.ServiceAgent.Console", "DocaLabs.HybridPortBridge.ServiceAgent.Console\DocaLabs.HybridPortBridge.ServiceAgent.Console.csproj", "{CF7FC5A9-2F17-445C-A49B-A9DF8233E09B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocaLabs.HybridPortBridge.IntegrationTests", "DocaLabs.HybridPortBridge.IntegrationTests\DocaLabs.HybridPortBridge.IntegrationTests.csproj", "{A86F5D19-B48E-4095-81E1-DF1CE54C45D5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{732FF1CA-37C3-4048-93FB-B64D5835FE47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{732FF1CA-37C3-4048-93FB-B64D5835FE47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{732FF1CA-37C3-4048-93FB-B64D5835FE47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{732FF1CA-37C3-4048-93FB-B64D5835FE47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C8E23BD-600F-4F40-83B0-0D4020390E4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C8E23BD-600F-4F40-83B0-0D4020390E4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C8E23BD-600F-4F40-83B0-0D4020390E4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C8E23BD-600F-4F40-83B0-0D4020390E4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F57D078-C951-471E-83A8-AFF3BA51DFA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F57D078-C951-471E-83A8-AFF3BA51DFA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F57D078-C951-471E-83A8-AFF3BA51DFA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F57D078-C951-471E-83A8-AFF3BA51DFA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{184252C3-CBAA-468B-A94F-7733386E0EBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{184252C3-CBAA-468B-A94F-7733386E0EBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{184252C3-CBAA-468B-A94F-7733386E0EBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{184252C3-CBAA-468B-A94F-7733386E0EBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF7FC5A9-2F17-445C-A49B-A9DF8233E09B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF7FC5A9-2F17-445C-A49B-A9DF8233E09B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF7FC5A9-2F17-445C-A49B-A9DF8233E09B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF7FC5A9-2F17-445C-A49B-A9DF8233E09B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A86F5D19-B48E-4095-81E1-DF1CE54C45D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A86F5D19-B48E-4095-81E1-DF1CE54C45D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A86F5D19-B48E-4095-81E1-DF1CE54C45D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A86F5D19-B48E-4095-81E1-DF1CE54C45D5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{732FF1CA-37C3-4048-93FB-B64D5835FE47} = {1CDE62C0-15F1-41AA-9C8D-1518CD342A2F}
+		{2C8E23BD-600F-4F40-83B0-0D4020390E4E} = {1CDE62C0-15F1-41AA-9C8D-1518CD342A2F}
+		{6F57D078-C951-471E-83A8-AFF3BA51DFA0} = {1CDE62C0-15F1-41AA-9C8D-1518CD342A2F}
+		{184252C3-CBAA-468B-A94F-7733386E0EBC} = {1CDE62C0-15F1-41AA-9C8D-1518CD342A2F}
+		{CF7FC5A9-2F17-445C-A49B-A9DF8233E09B} = {1CDE62C0-15F1-41AA-9C8D-1518CD342A2F}
+		{A86F5D19-B48E-4095-81E1-DF1CE54C45D5} = {BD6C7E1C-2E9E-488E-8834-28C78A09FDE9}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8AE01F8D-91A0-4DA3-BE19-2C422E090709}
+	EndGlobalSection
+EndGlobal

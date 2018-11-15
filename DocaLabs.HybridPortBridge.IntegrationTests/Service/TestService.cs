@@ -1,0 +1,57 @@
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+
+namespace DocaLabs.HybridPortBridge.IntegrationTests.Service
+{
+    public class TestService
+    {
+        public static async Task ProcessRequest(HttpContext context, Func<Task> next)
+        {
+            // emulate some work
+            await Task.Delay(10);
+
+            if (context.Request.IsGetPath("/api/echo/products/42"))
+            {
+                context.Response.StatusCode = 200;
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(JsonConvert.SerializeObject(new Product
+                {
+                    Id = 42,
+                    Category = "Nothing",
+                    Name = "Product",
+                    Price = 1.99M
+                }));
+            }
+            else if (context.Request.IsPostPath("/api/echo/products"))
+            {
+                context.Response.StatusCode = 200;
+                context.Response.ContentType = context.Request.ContentType;
+                await context.Request.Body.CopyToAsync(context.Response.Body);
+                await context.Response.Body.FlushAsync();
+            }
+            else if (context.Request.IsGetPath("/api/echo/large"))
+            {
+                context.Response.StatusCode = 200;
+                context.Response.ContentType = "text/plain";
+
+                int.TryParse(context.Request.Query["ll"], out var length);
+
+                var data = Utils.GenerateRandomString(length);
+                await context.Response.Body.WriteAsync(data, 0, data.Length);
+            }
+            else if (context.Request.IsPostPath("/api/echo/large"))
+            {
+                context.Response.StatusCode = 200;
+                context.Response.ContentType = context.Request.ContentType;
+                await context.Request.Body.CopyToAsync(context.Response.Body);
+                await context.Response.Body.FlushAsync();
+            }
+            else
+            {
+                await next.Invoke();
+            }
+        }
+    }
+}

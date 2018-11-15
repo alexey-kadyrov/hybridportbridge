@@ -1,0 +1,8 @@
+<Project>
+  <Import Project="common.props"/>
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>false</IncludeSymbols>
+    <PackageTags>Azure Hybrid Connection Relay</PackageTags>
+  </PropertyGroup>
+</Project>
