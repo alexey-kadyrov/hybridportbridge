@@ -5,21 +5,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
 
-namespace DocaLabs.HybridPortBridge.Downlink
+namespace DocaLabs.HybridPortBridge.DataChannels
 {
     public sealed class FrameQueue : IDisposable
     {
         private readonly ILogger _log;
-        private readonly CompleteEndpointWriter _completeEndpointWriter;
+        private readonly CompleteLocalWriter _completeLocalWriter;
         private readonly ConcurrentQueue<Frame> _frames;
         private readonly SemaphoreSlim _locker;
-        private readonly EndpointWriter _writer;
+        private readonly ILocalDataChannelWriter _writer;
 
-        public FrameQueue(ILogger loggerFactory, EndpointWriter writer, CompleteEndpointWriter completeEndpointWriter)
+        public FrameQueue(ILogger loggerFactory, ILocalDataChannelWriter writer, CompleteLocalWriter completeLocalWriter)
         {
             _log = loggerFactory?.ForContext(GetType()) ?? throw new ArgumentNullException(nameof(loggerFactory));
             _writer = writer;
-            _completeEndpointWriter = completeEndpointWriter;
+            _completeLocalWriter = completeLocalWriter;
             _locker = new SemaphoreSlim(1, 1);
             _frames = new ConcurrentQueue<Frame>();
         }
@@ -39,11 +39,11 @@ namespace DocaLabs.HybridPortBridge.Downlink
             {
                 while (_frames.TryDequeue(out var frame))
                 {
-                    var completeWriteBack = frame.FrameSize == 0;
+                    var completeWriteBack = frame.Size == 0;
 
                     try
                     {
-                        await frame.WriteAsync(_writer);
+                        await _writer.WriteAsync(frame);
                     }
                     catch (Exception e)
                     {
@@ -57,7 +57,7 @@ namespace DocaLabs.HybridPortBridge.Downlink
                     }
 
                     if (completeWriteBack)
-                        _completeEndpointWriter(frame.ConnectionId);
+                        _completeLocalWriter(frame.ConnectionId);
                 }
             }
             finally
@@ -68,8 +68,8 @@ namespace DocaLabs.HybridPortBridge.Downlink
 
         public void Dispose()
         {
-            _locker.IgnoreException(x => x.Dispose());
             _writer.IgnoreException(x => x.Dispose());
+            _locker.IgnoreException(x => x.Dispose());
         }
     }
 }

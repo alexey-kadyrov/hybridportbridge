@@ -9,42 +9,42 @@ using Serilog;
 
 namespace DocaLabs.HybridPortBridge.DataChannels
 {
-    public sealed class RelayDataChannel : IRelayDataChannelReader, IRelayDataChannelWriter, IDisposable
+    public sealed class RemoteRelayDataChannel : IRemoteDataChannelReader, IRemoteDataChannelWriter
     {
         public const int PreambleByteSize = ConnectionId.ByteSize + sizeof(ushort);
 
-        private static readonly MeterOptions RelayFailedOptions = new MeterOptions
+        private static readonly MeterOptions FailuresOptions = new MeterOptions
         {
-            Name = "Failure (Relay)",
+            Name = "Failure (Remote)",
             MeasurementUnit = Unit.Items
         };
 
         private static readonly MeterOptions FrameReadOptions = new MeterOptions
         {
-            Name = "Frame Read (Relay)",
+            Name = "Frame Read (Remote)",
             MeasurementUnit = Unit.Items
         };
 
         private static readonly MeterOptions FrameWrittenOptions = new MeterOptions
         {
-            Name = "Frame Written (Relay)",
+            Name = "Frame Written (Remote)",
             MeasurementUnit = Unit.Items
         };
 
         private static readonly MeterOptions BytesReadOptions = new MeterOptions
         {
-            Name = "Bytes Read (Relay)",
+            Name = "Bytes Read (Remote)",
             MeasurementUnit = Unit.Bytes
         };
 
         private static readonly MeterOptions BytesWrittenOptions = new MeterOptions
         {
-            Name = "Bytes Written (Relay)",
+            Name = "Bytes Written (Remote)",
             MeasurementUnit = Unit.Bytes
         };
 
         private readonly ILogger _log;
-        private readonly MeterMetric _relayFailed;
+        private readonly MeterMetric _failures;
         private readonly MeterMetric _frameRead;
         private readonly MeterMetric _frameWritten;
         private readonly MeterMetric _bytesRead;
@@ -53,13 +53,13 @@ namespace DocaLabs.HybridPortBridge.DataChannels
         private readonly string _instance;
         private readonly HybridConnectionStream _dataChannel;
 
-        public RelayDataChannel(ILogger logger, MetricsFactory metrics, string instance, MetricTags tags, HybridConnectionStream dataChannel)
+        public RemoteRelayDataChannel(ILogger logger, MetricsFactory metrics, string instance, MetricTags tags, HybridConnectionStream dataChannel)
         {
             _log = logger.ForContext(GetType());
             _instance = instance;
             _dataChannel = dataChannel;
 
-            _relayFailed = metrics.MakeMeter(RelayFailedOptions, tags);
+            _failures = metrics.MakeMeter(FailuresOptions, tags);
             _frameRead = metrics.MakeMeter(FrameReadOptions, tags);
             _frameWritten = metrics.MakeMeter(FrameWrittenOptions, tags);
             _bytesRead = metrics.MakeMeter(BytesReadOptions, tags);
@@ -67,7 +67,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
 
             _writeLock = new SemaphoreSlim(1, 1);
 
-            _log.Debug("Relay: {relay} is initialized", _instance);
+            _log.Debug("Remote: {remote} is initialized", _instance);
         }
 
         public void Dispose()
@@ -109,9 +109,9 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             }
             catch (Exception e)
             {
-                _relayFailed.Increment();
+                _failures.Increment();
 
-                _log.Error(e, "Relay: {relay}. Failed to read", _instance);
+                _log.Error(e, "Remote: {remote}. Failed to read", _instance);
 
                 throw;
             }
@@ -129,7 +129,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             }
             catch (Exception e)
             {
-                _relayFailed.Increment();
+                _failures.Increment();
 
                 _log.Error(e, "ConnectionId: {connectionId}. Failed to write", connectionId);
 
@@ -157,7 +157,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
 
             if (bytesRead == 0)
             {
-                _log.Debug("Relay: {relay}. Received empty frame", _instance);
+                _log.Debug("Remote: {remote}. Received empty frame", _instance);
                 return null;
             }
 

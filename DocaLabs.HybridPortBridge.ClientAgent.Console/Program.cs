@@ -22,14 +22,14 @@ namespace DocaLabs.HybridPortBridge.ClientAgent.Console
 
             host.Close();
 
-            MetricsRegistry.Instance.Dispose();
+            MetricsRegistry.Factory.Dispose();
         }
 
         private static PortBridgeClientForwarderHost Start(IConfiguration configuration)
         {
             var options = configuration.GetSection("PortBridge").Get<ClientAgentOptions>();
 
-            var loggerFactory = LoggerFactory.Initialize(configuration);
+            var loggerFactory = LoggerBuilder.Initialize(configuration);
 
             var host = new PortBridgeClientForwarderHost(loggerFactory, options);
 

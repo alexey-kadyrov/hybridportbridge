@@ -1,22 +1,26 @@
 ﻿using System;
 using System.Threading.Tasks;
-using DocaLabs.HybridPortBridge.DataChannels;
 using Serilog;
 
-namespace DocaLabs.HybridPortBridge.Downlink
+namespace DocaLabs.HybridPortBridge.DataChannels
 {
-    public sealed class DownlinkPump
+    public sealed class DownlinkPump : IDisposable
     {
         private readonly ILogger _log;
-        private readonly IRelayDataChannelReader _relayReader;
+        private readonly IRemoteDataChannelReader _remoteReader;
         private readonly FrameDispatcher _frameDispatcher;
         private bool _stopped;
 
-        public DownlinkPump(ILogger loggerFactory, IRelayDataChannelReader relayReader, FrameDispatcher frameDispatcher)
+        public DownlinkPump(ILogger loggerFactory, IRemoteDataChannelReader remoteReader, FrameDispatcher frameDispatcher)
         {
-            _log = loggerFactory?.ForContext(GetType()) ?? throw new ArgumentNullException(nameof(loggerFactory));
-            _relayReader = relayReader ?? throw new ArgumentNullException(nameof(relayReader));
+            _log = loggerFactory?.ForContext(GetType());
+            _remoteReader = remoteReader;
             _frameDispatcher = frameDispatcher;
+        }
+
+        public void Dispose()
+        {
+            _remoteReader.IgnoreException(x => x.Dispose());
         }
 
         public void Stop()
@@ -30,7 +34,7 @@ namespace DocaLabs.HybridPortBridge.Downlink
             {
                 Frame frame;
 
-                while ((frame = await _relayReader.ReadAsync()) != null)
+                while ((frame = await _remoteReader.ReadAsync()) != null)
                 {
                     if (_stopped)
                     {

@@ -3,15 +3,14 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using DocaLabs.HybridPortBridge.Config;
-using DocaLabs.HybridPortBridge.Downlink;
+using DocaLabs.HybridPortBridge.DataChannels;
 using DocaLabs.HybridPortBridge.Metrics;
-using DocaLabs.HybridPortBridge.Uplink;
 using Microsoft.Azure.Relay;
 using Serilog;
 
 namespace DocaLabs.HybridPortBridge.ClientAgent
 {
-    internal sealed class RelayConnection : IDisposable
+    internal sealed class RelayTunnel : IDisposable
     {
         private readonly ILogger _log;
         private readonly int _remoteTcpPort;
@@ -29,10 +28,8 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
 
         private DateTime _canAcceptUntil;
         private readonly MeterMetric _acceptedConnections;
-        private readonly MeterMetric _endpointReadBytes;
-        private readonly MeterMetric _endpointWrittentBytes;
 
-        public RelayConnection(ILogger loggerFactory, ServiceNamespaceOptions serviceNamespace, string entityPath, int remoteTcpPort, int ttlSeconds)
+        public RelayTunnel(ILogger loggerFactory, ServiceNamespaceOptions serviceNamespace, string entityPath, int remoteTcpPort, int ttlSeconds)
         {
             if (string.IsNullOrWhiteSpace(entityPath))
                 throw new ArgumentNullException(nameof(entityPath));
@@ -48,8 +45,6 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             _ttl = TimeSpan.FromSeconds(ttlSeconds);
             _canAcceptUntil = DateTime.MaxValue;
             _acceptedConnections = MetricsRegistry.MakeMeter(MetricsDefinitions.EndpointConnectionAcceptedMeter, _entityPath, _remoteTcpPort);
-            _endpointReadBytes = MetricsRegistry.MakeMeter(MetricsDefinitions.EndpointBytesReadMeter, _entityPath, _remoteTcpPort);
-            _endpointWrittentBytes = MetricsRegistry.MakeMeter(MetricsDefinitions.EndpointBytesWrittenMeter, _entityPath, _remoteTcpPort);
         }
 
         public bool CanAcceptNewClients()

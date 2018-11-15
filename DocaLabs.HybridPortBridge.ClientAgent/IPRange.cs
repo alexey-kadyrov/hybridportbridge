@@ -12,7 +12,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
         public IPRange(IPAddress address)
         {
             if (address.AddressFamily != AddressFamily.InterNetwork)
-                throw new ArgumentException("only IPv4 addresses permitted", nameof(address));
+                throw new ArgumentException("Only IPv4 addresses permitted", nameof(address));
 
             _begin = _end = IPAddressToInt(address);
         }
@@ -20,10 +20,10 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
         public IPRange(IPAddress begin, IPAddress end)
         {
             if (begin.AddressFamily != AddressFamily.InterNetwork)
-                throw new ArgumentException("only IPv4 addresses permitted", nameof(begin));
+                throw new ArgumentException("Only IPv4 addresses permitted", nameof(begin));
 
             if (end.AddressFamily != AddressFamily.InterNetwork)
-                throw new ArgumentException("only IPv4 addresses permitted", nameof(end));
+                throw new ArgumentException("Only IPv4 addresses permitted", nameof(end));
 
             _begin = IPAddressToInt(begin);
             _end = IPAddressToInt(end);

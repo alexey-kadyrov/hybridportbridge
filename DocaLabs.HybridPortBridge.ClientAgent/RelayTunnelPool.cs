@@ -5,16 +5,16 @@ using Serilog;
 
 namespace DocaLabs.HybridPortBridge.ClientAgent
 {
-    internal sealed class RelayConnectionPool
+    internal sealed class RelayTunnelPool
     {
         private readonly ServiceNamespaceOptions _serviceNamespace;
         private readonly PortMappingOptions _portMappings;
         private readonly ILogger _log;
         private readonly object _poolLock;
-        private readonly RelayConnection[] _connections;
+        private readonly RelayTunnel[] _tunnels;
         private long _counter;
 
-        public RelayConnectionPool(ILogger loggerFactory, ServiceNamespaceOptions serviceNamespace, PortMappingOptions portMappings)
+        public RelayTunnelPool(ILogger loggerFactory, ServiceNamespaceOptions serviceNamespace, PortMappingOptions portMappings)
         {
             _log = loggerFactory?.ForContext(GetType()) ?? throw new ArgumentNullException(nameof(loggerFactory));
 
@@ -23,23 +23,23 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             _serviceNamespace = serviceNamespace;
             _portMappings = portMappings;
 
-            _connections = new RelayConnection[portMappings.RelayChannelCount];
+            _tunnels = new RelayTunnel[portMappings.RelayChannelCount];
 
             for (var i = 0; i < portMappings.RelayChannelCount; i++)
             {
-                _connections[i] = new RelayConnection(loggerFactory, serviceNamespace, portMappings.EntityPath, portMappings.RemoteTcpPort, portMappings.RelayConnectionTtlSeconds);
+                _tunnels[i] = new RelayTunnel(loggerFactory, serviceNamespace, portMappings.EntityPath, portMappings.RemoteTcpPort, portMappings.RelayConnectionTtlSeconds);
             }
         }
 
-        public RelayConnection Get()
+        public RelayTunnel Get()
         {
             lock (_poolLock)
             {
                 var n = ++ _counter;
 
-                var id = n % _connections.Length;
+                var id = n % _tunnels.Length;
 
-                var connection = _connections[id];
+                var connection = _tunnels[id];
 
                 return connection.CanAcceptNewClients() 
                     ? connection 
@@ -47,16 +47,16 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             }
         }
 
-        private RelayConnection ReplaceByNewConnection(long id)
+        private RelayTunnel ReplaceByNewConnection(long id)
         {
             _log.Information("Replacing {id} RelayConnection", id);
 
-            return _connections[id] = new RelayConnection(_log, _serviceNamespace, _portMappings.EntityPath, _portMappings.RemoteTcpPort, _portMappings.RelayConnectionTtlSeconds);
+            return _tunnels[id] = new RelayTunnel(_log, _serviceNamespace, _portMappings.EntityPath, _portMappings.RemoteTcpPort, _portMappings.RelayConnectionTtlSeconds);
         }
 
         public void Dispose()
         {
-            foreach (var connection in _connections)
+            foreach (var connection in _tunnels)
                 connection.IgnoreException(x => x.Dispose());
         }
     }

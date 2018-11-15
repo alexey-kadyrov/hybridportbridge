@@ -3,7 +3,7 @@ using Serilog;
 
 namespace DocaLabs.HybridPortBridge
 {
-    public static class LoggerFactory
+    public static class LoggerBuilder
     {
         public static ILogger Initialize(IConfiguration configuration)
         {

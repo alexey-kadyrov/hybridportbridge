@@ -29,7 +29,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent.Console
         {
             var options = configuration.GetSection("PortBridge").Get<ServiceAgentOptions>();
 
-            var loggerFactory = LoggerFactory.Initialize(configuration);
+            var loggerFactory = LoggerBuilder.Initialize(configuration);
 
             var host = new PortBridgeServiceForwarderHost(loggerFactory, options);
 

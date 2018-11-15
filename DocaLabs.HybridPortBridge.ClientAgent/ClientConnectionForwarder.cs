@@ -15,21 +15,21 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
         private readonly int _fromPort;
         private readonly string _bindTo;
         private readonly FirewallRules _firewallRules;
-        private readonly RelayConnectionPool _relayPool;
+        private readonly RelayTunnelPool _relayPool;
         private TcpListener _endpointListener;
         private MeterMetric _acceptedConnections;
 
-        public ClientConnectionForwarder(ILogger loggerFactory, ServiceNamespaceOptions serviceNamespace, int fromPort, PortMappingOptions portMappings)
+        public ClientConnectionForwarder(ILogger logger, ServiceNamespaceOptions serviceNamespace, int fromPort, PortMappingOptions portMappings)
         {
             if (portMappings == null)
                 throw new ArgumentNullException(nameof(portMappings));
 
-            _log = loggerFactory?.ForContext(GetType()) ?? throw new ArgumentNullException(nameof(loggerFactory));
+            _log = logger.ForContext(GetType());
 
             _firewallRules = new FirewallRules(portMappings);
             _fromPort = fromPort;
             _bindTo = portMappings.BindToAddress;
-            _relayPool = new RelayConnectionPool(loggerFactory, serviceNamespace, portMappings);
+            _relayPool = new RelayTunnelPool(logger, serviceNamespace, portMappings);
         }
 
         public void Start()

@@ -3,10 +3,12 @@ using System.Threading.Tasks;
 
 namespace DocaLabs.HybridPortBridge.DataChannels
 {
-    public abstract class EndpointDataChannel : IDisposable
+    public abstract class LocalDataChannel : ILocalDataChannelReader, ILocalDataChannelWriter
     {
-        public abstract Task WriteAsync();
-        public abstract Task<int> ReadAsync();
+        public const int BufferSize = 65536;
+
+        public abstract Task WriteAsync(Frame frame);
+        public abstract Task<(int BytesRead, byte[] Data)> ReadAsync();
         protected abstract void Dispose(bool disposing);
 
         public void Dispose()

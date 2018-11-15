@@ -3,13 +3,13 @@
     public sealed class Frame
     {
         public ConnectionId ConnectionId { get; }
-        public ushort FrameSize { get; }
+        public ushort Size { get; }
         public byte[] Buffer { get; }
 
-        public Frame(ConnectionId connectionId, ushort frameSize, byte[] buffer)
+        public Frame(ConnectionId connectionId, ushort size, byte[] buffer)
         {
             ConnectionId = connectionId;
-            FrameSize = frameSize;
+            Size = size;
             Buffer = buffer;
         }
 

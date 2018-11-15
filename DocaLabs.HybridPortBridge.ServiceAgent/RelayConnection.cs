@@ -2,9 +2,8 @@
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using DocaLabs.HybridPortBridge.Downlink;
+using DocaLabs.HybridPortBridge.DataChannels;
 using DocaLabs.HybridPortBridge.Metrics;
-using DocaLabs.HybridPortBridge.Uplink;
 using Microsoft.Azure.Relay;
 using Serilog;
 
