@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocaLabs.HybridPortBridge.S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocaLabs.HybridPortBridge.IntegrationTests", "DocaLabs.HybridPortBridge.IntegrationTests\DocaLabs.HybridPortBridge.IntegrationTests.csproj", "{A86F5D19-B48E-4095-81E1-DF1CE54C45D5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocaLabs.Qa", "DocaLabs.Qa\DocaLabs.Qa.csproj", "{72ED01F0-51CF-447F-9D41-B8BE54E956FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{A86F5D19-B48E-4095-81E1-DF1CE54C45D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A86F5D19-B48E-4095-81E1-DF1CE54C45D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A86F5D19-B48E-4095-81E1-DF1CE54C45D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72ED01F0-51CF-447F-9D41-B8BE54E956FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72ED01F0-51CF-447F-9D41-B8BE54E956FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72ED01F0-51CF-447F-9D41-B8BE54E956FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72ED01F0-51CF-447F-9D41-B8BE54E956FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +66,7 @@ Global
 		{184252C3-CBAA-468B-A94F-7733386E0EBC} = {1CDE62C0-15F1-41AA-9C8D-1518CD342A2F}
 		{CF7FC5A9-2F17-445C-A49B-A9DF8233E09B} = {1CDE62C0-15F1-41AA-9C8D-1518CD342A2F}
 		{A86F5D19-B48E-4095-81E1-DF1CE54C45D5} = {BD6C7E1C-2E9E-488E-8834-28C78A09FDE9}
+		{72ED01F0-51CF-447F-9D41-B8BE54E956FF} = {BD6C7E1C-2E9E-488E-8834-28C78A09FDE9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8AE01F8D-91A0-4DA3-BE19-2C422E090709}

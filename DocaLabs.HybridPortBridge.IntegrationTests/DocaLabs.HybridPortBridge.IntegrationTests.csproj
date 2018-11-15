@@ -11,14 +11,17 @@
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.5.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.5" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.6" />
     <PackageReference Include="NUnit" Version="3.11.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.11.0" />
+    <PackageReference Include="Refit" Version="4.6.48" />
+    <PackageReference Include="Refit.HttpClientFactory" Version="4.6.48" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DocaLabs.HybridPortBridge.ClientAgent.Console\DocaLabs.HybridPortBridge.ClientAgent.Console.csproj" />
     <ProjectReference Include="..\DocaLabs.HybridPortBridge.ServiceAgent.Console\DocaLabs.HybridPortBridge.ServiceAgent.Console.csproj" />
+    <ProjectReference Include="..\DocaLabs.Qa\DocaLabs.Qa.csproj" />
   </ItemGroup>
 
 </Project>
