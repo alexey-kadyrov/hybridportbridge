@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Azure.Relay;
 using Newtonsoft.Json.Linq;
 
@@ -22,17 +23,15 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             return AllowedPorts.IsAllowed(port);
         }
 
-        public static RelayMetadata Parse(HybridConnectionListener listener)
+        public static async Task<RelayMetadata> Parse(HybridConnectionListener listener)
         {
-            var info = listener.GetRuntimeInformationAsync(default(CancellationToken))
-                .GetAwaiter()
-                .GetResult();
+            var info = await listener.GetRuntimeInformationAsync(default(CancellationToken));
 
             try
             {
-                var userData = JArray.Parse(info.UserMetadata);
+                var metadata = JArray.Parse(info.UserMetadata);
 
-                var endpoint = userData.FirstOrDefault(x => x["key"].Value<string>() == "endpoint");
+                var endpoint = metadata.FirstOrDefault(x => x["key"].Value<string>() == "endpoint");
                 if (endpoint == null)
                     throw new ConfigurationErrorException($"Expected endpoint key was not found in the {listener.Address} relay user metadata");
 
@@ -46,11 +45,8 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
                 return new RelayMetadata(parts[0], new AllowedPorts(parts[1]));
             }
-            catch (Exception e)
+            catch (Exception e) when(!(e is ConfigurationErrorException))
             {
-                if (e is ConfigurationErrorException)
-                    throw;
-
                 throw new ConfigurationErrorException($"Failed to parse the {listener.Address} relay user metadata", e);
             }
         }

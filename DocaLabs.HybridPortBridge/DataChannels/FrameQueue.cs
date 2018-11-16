@@ -17,7 +17,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
 
         public FrameQueue(ILogger loggerFactory, ILocalDataChannelWriter writer, CompleteLocalWriter completeLocalWriter)
         {
-            _log = loggerFactory?.ForContext(GetType()) ?? throw new ArgumentNullException(nameof(loggerFactory));
+            _log = loggerFactory.ForContext(GetType());
             _writer = writer;
             _completeLocalWriter = completeLocalWriter;
             _locker = new SemaphoreSlim(1, 1);
@@ -68,7 +68,6 @@ namespace DocaLabs.HybridPortBridge.DataChannels
 
         public void Dispose()
         {
-            _writer.IgnoreException(x => x.Dispose());
             _locker.IgnoreException(x => x.Dispose());
         }
     }

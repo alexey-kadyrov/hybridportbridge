@@ -20,6 +20,8 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             MeasurementUnit = Unit.Items
         };
 
+        private static int _idx;
+
         private readonly ILogger _log;
         private readonly int _forwarderIdx;
         private readonly HybridConnectionListener _relayListener;
@@ -28,27 +30,36 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
         private readonly ConcurrentDictionary<object, RelayTunnel> _tunnels;
         private readonly MeterMetric _establishedTunnels;
 
-        public ServiceConnectionForwarder(ILogger logger, int forwarderIdx, ServiceNamespaceOptions serviceNamespace, string entityPath)
+        private ServiceConnectionForwarder(ILogger logger, int forwarderIdx, HybridConnectionListener listener, RelayMetadata metadata, string entityPath)
         {
             _log = logger.ForContext(GetType());
 
             _forwarderIdx = forwarderIdx;
+            _relayListener = listener;
+            _metadata = metadata;
 
             _tunnels = new ConcurrentDictionary<object, RelayTunnel>();
-
-            var endpointVia = new UriBuilder("sb", serviceNamespace.ServiceNamespace, -1, entityPath).Uri;
-
-            var tokenProvider = TokenProvider.CreateSharedAccessSignatureTokenProvider(serviceNamespace.AccessRuleName, serviceNamespace.AccessRuleKey);
-
-            _relayListener = new HybridConnectionListener(endpointVia, tokenProvider);
-
-            _metadata = RelayMetadata.Parse(_relayListener);
 
             var metricTags = new MetricTags(new[] { nameof(entityPath), nameof(forwarderIdx) }, new[] { entityPath, forwarderIdx.ToString() });
 
             _establishedTunnels = MetricsRegistry.Factory.MakeMeter(EstablisheTunnelsOptions, metricTags);
 
             _tunnelFactory = new RelayTunnelFactory(logger, metricTags, _metadata.TargetHost, OnTunnelCompleted);
+        }
+
+        public static async Task<ServiceConnectionForwarder> Create(ILogger logger, ServiceNamespaceOptions serviceNamespace, string entityPath)
+        {
+            var forwarderIdx = Interlocked.Increment(ref _idx);
+
+            var endpointVia = new UriBuilder("sb", serviceNamespace.ServiceNamespace, -1, entityPath).Uri;
+
+            var tokenProvider = TokenProvider.CreateSharedAccessSignatureTokenProvider(serviceNamespace.AccessRuleName, serviceNamespace.AccessRuleKey);
+
+            var relayListener = new HybridConnectionListener(endpointVia, tokenProvider);
+
+            var metadata = await RelayMetadata.Parse(relayListener);
+
+            return new ServiceConnectionForwarder(logger, forwarderIdx, relayListener, metadata, entityPath);
         }
 
         public void Start()

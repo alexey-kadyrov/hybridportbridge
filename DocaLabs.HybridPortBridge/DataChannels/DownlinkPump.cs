@@ -11,9 +11,9 @@ namespace DocaLabs.HybridPortBridge.DataChannels
         private readonly FrameDispatcher _frameDispatcher;
         private bool _stopped;
 
-        public DownlinkPump(ILogger loggerFactory, IRemoteDataChannelReader remoteReader, FrameDispatcher frameDispatcher)
+        public DownlinkPump(ILogger logger, IRemoteDataChannelReader remoteReader, FrameDispatcher frameDispatcher)
         {
-            _log = loggerFactory?.ForContext(GetType());
+            _log = logger.ForContext(GetType());
             _remoteReader = remoteReader;
             _frameDispatcher = frameDispatcher;
         }

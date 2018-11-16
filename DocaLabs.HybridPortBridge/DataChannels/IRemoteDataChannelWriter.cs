@@ -1,9 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace DocaLabs.HybridPortBridge.DataChannels
 {
-    public interface IRemoteDataChannelWriter : IDisposable
+    public interface IRemoteDataChannelWriter
     {
         Task WriteAsync(ConnectionId connectionId, byte[] buffer, int count);
     }

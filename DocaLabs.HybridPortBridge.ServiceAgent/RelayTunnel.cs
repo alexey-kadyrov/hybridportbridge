@@ -32,6 +32,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             _createDataChannelFactory = createDataChannelFactory;
             _tunnelCompleted = tunnelCompleted;
             _frameDispatcher = new FrameDispatcher(_log, CorrelateLocalWriter);
+            _targetPort = targetPort;
 
             _baseMetricTags = MakeMetricTags(baseTags);
 
@@ -95,9 +96,8 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
                 _frameDispatcher.Clear();
                 _downlinkPump?.Stop();
+                _downlinkPump.IgnoreException(x => x.Dispose());
                 _downlinkPump = null;
-
-                _relayStream.IgnoreException(async x => await x.CloseAsync(default(CancellationToken)));
             }
             catch
             {
