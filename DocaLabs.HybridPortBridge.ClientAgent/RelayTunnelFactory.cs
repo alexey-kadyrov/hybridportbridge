@@ -5,7 +5,7 @@ using Serilog;
 
 namespace DocaLabs.HybridPortBridge.ClientAgent
 {
-    internal sealed class RelayTunnelPool
+    internal sealed class RelayTunnelFactory
     {
         private readonly ServiceNamespaceOptions _serviceNamespace;
         private readonly PortMappingOptions _portMappings;
@@ -14,7 +14,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
         private readonly RelayTunnel[] _tunnels;
         private long _counter;
 
-        public RelayTunnelPool(ILogger loggerFactory, ServiceNamespaceOptions serviceNamespace, PortMappingOptions portMappings)
+        public RelayTunnelFactory(ILogger loggerFactory, ServiceNamespaceOptions serviceNamespace, PortMappingOptions portMappings)
         {
             _log = loggerFactory?.ForContext(GetType()) ?? throw new ArgumentNullException(nameof(loggerFactory));
 

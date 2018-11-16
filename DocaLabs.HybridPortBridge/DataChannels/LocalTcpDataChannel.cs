@@ -88,7 +88,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             {
                 _failures.Increment();
 
-                _log.Error(e, "ConnectId: {connectId}. Failed to write", frame.ConnectionId);
+                _log.Error(e, "ConnectId: {connectionId}. Failed to write", frame.ConnectionId);
 
                 throw;
             }

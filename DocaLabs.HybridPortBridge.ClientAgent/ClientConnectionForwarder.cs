@@ -15,7 +15,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
         private readonly int _fromPort;
         private readonly string _bindTo;
         private readonly FirewallRules _firewallRules;
-        private readonly RelayTunnelPool _relayPool;
+        private readonly RelayTunnelFactory _relayFactory;
         private TcpListener _endpointListener;
         private MeterMetric _acceptedConnections;
 
@@ -29,7 +29,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             _firewallRules = new FirewallRules(portMappings);
             _fromPort = fromPort;
             _bindTo = portMappings.BindToAddress;
-            _relayPool = new RelayTunnelPool(logger, serviceNamespace, portMappings);
+            _relayFactory = new RelayTunnelFactory(logger, serviceNamespace, portMappings);
         }
 
         public void Start()
@@ -63,7 +63,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
         {
             _log.Information("Closing listener on port {port}", _fromPort);
 
-            _relayPool.IgnoreException(x => x.Dispose());
+            _relayFactory.IgnoreException(x => x.Dispose());
         }
 
         private async Task ClientAccepted(Task<TcpClient> prev)
@@ -101,7 +101,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
 
                     var connectionId = ConnectionId.New();
 
-                    await _relayPool
+                    await _relayFactory
                         .Get()
                         .EnsureRelayConnection(endpoint, connectionId);
 

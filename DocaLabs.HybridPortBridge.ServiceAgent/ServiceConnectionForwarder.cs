@@ -1,46 +1,59 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using App.Metrics;
+using App.Metrics.Meter;
 using DocaLabs.HybridPortBridge.Config;
+using DocaLabs.HybridPortBridge.Metrics;
 using Microsoft.Azure.Relay;
-using Newtonsoft.Json.Linq;
 using Serilog;
 
 namespace DocaLabs.HybridPortBridge.ServiceAgent
 {
     public sealed class ServiceConnectionForwarder : IConnectionForwarder
     {
-        private readonly ILogger _log;
-        private readonly Uri _endpointVia;
-        private readonly int _idx;
-        private readonly string _entityPath;
-        private readonly HybridConnectionListener _relayListener;
-        private string _targetHost;
-        private AllowedPorts _allowedPorts;
-        private readonly ConcurrentDictionary<object, RelayConnection> _connections;
-
-        public ServiceConnectionForwarder(ILogger loggerFactory, int idx, ServiceNamespaceOptions serviceNamespace, string entityPath)
+        private static readonly MeterOptions EstablisheTunnelsOptions = new MeterOptions
         {
-            _log = loggerFactory?.ForContext(GetType()) ?? throw new ArgumentNullException(nameof(loggerFactory));
+            Name = "Established Tunnels (Remote)",
+            MeasurementUnit = Unit.Items
+        };
 
-            _idx = idx;
-            _entityPath = entityPath;
+        private readonly ILogger _log;
+        private readonly int _forwarderIdx;
+        private readonly HybridConnectionListener _relayListener;
+        private readonly RelayMetadata _metadata;
+        private readonly RelayTunnelFactory _tunnelFactory;
+        private readonly ConcurrentDictionary<object, RelayTunnel> _tunnels;
+        private readonly MeterMetric _establishedTunnels;
 
-            _connections = new ConcurrentDictionary<object, RelayConnection>();
-            _endpointVia = new UriBuilder("sb", serviceNamespace.ServiceNamespace, -1, _entityPath).Uri;
+        public ServiceConnectionForwarder(ILogger logger, int forwarderIdx, ServiceNamespaceOptions serviceNamespace, string entityPath)
+        {
+            _log = logger.ForContext(GetType());
+
+            _forwarderIdx = forwarderIdx;
+
+            _tunnels = new ConcurrentDictionary<object, RelayTunnel>();
+
+            var endpointVia = new UriBuilder("sb", serviceNamespace.ServiceNamespace, -1, entityPath).Uri;
 
             var tokenProvider = TokenProvider.CreateSharedAccessSignatureTokenProvider(serviceNamespace.AccessRuleName, serviceNamespace.AccessRuleKey);
-            _relayListener = new HybridConnectionListener(_endpointVia, tokenProvider);
 
-            ParseRelayMetadata();
+            _relayListener = new HybridConnectionListener(endpointVia, tokenProvider);
+
+            _metadata = RelayMetadata.Parse(_relayListener);
+
+            var metricTags = new MetricTags(new[] { nameof(entityPath), nameof(forwarderIdx) }, new[] { entityPath, forwarderIdx.ToString() });
+
+            _establishedTunnels = MetricsRegistry.Factory.MakeMeter(EstablisheTunnelsOptions, metricTags);
+
+            _tunnelFactory = new RelayTunnelFactory(logger, metricTags, _metadata.TargetHost, OnTunnelCompleted);
         }
 
         public void Start()
         {
-            _log.Information("Relay: {idx}:{relay}. Opening relay listener connection", _idx, _endpointVia);
+            _log.Information("Relay: {idx}:{relay}. Opening relay listener connection", _forwarderIdx, _relayListener.Address);
 
             try
             {
@@ -50,53 +63,18 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             }
             catch (Exception e)
             {
-                _log.Error(e, "Relay: {idx}:{relay}. Unable to connect", _idx, _endpointVia);
+                _log.Error(e, "Relay: {idx}:{relay}. Unable to connect", _forwarderIdx, _relayListener.Address);
                 throw;
             }
         }
 
         public void Stop()
         {
-            _log.Information("Relay: {idx}:{relay}. Closing relay listener connection", _idx, _endpointVia);
+            _log.Information("Relay: {idx}:{relay}. Closing relay listener connection", _forwarderIdx, _relayListener.Address);
 
-            _connections.DisposeAndClear();
+            _tunnels.DisposeAndClear();
 
             _relayListener.CloseAsync(CancellationToken.None).GetAwaiter().GetResult();
-        }
-
-        private void ParseRelayMetadata()
-        {
-            var info = _relayListener.GetRuntimeInformationAsync(default(CancellationToken))
-                .GetAwaiter()
-                .GetResult();
-
-            try
-            {
-                var userData = JArray.Parse(info.UserMetadata);
-
-                var endpoint = userData.FirstOrDefault(x => x["key"].Value<string>() == "endpoint");
-                if(endpoint == null)
-                    throw new ConfigurationErrorException($"Expected endpoint key was not found in the {_endpointVia} relay user metadata");
-
-                var targetHostInfo = endpoint["value"].Value<string>();
-                if(string.IsNullOrWhiteSpace(targetHostInfo))
-                    throw new ConfigurationErrorException($"The endpoint value is null or empty string in the {_endpointVia} relay user metadata");
-
-                var parts = targetHostInfo.Split(new [] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-                if(parts.Length != 2)
-                    throw new ConfigurationErrorException($"Wrong format of the endpoint {targetHostInfo} value in the {_endpointVia} relay user metadata");
-
-                _targetHost = parts[0];
-
-                _allowedPorts = new AllowedPorts(parts[1]);
-            }
-            catch (Exception e)
-            {
-                if (e is ConfigurationErrorException)
-                    throw;
-
-                throw new ConfigurationErrorException($"Failed to parse the {_endpointVia} relay user metadata", e);
-            }
         }
 
         private async Task StreamAccepted(Task<HybridConnectionStream> prev)
@@ -114,62 +92,60 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
                     
                 if (relayStream != null)
                 {
-                    var connectionInfo = await relayStream.ReadLengthPrefixedStringAsync();
+                    var info = await relayStream.ReadLengthPrefixedStringAsync();
 
-                    if (connectionInfo.StartsWith("tcp:", StringComparison.OrdinalIgnoreCase))
+                    if (info.StartsWith("tcp:", StringComparison.OrdinalIgnoreCase))
                     {
-                        if (!int.TryParse(connectionInfo.Substring(4), out var port))
+                        if (!int.TryParse(info.Substring(4), out var port))
                         {
-                            CloseRelayStreamConnection(relayStream, "Bad target port format");
+                            CloseRelayStream(relayStream, "Bad target port format");
                             return;
                         }
 
-                        if (!_allowedPorts.IsAllowed(port))
+                        if (!_metadata.IsPortAllowed(port))
                         {
-                            CloseRelayStreamConnection(relayStream, $"Incoming connection for port {port} not permitted");
+                            CloseRelayStream(relayStream, $"Incoming connection for port {port} not permitted");
                             return;
                         }
 
-                        _log.Debug("Relay: {idx}:{relay}. Incoming connection for port {port}", _idx, _endpointVia, port);
+                        _log.Debug("Relay: {idx}:{relay}. Incoming connection for port {port}", _forwarderIdx, _relayListener.Address, port);
 
-                        var connection = CreateConnection(relayStream, port);
-
-                        connection.Start();
+                        EstablishTunnel(relayStream, port);
                     }
                     else
                     {
-                        CloseRelayStreamConnection(relayStream, $"Unable to handle connection for {connectionInfo}");
+                        CloseRelayStream(relayStream, $"Unable to handle connection for {info}");
                     }
                 }
             }
             catch (Exception e)
             {
-                _log.Error(e, "Relay: {idx}:{relay}. Error accepting connection", _idx, _endpointVia);
+                _log.Error(e, "Relay: {idx}:{relay}. Error accepting connection", _forwarderIdx, _relayListener.Address);
             }
         }
 
-        private RelayConnection CreateConnection(HybridConnectionStream relayStream, int port)
+        private void EstablishTunnel(HybridConnectionStream stream, int port)
         {
-            var connection = new RelayConnection(_log, _idx, _entityPath, relayStream, _targetHost, port, OnConnectionCompleted);
+            var tunnel = _tunnelFactory.Create(stream, port);
 
-            _connections[connection] = connection;
+            _tunnels[tunnel] = tunnel;
 
-            return connection;
+            _establishedTunnels.Increment();
+
+            tunnel.Start();
         }
 
-        private Task OnConnectionCompleted(RelayConnection obj)
+        private Task OnTunnelCompleted(RelayTunnel tunnel)
         {
-            if (_connections.TryRemove(obj, out var connection))
-            {
-                connection.IgnoreException(x => x.Dispose());
-            }
+            if (_tunnels.TryRemove(tunnel, out _))
+                tunnel.IgnoreException(x => x.Dispose());
 
             return Task.CompletedTask;
         }
 
-        private void CloseRelayStreamConnection(Stream stream, string reason)
+        private void CloseRelayStream(Stream stream, string reason)
         {
-            _log.Warning("Relay: {idx}:{relay}. " + reason, _idx, _endpointVia);
+            _log.Warning("Relay: {idx}:{relay}. " + reason, _forwarderIdx, _relayListener.Address);
 
             stream.IgnoreException(x => x.Dispose());
         }
