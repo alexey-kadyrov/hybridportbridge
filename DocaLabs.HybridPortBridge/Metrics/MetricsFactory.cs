@@ -9,6 +9,78 @@ namespace DocaLabs.HybridPortBridge.Metrics
 {
     public sealed class MetricsFactory : IDisposable
     {
+        public static readonly MeterOptions RemoteEstablisheTunnelsOptions = new MeterOptions
+        {
+            Name = "Established Tunnels (Remote)",
+            MeasurementUnit = Unit.Items
+        };
+
+        public static readonly MeterOptions LocalEstablishedConnectionsOptions = new MeterOptions
+        {
+            Name = "Established Connections (Local)",
+            MeasurementUnit = Unit.Items
+        };
+
+        public static readonly MeterOptions LocalFailuresOptions = new MeterOptions
+        {
+            Name = "Failure (Local)",
+            MeasurementUnit = Unit.Items
+        };
+
+        public static readonly MeterOptions LocalFrameReadOptions = new MeterOptions
+        {
+            Name = "Frame Read (Local)",
+            MeasurementUnit = Unit.Items
+        };
+
+        public static readonly MeterOptions LocalFrameWrittenOptions = new MeterOptions
+        {
+            Name = "Frame Written (Local)",
+            MeasurementUnit = Unit.Items
+        };
+
+        public static readonly MeterOptions LocalBytesReadOptions = new MeterOptions
+        {
+            Name = "Bytes Read (Local)",
+            MeasurementUnit = Unit.Bytes
+        };
+
+        public static readonly MeterOptions LocalBytesWrittenOptions = new MeterOptions
+        {
+            Name = "Bytes Written (Local)",
+            MeasurementUnit = Unit.Bytes
+        };
+
+        public static readonly MeterOptions RemoteFailuresOptions = new MeterOptions
+        {
+            Name = "Failure (Remote)",
+            MeasurementUnit = Unit.Items
+        };
+
+        public static readonly MeterOptions RemoteFrameReadOptions = new MeterOptions
+        {
+            Name = "Frame Read (Remote)",
+            MeasurementUnit = Unit.Items
+        };
+
+        public static readonly MeterOptions RemoteFrameWrittenOptions = new MeterOptions
+        {
+            Name = "Frame Written (Remote)",
+            MeasurementUnit = Unit.Items
+        };
+
+        public static readonly MeterOptions RemoteBytesReadOptions = new MeterOptions
+        {
+            Name = "Bytes Read (Remote)",
+            MeasurementUnit = Unit.Bytes
+        };
+
+        public static readonly MeterOptions RemoteBytesWrittenOptions = new MeterOptions
+        {
+            Name = "Bytes Written (Remote)",
+            MeasurementUnit = Unit.Bytes
+        };
+
         public IMetricsRoot Metrics { get; }
         public IMeasureCounterMetrics Counters { get; }
         public IMeasureMeterMetrics Meters { get; }
@@ -49,7 +121,7 @@ namespace DocaLabs.HybridPortBridge.Metrics
             if (options.ReportConsole)
                 builder.Report.ToConsole();
 
-            if (!string.IsNullOrWhiteSpace(options.ReportFile))
+            if (!String.IsNullOrWhiteSpace(options.ReportFile))
                 builder.Report.ToTextFile(options.ReportFile);
         }
 

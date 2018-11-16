@@ -1,7 +1,6 @@
 ﻿using System.Net.Sockets;
 using System.Threading.Tasks;
 using App.Metrics;
-using App.Metrics.Meter;
 using DocaLabs.HybridPortBridge.DataChannels;
 using DocaLabs.HybridPortBridge.Metrics;
 using Microsoft.Azure.Relay;
@@ -11,12 +10,6 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 {
     internal sealed class RelayTunnelFactory
     {
-        private static readonly MeterOptions LocalConnectionsOptions = new MeterOptions
-        {
-            Name = "Established Connections (Local)",
-            MeasurementUnit = Unit.Items
-        };
-
         private readonly ILogger _log;
         private readonly string _targetHost;
         private readonly TunnelCompleted _tunnelCompleted;
@@ -31,7 +24,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
             _baseMetricTags = baseMetricTags;
 
-            _localConnections = MetricsRegistry.Factory.MakeMeter(LocalConnectionsOptions, _baseMetricTags);
+            _localConnections = MetricsRegistry.Factory.MakeMeter(MetricsFactory.LocalEstablishedConnectionsOptions, _baseMetricTags);
         }
 
         public RelayTunnel Create(HybridConnectionStream stream, int targetPort)

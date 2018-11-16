@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using App.Metrics;
-using App.Metrics.Meter;
 using DocaLabs.HybridPortBridge.Config;
 using DocaLabs.HybridPortBridge.Metrics;
 using Microsoft.Azure.Relay;
@@ -14,12 +13,6 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 {
     public sealed class ServiceConnectionForwarder : IConnectionForwarder
     {
-        private static readonly MeterOptions EstablisheTunnelsOptions = new MeterOptions
-        {
-            Name = "Established Tunnels (Remote)",
-            MeasurementUnit = Unit.Items
-        };
-
         private static int _idx;
 
         private readonly ILogger _log;
@@ -42,7 +35,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
             var metricTags = new MetricTags(new[] { nameof(entityPath), nameof(forwarderIdx) }, new[] { entityPath, forwarderIdx.ToString() });
 
-            _establishedTunnels = MetricsRegistry.Factory.MakeMeter(EstablisheTunnelsOptions, metricTags);
+            _establishedTunnels = MetricsRegistry.Factory.MakeMeter(MetricsFactory.RemoteEstablisheTunnelsOptions, metricTags);
 
             _tunnelFactory = new RelayTunnelFactory(logger, metricTags, _metadata.TargetHost, OnTunnelCompleted);
         }

@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using App.Metrics;
-using App.Metrics.Meter;
 using DocaLabs.HybridPortBridge.Metrics;
 using Microsoft.Azure.Relay;
 using Serilog;
@@ -12,36 +11,6 @@ namespace DocaLabs.HybridPortBridge.DataChannels
     public sealed class RemoteRelayDataChannel : IRemoteDataChannelReader, IRemoteDataChannelWriter
     {
         public const int PreambleByteSize = ConnectionId.ByteSize + sizeof(ushort);
-
-        private static readonly MeterOptions FailuresOptions = new MeterOptions
-        {
-            Name = "Failure (Remote)",
-            MeasurementUnit = Unit.Items
-        };
-
-        private static readonly MeterOptions FrameReadOptions = new MeterOptions
-        {
-            Name = "Frame Read (Remote)",
-            MeasurementUnit = Unit.Items
-        };
-
-        private static readonly MeterOptions FrameWrittenOptions = new MeterOptions
-        {
-            Name = "Frame Written (Remote)",
-            MeasurementUnit = Unit.Items
-        };
-
-        private static readonly MeterOptions BytesReadOptions = new MeterOptions
-        {
-            Name = "Bytes Read (Remote)",
-            MeasurementUnit = Unit.Bytes
-        };
-
-        private static readonly MeterOptions BytesWrittenOptions = new MeterOptions
-        {
-            Name = "Bytes Written (Remote)",
-            MeasurementUnit = Unit.Bytes
-        };
 
         private readonly ILogger _log;
         private readonly MeterMetric _failures;
@@ -59,11 +28,11 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             _instance = instance;
             _dataChannel = dataChannel;
 
-            _failures = metrics.MakeMeter(FailuresOptions, tags);
-            _frameRead = metrics.MakeMeter(FrameReadOptions, tags);
-            _frameWritten = metrics.MakeMeter(FrameWrittenOptions, tags);
-            _bytesRead = metrics.MakeMeter(BytesReadOptions, tags);
-            _bytesWritten = metrics.MakeMeter(BytesWrittenOptions, tags);
+            _failures = metrics.MakeMeter(MetricsFactory.RemoteFailuresOptions, tags);
+            _frameRead = metrics.MakeMeter(MetricsFactory.RemoteFrameReadOptions, tags);
+            _frameWritten = metrics.MakeMeter(MetricsFactory.RemoteFrameWrittenOptions, tags);
+            _bytesRead = metrics.MakeMeter(MetricsFactory.RemoteBytesReadOptions, tags);
+            _bytesWritten = metrics.MakeMeter(MetricsFactory.RemoteBytesWrittenOptions, tags);
 
             _writeLock = new SemaphoreSlim(1, 1);
 

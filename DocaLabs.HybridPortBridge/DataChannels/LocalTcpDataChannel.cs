@@ -3,7 +3,6 @@ using System.IO;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using App.Metrics;
-using App.Metrics.Meter;
 using DocaLabs.HybridPortBridge.Metrics;
 using Serilog;
 
@@ -11,36 +10,6 @@ namespace DocaLabs.HybridPortBridge.DataChannels
 {
     public sealed class LocalTcpDataChannel : LocalDataChannel
     {
-        private static readonly MeterOptions FailuresOptions = new MeterOptions
-        {
-            Name = "Failure (Local)",
-            MeasurementUnit = Unit.Items
-        };
-
-        private static readonly MeterOptions FrameReadOptions = new MeterOptions
-        {
-            Name = "Frame Read (Local)",
-            MeasurementUnit = Unit.Items
-        };
-
-        private static readonly MeterOptions FrameWrittenOptions = new MeterOptions
-        {
-            Name = "Frame Written (Local)",
-            MeasurementUnit = Unit.Items
-        };
-
-        private static readonly MeterOptions BytesReadOptions = new MeterOptions
-        {
-            Name = "Bytes Read (Local)",
-            MeasurementUnit = Unit.Bytes
-        };
-
-        private static readonly MeterOptions BytesWrittenOptions = new MeterOptions
-        {
-            Name = "Bytes Written (Local)",
-            MeasurementUnit = Unit.Bytes
-        };
-
         private readonly ILogger _log;
         private readonly MeterMetric _failures;
         private readonly MeterMetric _frameRead;
@@ -60,11 +29,11 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             _stream = _endpoint.GetStream();
             _buffer = new byte[BufferSize];
 
-            _failures = metrics.MakeMeter(FailuresOptions, tags);
-            _frameRead = metrics.MakeMeter(FrameReadOptions, tags);
-            _frameWritten = metrics.MakeMeter(FrameWrittenOptions, tags);
-            _bytesRead = metrics.MakeMeter(BytesReadOptions, tags);
-            _bytesWritten = metrics.MakeMeter(BytesWrittenOptions, tags);
+            _failures = metrics.MakeMeter(MetricsFactory.LocalFailuresOptions, tags);
+            _frameRead = metrics.MakeMeter(MetricsFactory.LocalFrameReadOptions, tags);
+            _frameWritten = metrics.MakeMeter(MetricsFactory.LocalFrameWrittenOptions, tags);
+            _bytesRead = metrics.MakeMeter(MetricsFactory.LocalBytesReadOptions, tags);
+            _bytesWritten = metrics.MakeMeter(MetricsFactory.LocalBytesWrittenOptions, tags);
 
             _log.Debug("Local: {local} is initialized", _instance);
         }
