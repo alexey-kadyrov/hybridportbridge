@@ -24,12 +24,8 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests
         public const string EchoBaseAddress33 = "http://localhost:5031";
         public const string EchoServiceBaseAddress = "http://localhost:5011/";
 
-        public const string ServiceNamespace = "";
-        public const string AccessRuleName = "";
-        public const string AccessRuleKey = "";
-
-        public const string TargetHostEcho = "";
-        public const string TargetHostEcho33 = "";
+        public const string TargetHostEcho = "ovc-cicd-relay-echo";
+        public const string TargetHostEcho33 = "ovc-cicd-relay-echo-cert";
 
         public const string ClientCertificate =
             "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";
@@ -71,12 +67,6 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests
             {
                 PortBridge = new ServiceAgentOptions
                 {
-                    ServiceNamespace = new ServiceNamespaceOptions
-                    {
-                        ServiceNamespace = ServiceNamespace,
-                        AccessRuleName = AccessRuleName,
-                        AccessRuleKey = AccessRuleKey,
-                    },
                     EntityPaths =
                     {
                         TargetHostEcho,
@@ -116,12 +106,6 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests
                 {
                     PortBridge = new ClientAgentOptions
                     {
-                        ServiceNamespace = new ServiceNamespaceOptions
-                        {
-                            ServiceNamespace = ServiceNamespace,
-                            AccessRuleName = AccessRuleName,
-                            AccessRuleKey = AccessRuleKey,
-                        },
                         PortMappings = {
                         {
                             "5020", new PortMappingOptions
