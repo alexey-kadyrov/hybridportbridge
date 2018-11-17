@@ -10,7 +10,7 @@ namespace DocaLabs.Qa
 
         public static IConfiguration Configuration { get; private set; }
 
-        public static void Initialize(Action<IServiceCollection, IConfiguration> builder, string[] args = null, string jsonFile = "appsettings")
+        public static void Initialize(Action<IServiceCollection, IConfiguration> builder, string[] args = null, string jsonFile = null)
         {
             Configuration = QaDefaults.BuildConfiguration(args, jsonFile);
 

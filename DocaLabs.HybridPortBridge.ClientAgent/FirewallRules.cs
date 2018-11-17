@@ -45,7 +45,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
                             rules.Add(new IPRange(IPAddress.Parse(parts[0]), IPAddress.Parse(parts[1])));
                             break;
                         default:
-                            throw new ConfigurationErrorException("The IP range must be either single IP address or two addresses eparated by the dash (-)");
+                            throw new ConfigurationErrorException("The IP range must be either single IP address or two addresses separated by the dash (-) like 10.1.34.01-10.1.34.255");
                     }
                 }
 
@@ -53,7 +53,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             }
             catch (Exception e)
             {
-                throw new ConfigurationErrorException("Bad firewal rules", e);
+                throw new ConfigurationErrorException("Bad firewall rules", e);
             }
         }
     }

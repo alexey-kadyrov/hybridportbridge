@@ -7,7 +7,7 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests
 {
     public class Startup
     {
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory logger)
         {
             app.Use(async (context, next) => await TestService.ProcessRequest(context, next));
         }

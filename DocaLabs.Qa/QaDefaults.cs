@@ -105,11 +105,9 @@ namespace DocaLabs.Qa
             return o.ToConfigurationArgs();
         }
 
-        public static ILogger BuildRootLogger(string service)
+        public static ILogger BuildRootLogger(string service, string[] args, string jsonFile = null)
         {
-            var args = GetSerilogConfigurationArgs(service, MakeDefaultLogPath(service));
-
-            var appConfig = BuildConfiguration(args);
+            var appConfig = BuildConfiguration(args, jsonFile);
 
             var logConfig = new LoggerConfiguration()
                 .ReadFrom.Configuration(appConfig)
@@ -127,7 +125,7 @@ namespace DocaLabs.Qa
             return Path.Combine(AppContext.BaseDirectory, "logs", service, "{Date}.log");
         }
 
-        public static IConfiguration BuildConfiguration(string[] args, string jsonFile = "appsettings")
+        public static IConfiguration BuildConfiguration(string[] args, string jsonFile = null)
         {
             var environmentName = Environment.GetEnvironmentVariable("Hosting:Environment");
 

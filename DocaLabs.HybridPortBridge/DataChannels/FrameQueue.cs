@@ -15,9 +15,9 @@ namespace DocaLabs.HybridPortBridge.DataChannels
         private readonly SemaphoreSlim _locker;
         private readonly ILocalDataChannelWriter _writer;
 
-        public FrameQueue(ILogger loggerFactory, ILocalDataChannelWriter writer, CompleteLocalWriter completeLocalWriter)
+        public FrameQueue(ILogger logger, ILocalDataChannelWriter writer, CompleteLocalWriter completeLocalWriter)
         {
-            _log = loggerFactory.ForContext(GetType());
+            _log = logger.ForContext(GetType());
             _writer = writer;
             _completeLocalWriter = completeLocalWriter;
             _locker = new SemaphoreSlim(1, 1);
