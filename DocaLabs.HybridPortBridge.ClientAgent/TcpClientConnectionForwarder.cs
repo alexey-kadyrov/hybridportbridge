@@ -10,7 +10,7 @@ using Serilog;
 
 namespace DocaLabs.HybridPortBridge.ClientAgent
 {
-    public sealed class ClientConnectionForwarder : IDisposable, IConnectionForwarder
+    public sealed class TcpClientConnectionForwarder : IDisposable, IConnectionForwarder
     {
         private readonly ILogger _log;
         private readonly int _fromPort;
@@ -20,18 +20,19 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
         private TcpListener _endpointListener;
         private readonly MeterMetric _acceptedConnections;
 
-        public ClientConnectionForwarder(ILogger logger, ServiceNamespaceOptions serviceNamespace, int fromPort, PortMappingOptions portMappings)
+        public TcpClientConnectionForwarder(ILogger logger, ServiceNamespaceOptions serviceNamespace, int fromPort, PortMappingOptions portMappings)
         {
             _log = logger.ForContext(GetType());
             _firewallRules = new FirewallRules(portMappings);
             _fromPort = fromPort;
             _bindTo = portMappings.BindToAddress;
 
-            var metricTags = new MetricTags("fromPort", fromPort.ToString());
+            var metricTags = new MetricTags(
+                new [] {"entityPath", "fromPort" }, new [] { portMappings.EntityPath, fromPort.ToString() });
 
             _acceptedConnections = MetricsRegistry.Factory.MakeMeter(MetricsFactory.LocalEstablishedConnectionsOptions, metricTags);
 
-            _relayFactory = new RelayTunnelFactory(logger, serviceNamespace, portMappings);
+            _relayFactory = new RelayTunnelFactory(logger, metricTags, serviceNamespace, portMappings);
         }
 
         public void Start()

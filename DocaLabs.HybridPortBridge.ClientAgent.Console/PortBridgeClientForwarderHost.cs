@@ -38,7 +38,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent.Console
                 if (!int.TryParse(mapping.Key, out var port))
                     throw new ConfigurationErrorException($"Invalid {mapping.Key} port number");
 
-                forwarders.Add(new ClientConnectionForwarder(loggerFactory, options.ServiceNamespace, port, mapping.Value));
+                forwarders.Add(new TcpClientConnectionForwarder(loggerFactory, options.ServiceNamespace, port, mapping.Value));
             }
 
             return forwarders;

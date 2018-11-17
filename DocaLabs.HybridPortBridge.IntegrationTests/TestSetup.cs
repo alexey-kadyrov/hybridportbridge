@@ -1,11 +1,14 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using DocaLabs.HybridPortBridge.ClientAgent.Config;
+using DocaLabs.HybridPortBridge.Config;
+using DocaLabs.HybridPortBridge.ServiceAgent.Config;
+using DocaLabs.Qa;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
@@ -16,9 +19,9 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests
     [SetUpFixture]
     public class TestSetup
     {
-        public const string EchoBaseAddressWithClientCertificateRequirements = "https://localhost:5020/api/echo/";
-        public const string EchoBaseAddress = "http://localhost:5021/api/echo/";
-        public const string EchoBaseAddress33 = "http://localhost:5031/api/echo/";
+        public const string EchoBaseAddressWithClientCertificateRequirements = "https://localhost:5020";
+        public const string EchoBaseAddress = "http://localhost:5021";
+        public const string EchoBaseAddress33 = "http://localhost:5031";
         public const string EchoServiceBaseAddress = "http://localhost:5011/";
 
         public const string ServiceNamespace = "";
@@ -43,7 +46,7 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests
 
         private static readonly string[] ServiceAgentArgs = QaDefaults
             .GetSerilogConfigurationArgs(ServiceAgentName, QaDefaults.MakeDefaultLogPath(ServiceAgentName))
-            .AppendRange(new
+            .MergeRange(new
             {
                 AgentMetrics = new AgentMetricsOptions
                 {
@@ -64,7 +67,7 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests
                     }
                 }
             }.ToConfigurationArgs())
-            .AppendRange(new
+            .MergeRange(new
             {
                 PortBridge = new ServiceAgentOptions
                 {
@@ -84,12 +87,11 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests
                     }
                 }
             }
-            .ToConfigurationArgs())
-            .ToArray();
+            .ToConfigurationArgs());
 
         private static readonly string[] ClientAgentArgs = QaDefaults
             .GetSerilogConfigurationArgs(ClientAgentName, QaDefaults.MakeDefaultLogPath(ClientAgentName))
-            .AppendRange(new
+            .MergeRange(new
             {
                 AgentMetrics = new AgentMetricsOptions
                 {
@@ -110,7 +112,7 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests
                     }
                 }
             }.ToConfigurationArgs())
-            .AppendRange(new
+            .MergeRange(new
                 {
                     PortBridge = new ClientAgentOptions
                     {
@@ -156,8 +158,7 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests
                         }}
                     }
                 }
-                .ToConfigurationArgs())
-            .ToArray();
+                .ToConfigurationArgs());
 
 
         private IWebHost _echoServiceHost;
@@ -244,7 +245,7 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests
 
         private void StartServiceAgent()
         {
-            _serviceAgentThread = new Thread(() => Program.Main(ServiceAgentArgs))
+            _serviceAgentThread = new Thread(() => ServiceAgent.Console.Program.Main(ServiceAgentArgs))
             {
                 IsBackground = true
             };
@@ -254,7 +255,7 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests
 
         private void StartClientAgent()
         {
-            _clientAgentThread = new Thread(() => ClientAgent.ConsoleApp.Program.Main(ClientAgentArgs))
+            _clientAgentThread = new Thread(() => ClientAgent.Console.Program.Main(ClientAgentArgs))
             {
                 IsBackground = true
             };
@@ -290,7 +291,7 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests
         {
             try
             {
-                Program.Blocker.Release();
+                ServiceAgent.Console.Program.Blocker.Release();
 
                 if (_serviceAgentThread == null)
                     return;
@@ -308,7 +309,7 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests
         {
             try
             {
-                ClientAgent.ConsoleApp.Program.Blocker.Release();
+                ClientAgent.Console.Program.Blocker.Release();
 
                 if (_clientAgentThread == null)
                     return;

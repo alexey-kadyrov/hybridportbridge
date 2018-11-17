@@ -13,7 +13,6 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
     internal sealed class RelayTunnel : IDisposable
     {
         private readonly ILogger _log;
-        private readonly int _remoteTcpPort;
         private readonly Uri _relay;
         private readonly TokenProvider _tokenProvider;
         private readonly SemaphoreSlim _establishLock;
@@ -21,31 +20,27 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
         private DownlinkPump _downlinkPump;
         private readonly FrameDispatcher _frameDispatcher;
         private readonly TimeSpan _ttl;
-
-        private readonly string _entityPath;
-        private static long _dowlinkPumpCounter;
-
         private DateTime _canAcceptUntil;
         private readonly TunnelPreamble _tunnelPreamble;
+        private readonly MetricTags _metricTags;
 
         public Action<RelayTunnel> OnDataChannelClosed { get; set; }
 
-        public RelayTunnel(ILogger logger, ServiceNamespaceOptions serviceNamespace, string entityPath, int remoteTcpPort, int ttlSeconds)
+        public RelayTunnel(ILogger logger, MetricTags metricTags, ServiceNamespaceOptions serviceNamespace, string entityPath, int remoteTcpPort, int ttlSeconds)
         {
             if (string.IsNullOrWhiteSpace(entityPath))
                 throw new ArgumentNullException(nameof(entityPath));
 
             _log = logger.ForContext(GetType());
 
-            _entityPath = entityPath;
-            _remoteTcpPort = remoteTcpPort;
             _establishLock = new SemaphoreSlim(1, 1);
-            _relay = new UriBuilder("sb", serviceNamespace.ServiceNamespace, -1, _entityPath).Uri;
+            _relay = new UriBuilder("sb", serviceNamespace.ServiceNamespace, -1, entityPath).Uri;
             _tokenProvider = serviceNamespace.CreateSasTokenProvider();
             _frameDispatcher = new FrameDispatcher(_log);
             _ttl = TimeSpan.FromSeconds(ttlSeconds);
-            _tunnelPreamble = new TunnelPreamble(TunnelFlags.Tcp, _remoteTcpPort);
+            _tunnelPreamble = new TunnelPreamble(TunnelFlags.Tcp, remoteTcpPort);
             _canAcceptUntil = DateTime.MaxValue;
+            _metricTags = metricTags;
         }
 
         public bool CanStillAccept()
@@ -101,9 +96,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
 
         private void EnsureDownlinkPump(HybridConnectionStream stream)
         {
-            var counter = Interlocked.Increment(ref _dowlinkPumpCounter);
-
-            _dataChannel = new RemoteRelayDataChannel(_log, MetricsRegistry.Factory, counter.ToString(), new MetricTags(), stream);
+            _dataChannel = new RemoteRelayDataChannel(_log, MetricsRegistry.Factory, _metricTags, stream);
 
             _downlinkPump = new DownlinkPump(_log, _dataChannel, _frameDispatcher);
 
@@ -112,7 +105,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
 
         private void EnsureUplinkPump(TcpClient endpoint, ConnectionId connectionId)
         {
-            var localDataChannel = new LocalTcpDataChannel(_log, MetricsRegistry.Factory, connectionId.ToString(), new MetricTags(), endpoint);
+            var localDataChannel = new LocalTcpDataChannel(_log, MetricsRegistry.Factory, connectionId.ToString(), _metricTags, endpoint);
 
             var uplinkPump = new UplinkPump(_log, connectionId, localDataChannel, _dataChannel);
 

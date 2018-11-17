@@ -31,16 +31,6 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests.Service
                 await context.Request.Body.CopyToAsync(context.Response.Body);
                 await context.Response.Body.FlushAsync();
             }
-            else if (context.Request.IsGetPath("/api/echo/large"))
-            {
-                context.Response.StatusCode = 200;
-                context.Response.ContentType = "text/plain";
-
-                int.TryParse(context.Request.Query["ll"], out var length);
-
-                var data = Utils.GenerateRandomString(length);
-                await context.Response.Body.WriteAsync(data, 0, data.Length);
-            }
             else if (context.Request.IsPostPath("/api/echo/large"))
             {
                 context.Response.StatusCode = 200;

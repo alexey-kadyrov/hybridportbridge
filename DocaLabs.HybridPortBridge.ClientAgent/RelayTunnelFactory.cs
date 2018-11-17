@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using App.Metrics;
 using DocaLabs.HybridPortBridge.ClientAgent.Config;
 using DocaLabs.HybridPortBridge.Config;
 using Serilog;
@@ -12,10 +13,12 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
         private readonly ILogger _log;
         private readonly object _poolLocker;
         private readonly RelayTunnel[] _tunnels;
+        private readonly MetricTags[] _metricTags;
         private readonly ConcurrentDictionary<object, RelayTunnel> _replacedTunnels;
         private long _counter;
 
-        public RelayTunnelFactory(ILogger logger, ServiceNamespaceOptions serviceNamespace, PortMappingOptions portMappings)
+        public RelayTunnelFactory(ILogger logger, MetricTags metricTags, ServiceNamespaceOptions serviceNamespace,
+            PortMappingOptions portMappings)
         {
             _log = logger?.ForContext(GetType());
 
@@ -24,11 +27,14 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             _portMappings = portMappings;
 
             _replacedTunnels = new ConcurrentDictionary<object, RelayTunnel>();
+
             _tunnels = new RelayTunnel[portMappings.RelayChannelCount];
+            _metricTags = new MetricTags[portMappings.RelayChannelCount];
 
             for (var i = 0; i < portMappings.RelayChannelCount; i++)
             {
-                _tunnels[i] = new RelayTunnel(logger, serviceNamespace, portMappings.EntityPath, portMappings.RemoteTcpPort, portMappings.RelayConnectionTtlSeconds);
+                _metricTags[i] = MetricTags.Concat(metricTags, new MetricTags("idx", i.ToString()));
+                _tunnels[i] = new RelayTunnel(logger, _metricTags[i], serviceNamespace, portMappings.EntityPath, portMappings.RemoteTcpPort, portMappings.RelayConnectionTtlSeconds);
             }
         }
 
@@ -62,7 +68,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
 
             replacing.OnDataChannelClosed = OnReplacedTunnelDataChannelClosed;
 
-            return _tunnels[idx] = new RelayTunnel(_log, _serviceNamespace, _portMappings.EntityPath, _portMappings.RemoteTcpPort, _portMappings.RelayConnectionTtlSeconds);
+            return _tunnels[idx] = new RelayTunnel(_log, _metricTags[idx], _serviceNamespace, _portMappings.EntityPath, _portMappings.RemoteTcpPort, _portMappings.RelayConnectionTtlSeconds);
         }
 
         private void OnReplacedTunnelDataChannelClosed(RelayTunnel tunnel)

@@ -9,6 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Tests\PortBridgeConcurrentTests.cs" />
+    <Compile Remove="Tests\PortBridgeWithClientCertificateTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Tests\PortBridgeConcurrentTests.cs" />
+    <None Include="Tests\PortBridgeWithClientCertificateTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.5.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.6" />

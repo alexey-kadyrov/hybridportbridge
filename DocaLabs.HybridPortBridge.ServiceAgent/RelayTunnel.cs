@@ -37,7 +37,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
             _baseMetricTags = MakeMetricTags(baseTags);
 
-            _relayDataChannel = new RemoteRelayDataChannel(logger, MetricsRegistry.Factory, "", _baseMetricTags, relayStream);
+            _relayDataChannel = new RemoteRelayDataChannel(logger, MetricsRegistry.Factory, _baseMetricTags, relayStream);
 
             _downlinkPump = new DownlinkPump(logger, _relayDataChannel, _frameDispatcher);
         }

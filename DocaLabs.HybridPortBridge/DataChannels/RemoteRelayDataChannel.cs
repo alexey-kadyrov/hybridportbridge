@@ -19,13 +19,11 @@ namespace DocaLabs.HybridPortBridge.DataChannels
         private readonly MeterMetric _bytesRead;
         private readonly MeterMetric _bytesWritten;
         private readonly SemaphoreSlim _writeLock;
-        private readonly string _instance;
         private readonly HybridConnectionStream _dataChannel;
 
-        public RemoteRelayDataChannel(ILogger logger, MetricsFactory metrics, string instance, MetricTags tags, HybridConnectionStream dataChannel)
+        public RemoteRelayDataChannel(ILogger logger, MetricsFactory metrics, MetricTags tags, HybridConnectionStream dataChannel)
         {
             _log = logger.ForContext(GetType());
-            _instance = instance;
             _dataChannel = dataChannel;
 
             _failures = metrics.MakeMeter(MetricsFactory.RemoteFailuresOptions, tags);
@@ -35,8 +33,6 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             _bytesWritten = metrics.MakeMeter(MetricsFactory.RemoteBytesWrittenOptions, tags);
 
             _writeLock = new SemaphoreSlim(1, 1);
-
-            _log.Debug("Remote: {remote} is initialized", _instance);
         }
 
         public void Dispose()
@@ -80,7 +76,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             {
                 _failures.Increment();
 
-                _log.Error(e, "Remote: {remote}. Failed to read", _instance);
+                _log.Error(e, "Failed to read");
 
                 throw;
             }
@@ -126,7 +122,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
 
             if (bytesRead == 0)
             {
-                _log.Debug("Remote: {remote}. Received empty frame", _instance);
+                _log.Debug("Received empty frame");
                 return null;
             }
 
