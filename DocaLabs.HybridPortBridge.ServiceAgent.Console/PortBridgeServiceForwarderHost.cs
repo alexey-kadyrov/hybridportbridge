@@ -1,17 +1,29 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using DocaLabs.HybridPortBridge.ServiceAgent.Config;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 
 namespace DocaLabs.HybridPortBridge.ServiceAgent.Console
 {
     internal class PortBridgeServiceForwarderHost
     {
-        public PortBridgeServiceForwarderHost(ILogger loggerFactory, ServiceAgentOptions options)
-        {
-            Forwarders = BuildServiceForwarders(loggerFactory, options);
-        }
+        public IReadOnlyCollection<ServiceConnectionForwarder> Forwarders { get; }
 
-        public ICollection<ServiceConnectionForwarder> Forwarders { get; }
+        private PortBridgeServiceForwarderHost(IReadOnlyCollection<ServiceConnectionForwarder> forwarders)
+        {
+            Forwarders = forwarders;
+        }
+        public static async Task<PortBridgeServiceForwarderHost> Create(IConfiguration configuration)
+        {
+            var options = configuration.GetSection("PortBridge").Get<ServiceAgentOptions>();
+
+            var logger = LoggerBuilder.Initialize(configuration);
+
+            var forwarders = await BuildServiceForwarders(logger, options);
+
+            return new PortBridgeServiceForwarderHost(forwarders);
+        }
 
         public void Start()
         {
@@ -29,13 +41,13 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent.Console
             }
         }
 
-        private static ICollection<ServiceConnectionForwarder> BuildServiceForwarders(ILogger loggerFactory, ServiceAgentOptions options)
+        private static async Task<IReadOnlyCollection<ServiceConnectionForwarder>> BuildServiceForwarders(ILogger logger, ServiceAgentOptions options)
         {
             var forwarders = new List<ServiceConnectionForwarder>();
 
-            for (var i = 0; i < options.EntityPaths.Count; ++i)
+            foreach (var entityPath in options.EntityPaths)
             {
-                forwarders.Add(new ServiceConnectionForwarder(loggerFactory, i, options.ServiceNamespace, options.EntityPaths[i]));
+                forwarders.Add(await ServiceConnectionForwarder.Create(logger, options.ServiceNamespace, entityPath));
             }
 
             return forwarders;

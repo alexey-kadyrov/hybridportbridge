@@ -96,29 +96,23 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
                     
                 if (relayStream != null)
                 {
-                    var info = await relayStream.ReadLengthPrefixedStringAsync();
+                    var preamble = await TunnelPreamble.ReadAsync(relayStream);
 
-                    if (info.StartsWith("tcp:", StringComparison.OrdinalIgnoreCase))
+                    if (preamble.Flags.HasFlag(TunnelFlags.Tcp))
                     {
-                        if (!int.TryParse(info.Substring(4), out var port))
+                        if (!_metadata.IsPortAllowed(preamble.Port))
                         {
-                            CloseRelayStream(relayStream, "Bad target port format");
+                            CloseRelayStream(relayStream, $"Incoming connection for port {preamble.Port} not permitted");
                             return;
                         }
 
-                        if (!_metadata.IsPortAllowed(port))
-                        {
-                            CloseRelayStream(relayStream, $"Incoming connection for port {port} not permitted");
-                            return;
-                        }
+                        _log.Debug("Relay: {idx}:{relay}. Incoming connection for port {port}", _forwarderIdx, _relayListener.Address, preamble.Port);
 
-                        _log.Debug("Relay: {idx}:{relay}. Incoming connection for port {port}", _forwarderIdx, _relayListener.Address, port);
-
-                        EstablishTunnel(relayStream, port);
+                        EstablishTunnel(relayStream, preamble.Port);
                     }
                     else
                     {
-                        CloseRelayStream(relayStream, $"Unable to handle connection for {info}");
+                        CloseRelayStream(relayStream, $"Unable to handle connection for {preamble}");
                     }
                 }
             }

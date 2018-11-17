@@ -28,6 +28,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
 
         private DateTime _canAcceptUntil;
         private readonly MeterMetric _acceptedConnections;
+        private readonly TunnelPreamble _tunnelPreamble;
 
         public RelayTunnel(ILogger loggerFactory, ServiceNamespaceOptions serviceNamespace, string entityPath, int remoteTcpPort, int ttlSeconds)
         {
@@ -43,6 +44,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             _tokenProvider = serviceNamespace.CreateSasTokenProvider();
             _frameDispatcher = new FrameDispatcher(_log);
             _ttl = TimeSpan.FromSeconds(ttlSeconds);
+            _tunnelPreamble = new TunnelPreamble(TunnelFlags.Tcp, _remoteTcpPort);
             _canAcceptUntil = DateTime.MaxValue;
             _acceptedConnections = MetricsRegistry.MakeMeter(MetricsDefinitions.EndpointConnectionAcceptedMeter, _entityPath, _remoteTcpPort);
         }
@@ -82,7 +84,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
 
             try
             {
-                await _dataChannel.WriteLengthPrefixedStringAsync("tcp:" + _remoteTcpPort);
+                await _tunnelPreamble.WriteAsync(_dataChannel);
             }
             catch (AuthorizationFailedException e)
             {
@@ -93,7 +95,9 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             catch (Exception e)
             {
                 _log.Error(e, "Relay: {relay}. Unable to establish data channel", _relay);
+
                 await CloseDataChannelAsync();
+
                 throw;
             }
 

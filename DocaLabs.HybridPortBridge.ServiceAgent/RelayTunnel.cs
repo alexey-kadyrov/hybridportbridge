@@ -17,7 +17,8 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
         private readonly ILogger _log;
         private readonly CreateLocalDataChannel _createDataChannelFactory;
         private readonly TunnelCompleted _tunnelCompleted;
-        private DownlinkPump _downlinkPump;
+        private readonly DownlinkPump _downlinkPump;
+        private readonly RemoteRelayDataChannel _relayDataChannel;
         private readonly ConcurrentDictionary<object, UplinkPump> _uplinkPumps;
         private readonly FrameDispatcher _frameDispatcher;
         private static long _dowlinkPumpCounter;
@@ -31,12 +32,21 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             _uplinkPumps = new ConcurrentDictionary<object, UplinkPump>();
             _createDataChannelFactory = createDataChannelFactory;
             _tunnelCompleted = tunnelCompleted;
-            _frameDispatcher = new FrameDispatcher(_log, CorrelateLocalWriter);
+            _frameDispatcher = new FrameDispatcher(_log, CorrelateLocalDataChannel);
             _targetPort = targetPort;
 
             _baseMetricTags = MakeMetricTags(baseTags);
 
-            _downlinkPump = new DownlinkPump(logger, relayReadBytes, relayStream.ReadAsync, _frameDispatcher);
+            _relayDataChannel = new RemoteRelayDataChannel(logger, MetricsRegistry.Factory, "", _baseMetricTags, relayStream);
+
+            _downlinkPump = new DownlinkPump(logger, _relayDataChannel, _frameDispatcher);
+        }
+
+        public void Dispose()
+        {
+            _uplinkPumps.DisposeAndClear();
+
+            CloseDataChannel();
         }
 
         private static MetricTags MakeMetricTags(MetricTags baseTags)
@@ -46,11 +56,11 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             return MetricTags.Concat(baseTags, new MetricTags("instance", counter.ToString()));
         }
 
-        private async Task<ILocalDataChannelWriter> CorrelateLocalWriter(ConnectionId connectionId)
+        private async Task<ILocalDataChannelWriter> CorrelateLocalDataChannel(ConnectionId connectionId)
         {
             var localDataChannel = await _createDataChannelFactory(connectionId, _targetPort, _baseMetricTags);
 
-            var uplinkPump = new UplinkPump(_log, connectionId, localDataChannel, null);
+            var uplinkPump = new UplinkPump(_log, connectionId, localDataChannel, _relayDataChannel);
 
             _uplinkPumps[uplinkPump] = uplinkPump;
 
@@ -59,13 +69,6 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 #pragma warning restore 4014
 
             return localDataChannel;
-        }
-
-        public void Dispose()
-        {
-            _uplinkPumps.DisposeAndClear();
-
-            CloseDataChannel();
         }
 
         public void Start()
@@ -97,7 +100,6 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
                 _frameDispatcher.Clear();
                 _downlinkPump?.Stop();
                 _downlinkPump.IgnoreException(x => x.Dispose());
-                _downlinkPump = null;
             }
             catch
             {

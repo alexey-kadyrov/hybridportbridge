@@ -14,15 +14,15 @@ namespace DocaLabs.HybridPortBridge.DataChannels
         private readonly CorrelateLocalWriter _correlateLocalWriter;
         private readonly ConcurrentDictionary<ConnectionId, FrameQueue> _queues;
 
-        public FrameDispatcher(ILogger loggerFactory, CorrelateLocalWriter correlateLocalWriter)
-            : this(loggerFactory)
+        public FrameDispatcher(ILogger logger, CorrelateLocalWriter correlateLocalWriter)
+            : this(logger)
         {
             _correlateLocalWriter = correlateLocalWriter;
         }
 
-        public FrameDispatcher(ILogger loggerFactory)
+        public FrameDispatcher(ILogger logger)
         {
-            _log = loggerFactory?.ForContext(GetType()) ?? throw new ArgumentNullException(nameof(loggerFactory));
+            _log = logger.ForContext(GetType());
             _queues = new ConcurrentDictionary<ConnectionId, FrameQueue>();
         }
 

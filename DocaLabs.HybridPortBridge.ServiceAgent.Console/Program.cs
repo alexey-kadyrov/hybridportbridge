@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using DocaLabs.HybridPortBridge.ServiceAgent.Config;
-using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
 
 namespace DocaLabs.HybridPortBridge.ServiceAgent.Console
 {
@@ -12,33 +10,28 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent.Console
         {
             System.Console.Title = "DocaLabs.HybridPortBridge.ServiceAgent.Console";
 
+            MainAsync(args)
+                .GetAwaiter()
+                .GetResult();
+        }
+
+        private static async Task MainAsync(string[] args)
+        {
             var configuration = args.BuildConfiguration();
 
             MetricsRegistry.Build(configuration);
 
-            var host = Start(configuration);
+            var host = await PortBridgeServiceForwarderHost.Create(configuration);
+
+            host.Start();
 
             Blocker.Block();
 
             host.Stop();
 
-            MetricsRegistry.Instance.Dispose();
+            MetricsRegistry.Factory.Dispose();
         }
 
-        private static PortBridgeServiceForwarderHost Start(IConfiguration configuration)
-        {
-            var options = configuration.GetSection("PortBridge").Get<ServiceAgentOptions>();
-
-            var loggerFactory = LoggerBuilder.Initialize(configuration);
-
-            var host = new PortBridgeServiceForwarderHost(loggerFactory, options);
-
-            host.Start();
-
-            return host;
-        }
-
-        [ExcludeFromCodeCoverage]
         public static class Blocker
         {
             private static readonly AutoResetEvent Closing = new AutoResetEvent(false);
