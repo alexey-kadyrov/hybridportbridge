@@ -35,7 +35,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
             var metricTags = new MetricTags(new[] { nameof(entityPath), nameof(forwarderIdx) }, new[] { entityPath, forwarderIdx.ToString() });
 
-            _establishedTunnels = MetricsRegistry.Factory.MakeMeter(MetricsFactory.RemoteEstablisheTunnelsOptions, metricTags);
+            _establishedTunnels = MetricsRegistry.Factory.MakeMeter(MetricsFactory.RemoteEstablishedTunnelsOptions, metricTags);
 
             _tunnelFactory = new RelayTunnelFactory(logger, metricTags, _metadata.TargetHost, OnTunnelCompleted);
         }

@@ -9,7 +9,7 @@ namespace DocaLabs.HybridPortBridge.Metrics
 {
     public sealed class MetricsFactory : IDisposable
     {
-        public static readonly MeterOptions RemoteEstablisheTunnelsOptions = new MeterOptions
+        public static readonly MeterOptions RemoteEstablishedTunnelsOptions = new MeterOptions
         {
             Name = "Established Tunnels (Remote)",
             MeasurementUnit = Unit.Items
@@ -121,7 +121,7 @@ namespace DocaLabs.HybridPortBridge.Metrics
             if (options.ReportConsole)
                 builder.Report.ToConsole();
 
-            if (!String.IsNullOrWhiteSpace(options.ReportFile))
+            if (!string.IsNullOrWhiteSpace(options.ReportFile))
                 builder.Report.ToTextFile(options.ReportFile);
         }
 
