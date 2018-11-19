@@ -9,10 +9,10 @@ namespace MySql.IntegrationTests.Tests
     [TestFixture]
     public class PortBridgeTests
     {
-        private const string ConnectionString = "server=localhost;user id=root;password=password;port=5030;database=test-db";
+        private const string ConnectionString = "server=localhost;user id=root;password=password;port=3306;database=test-db";
         private const string CreateTableClause = "CREATE TABLE Records(Id int NOT NULL, RecordValue int NOT NULL)";
 
-        private const string DropTableClause = "DRO TABLE Records";
+        private const string DropTableClause = "DROP TABLE Records";
 
 
         [Test]
@@ -26,10 +26,10 @@ namespace MySql.IntegrationTests.Tests
 
                     await CreateTable(connection);
 
-                    await AddRecord(connection, 1, 15);
-                    await AddRecord(connection, 2, 15);
-                    await AddRecord(connection, 3, 15);
-                    await AddRecord(connection, 4, 15);
+                    await AddRecord(connection, 1, 11);
+                    await AddRecord(connection, 2, 12);
+                    await AddRecord(connection, 3, 13);
+                    await AddRecord(connection, 4, 14);
                     await AddRecord(connection, 5, 15);
 
                     var command = new MySqlCommand("SELECT Id, RecordValue FROM Records ORDER BY Id", connection);

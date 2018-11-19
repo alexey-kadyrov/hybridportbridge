@@ -83,7 +83,7 @@ namespace MySql.IntegrationTests
                     PortMappings =
                     {
                         {
-                            "5030", new PortMappingOptions
+                            "3305", new PortMappingOptions
                             {
                                 EntityPath = EntityPath,
                                 RemoteTcpPort = 3306,
