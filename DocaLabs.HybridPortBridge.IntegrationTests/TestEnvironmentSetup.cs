@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using NUnit.Framework;
 
-namespace DocaLabs.HybridPortBridge.IntegrationTests
+namespace Http.Simple.IntegrationTests
 {
     [SetUpFixture]
     public class TestEnvironmentSetup
@@ -225,7 +225,7 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests
 
         private void StartServiceAgent()
         {
-            _serviceAgentThread = new Thread(() => ServiceAgent.Console.Program.Main(ServiceAgentArgs))
+            _serviceAgentThread = new Thread(() => DocaLabs.HybridPortBridge.ServiceAgent.Console.Program.Main(ServiceAgentArgs))
             {
                 IsBackground = true
             };
@@ -235,7 +235,7 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests
 
         private void StartClientAgent()
         {
-            _clientAgentThread = new Thread(() => ClientAgent.Console.Program.Main(ClientAgentArgs))
+            _clientAgentThread = new Thread(() => DocaLabs.HybridPortBridge.ClientAgent.Console.Program.Main(ClientAgentArgs))
             {
                 IsBackground = true
             };
@@ -273,7 +273,7 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests
         {
             try
             {
-                ServiceAgent.Console.Program.Blocker.Release();
+                DocaLabs.HybridPortBridge.ServiceAgent.Console.Program.Blocker.Release();
 
                 if (_serviceAgentThread == null)
                     return;
@@ -291,7 +291,7 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests
         {
             try
             {
-                ClientAgent.Console.Program.Blocker.Release();
+                DocaLabs.HybridPortBridge.ClientAgent.Console.Program.Blocker.Release();
 
                 if (_clientAgentThread == null)
                     return;

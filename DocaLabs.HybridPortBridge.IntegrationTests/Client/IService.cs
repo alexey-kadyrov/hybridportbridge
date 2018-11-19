@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Refit;
 
-namespace DocaLabs.HybridPortBridge.IntegrationTests.Client
+namespace Http.Simple.IntegrationTests.Client
 {
     internal interface IService
     {

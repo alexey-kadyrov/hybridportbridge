@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using DocaLabs.HybridPortBridge.IntegrationTests.Client;
 using FluentAssertions;
+using Http.Simple.IntegrationTests.Client;
 using NUnit.Framework;
 
-namespace DocaLabs.HybridPortBridge.IntegrationTests.Tests
+namespace Http.Simple.IntegrationTests.Tests
 {
     [TestFixture]
     public class PortBridgeConcurrentTests

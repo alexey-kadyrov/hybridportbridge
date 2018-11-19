@@ -17,9 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocaLabs.HybridPortBridge.S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocaLabs.HybridPortBridge.ServiceAgent.Console", "DocaLabs.HybridPortBridge.ServiceAgent.Console\DocaLabs.HybridPortBridge.ServiceAgent.Console.csproj", "{CF7FC5A9-2F17-445C-A49B-A9DF8233E09B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocaLabs.HybridPortBridge.IntegrationTests", "DocaLabs.HybridPortBridge.IntegrationTests\DocaLabs.HybridPortBridge.IntegrationTests.csproj", "{A86F5D19-B48E-4095-81E1-DF1CE54C45D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Http.Simple.IntegrationTests", "DocaLabs.HybridPortBridge.IntegrationTests\Http.Simple.IntegrationTests.csproj", "{A86F5D19-B48E-4095-81E1-DF1CE54C45D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocaLabs.Qa", "DocaLabs.Qa\DocaLabs.Qa.csproj", "{72ED01F0-51CF-447F-9D41-B8BE54E956FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocaLabs.Qa", "DocaLabs.Qa\DocaLabs.Qa.csproj", "{72ED01F0-51CF-447F-9D41-B8BE54E956FF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MySql.IntegrationTests", "MySql.IntegrationTests\MySql.IntegrationTests.csproj", "{50D6814F-D9DF-4992-B211-B3AED5CD4C76}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{72ED01F0-51CF-447F-9D41-B8BE54E956FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72ED01F0-51CF-447F-9D41-B8BE54E956FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72ED01F0-51CF-447F-9D41-B8BE54E956FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50D6814F-D9DF-4992-B211-B3AED5CD4C76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50D6814F-D9DF-4992-B211-B3AED5CD4C76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50D6814F-D9DF-4992-B211-B3AED5CD4C76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50D6814F-D9DF-4992-B211-B3AED5CD4C76}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +73,7 @@ Global
 		{CF7FC5A9-2F17-445C-A49B-A9DF8233E09B} = {1CDE62C0-15F1-41AA-9C8D-1518CD342A2F}
 		{A86F5D19-B48E-4095-81E1-DF1CE54C45D5} = {BD6C7E1C-2E9E-488E-8834-28C78A09FDE9}
 		{72ED01F0-51CF-447F-9D41-B8BE54E956FF} = {BD6C7E1C-2E9E-488E-8834-28C78A09FDE9}
+		{50D6814F-D9DF-4992-B211-B3AED5CD4C76} = {BD6C7E1C-2E9E-488E-8834-28C78A09FDE9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8AE01F8D-91A0-4DA3-BE19-2C422E090709}

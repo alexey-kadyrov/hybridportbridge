@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using DocaLabs.HybridPortBridge.IntegrationTests.Client;
+using Http.Simple.IntegrationTests.Client;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
-namespace DocaLabs.HybridPortBridge.IntegrationTests.Service
+namespace Http.Simple.IntegrationTests.Service
 {
     internal class TestService
     {

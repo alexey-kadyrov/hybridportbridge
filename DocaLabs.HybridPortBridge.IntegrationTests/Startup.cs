@@ -1,9 +1,9 @@
-﻿using DocaLabs.HybridPortBridge.IntegrationTests.Service;
+﻿using Http.Simple.IntegrationTests.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace DocaLabs.HybridPortBridge.IntegrationTests
+namespace Http.Simple.IntegrationTests
 {
     internal class Startup
     {

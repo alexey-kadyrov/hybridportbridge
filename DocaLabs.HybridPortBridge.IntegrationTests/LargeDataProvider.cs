@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DocaLabs.HybridPortBridge.IntegrationTests
+namespace Http.Simple.IntegrationTests
 {
     internal static class LargeDataProvider
     {

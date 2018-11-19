@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using Refit;
 
-namespace DocaLabs.HybridPortBridge.IntegrationTests.Client
+namespace Http.Simple.IntegrationTests.Client
 {
     internal static class ClientFactory
     {

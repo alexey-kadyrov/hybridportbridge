@@ -3,12 +3,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using DocaLabs.HybridPortBridge.IntegrationTests.Client;
 using FluentAssertions;
+using Http.Simple.IntegrationTests.Client;
 using NUnit.Framework;
 using Refit;
 
-namespace DocaLabs.HybridPortBridge.IntegrationTests.Tests
+namespace Http.Simple.IntegrationTests.Tests
 {
     [TestFixture]
     public class PortBridgeTests

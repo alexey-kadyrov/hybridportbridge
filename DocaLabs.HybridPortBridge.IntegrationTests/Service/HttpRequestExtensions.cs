@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
 
-namespace DocaLabs.HybridPortBridge.IntegrationTests.Service
+namespace Http.Simple.IntegrationTests.Service
 {
     internal static class HttpRequestExtensions
     {

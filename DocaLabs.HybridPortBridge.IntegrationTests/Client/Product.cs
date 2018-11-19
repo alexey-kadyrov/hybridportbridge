@@ -1,4 +1,4 @@
-﻿namespace DocaLabs.HybridPortBridge.IntegrationTests.Client
+﻿namespace Http.Simple.IntegrationTests.Client
 {
     internal class Product
     {
