@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using DocaLabs.HybridPortBridge.IntegrationTests.Client;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
 namespace DocaLabs.HybridPortBridge.IntegrationTests.Service
 {
-    public class TestService
+    internal class TestService
     {
         public static async Task ProcessRequest(HttpContext context, Func<Task> next)
         {

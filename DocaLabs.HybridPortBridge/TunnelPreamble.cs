@@ -62,6 +62,6 @@ namespace DocaLabs.HybridPortBridge
     {
         None = 0,
         Tcp = 1,
-        Encrypted = 4
+        Encrypted = 2
     }
 }

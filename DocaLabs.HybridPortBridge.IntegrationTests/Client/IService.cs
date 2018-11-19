@@ -1,8 +1,9 @@
 ﻿using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Refit;
 
-namespace DocaLabs.HybridPortBridge.IntegrationTests.Service
+namespace DocaLabs.HybridPortBridge.IntegrationTests.Client
 {
     internal interface IService
     {
@@ -13,6 +14,6 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests.Service
         Task<Product> PostProductAsync(Product product);
 
         [Post("/api/echo/large")]
-        Task<Stream> PostLargeDataAsync(Stream data);
+        Task<HttpContent> PostLargeDataAsync(Stream data);
     }
 }

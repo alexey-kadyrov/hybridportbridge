@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace DocaLabs.HybridPortBridge.IntegrationTests
 {
-    public static class LargeDataProvider
+    internal static class LargeDataProvider
     {
         private static int _counter;
         private static readonly List<byte[]> Data;
@@ -40,21 +42,26 @@ namespace DocaLabs.HybridPortBridge.IntegrationTests
             Data.Add(d);
         }
 
-        public static MemoryStream Next()
+        public static byte[] Next()
         {
             var i = Interlocked.Increment(ref _counter) % Data.Count;
-            return new MemoryStream(Data[i]);
+
+            return Data[i];
         }
 
-        public static bool Compare(MemoryStream expected, MemoryStream actual)
+        public static async Task<bool> Compare(byte[] expected, HttpContent received)
         {
-            if (expected.Length != actual.Length)
-                return false;
+            using(var actual = new MemoryStream())
+            {
+                await received.CopyToAsync(actual);
 
-            var d1 = expected.GetBuffer();
-            var d2 = actual.GetBuffer();
+                if (expected.Length != actual.Length)
+                    return false;
 
-            return !d1.Where((t, i) => t != d2[i]).Any();
+                var d2 = actual.GetBuffer();
+
+                return !expected.Where((b, i) => b != d2[i]).Any();
+            }
         }
     }
 }

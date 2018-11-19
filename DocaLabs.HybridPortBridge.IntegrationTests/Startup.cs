@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DocaLabs.HybridPortBridge.IntegrationTests
 {
-    public class Startup
+    internal class Startup
     {
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory logger)
         {

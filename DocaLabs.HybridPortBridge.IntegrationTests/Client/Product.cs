@@ -1,6 +1,6 @@
-﻿namespace DocaLabs.HybridPortBridge.IntegrationTests.Service
+﻿namespace DocaLabs.HybridPortBridge.IntegrationTests.Client
 {
-    public class Product
+    internal class Product
     {
         public int Id { get; set; }
         public string Name { get; set; }

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace DocaLabs.HybridPortBridge.IntegrationTests.Service
 {
-    public static class HttpRequestExtensions
+    internal static class HttpRequestExtensions
     {
         public static bool IsGetPath(this HttpRequest request, string path)
         {
