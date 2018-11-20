@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using DocaLabs.HybridPortBridge;
@@ -117,8 +116,6 @@ namespace Resilience.IntegrationTests
         public async Task Setup()
         {
             Console.WriteLine("Setting up test environment...");
-
-            ServicePointManager.FindServicePoint(ServiceBaseAddressForClientAgent, null).ConnectionLeaseTimeout = (int)TimeSpan.FromSeconds(5).TotalMilliseconds;
 
             ServiceLocator.Initialize((services, configuration) =>
             {
