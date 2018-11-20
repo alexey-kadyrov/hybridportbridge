@@ -4,7 +4,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <ProjectGuid>A86F5D19-B48E-4095-81E1-DF1CE54C45D5</ProjectGuid>
+    <ProjectGuid>811E1958-4C9A-404F-8C84-D6327FA9C84F</ProjectGuid>
     <DebugType>Full</DebugType>
   </PropertyGroup>
 

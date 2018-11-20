@@ -5,6 +5,7 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using DocaLabs.HybridPortBridge;
 using DocaLabs.HybridPortBridge.ClientAgent.Config;
 using DocaLabs.HybridPortBridge.Config;
 using DocaLabs.HybridPortBridge.ServiceAgent.Config;
@@ -140,8 +141,8 @@ namespace Http.Simple.IntegrationTests
 
         private IWebHost _serviceHost;
         private IWebHost _serviceHostRequiringClientCertificate;
-        private Thread _serviceAgentThread;
-        private Thread _clientAgentThread;
+        private AgentHost _serviceAgent;
+        private AgentHost _clientAgent;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -225,22 +226,16 @@ namespace Http.Simple.IntegrationTests
 
         private void StartServiceAgent()
         {
-            _serviceAgentThread = new Thread(() => DocaLabs.HybridPortBridge.ServiceAgent.Console.Program.Main(ServiceAgentArgs))
-            {
-                IsBackground = true
-            };
+            _serviceAgent = DocaLabs.HybridPortBridge.ServiceAgent.Console.PortBridgeServiceForwarderHost.Configure(ServiceAgentArgs);
 
-            _serviceAgentThread.Start();
+            _serviceAgent.Start();
         }
 
         private void StartClientAgent()
         {
-            _clientAgentThread = new Thread(() => DocaLabs.HybridPortBridge.ClientAgent.Console.Program.Main(ClientAgentArgs))
-            {
-                IsBackground = true
-            };
+            _clientAgent = DocaLabs.HybridPortBridge.ClientAgent.Console.PortBridgeClientForwarderHost.Configure(ClientAgentArgs);
 
-            _clientAgentThread.Start();
+            _clientAgent.Start();
         }
 
         private async Task StopServiceRequiringClientCertificate()
@@ -273,13 +268,7 @@ namespace Http.Simple.IntegrationTests
         {
             try
             {
-                DocaLabs.HybridPortBridge.ServiceAgent.Console.Program.Blocker.Release();
-
-                if (_serviceAgentThread == null)
-                    return;
-
-                if (!_serviceAgentThread.Join(TimeSpan.FromSeconds(5)))
-                    _serviceAgentThread.Abort();
+                _serviceAgent?.Stop();
             }
             catch (Exception e)
             {
@@ -291,13 +280,7 @@ namespace Http.Simple.IntegrationTests
         {
             try
             {
-                DocaLabs.HybridPortBridge.ClientAgent.Console.Program.Blocker.Release();
-
-                if (_clientAgentThread == null)
-                    return;
-
-                if (!_clientAgentThread.Join(TimeSpan.FromSeconds(5)))
-                    _clientAgentThread.Abort();
+                _clientAgent?.Stop();
             }
             catch (Exception e)
             {

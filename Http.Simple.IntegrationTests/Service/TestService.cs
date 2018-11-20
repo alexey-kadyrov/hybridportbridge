@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using DocaLabs.Qa;
 using Http.Simple.IntegrationTests.Client;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;

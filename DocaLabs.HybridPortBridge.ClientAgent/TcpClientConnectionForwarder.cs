@@ -10,7 +10,7 @@ using Serilog;
 
 namespace DocaLabs.HybridPortBridge.ClientAgent
 {
-    public sealed class TcpClientConnectionForwarder : IDisposable, IConnectionForwarder
+    public sealed class TcpClientConnectionForwarder : IDisposable, IForwarder
     {
         private readonly ILogger _log;
         private readonly int _fromPort;

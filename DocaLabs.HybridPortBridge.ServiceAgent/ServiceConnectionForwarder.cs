@@ -11,7 +11,7 @@ using Serilog;
 
 namespace DocaLabs.HybridPortBridge.ServiceAgent
 {
-    public sealed class ServiceConnectionForwarder : IConnectionForwarder
+    public sealed class ServiceConnectionForwarder : IForwarder
     {
         private static int _idx;
 

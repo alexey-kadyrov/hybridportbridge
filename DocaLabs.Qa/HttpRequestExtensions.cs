@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
 
-namespace Http.Simple.IntegrationTests.Service
+namespace DocaLabs.Qa
 {
-    internal static class HttpRequestExtensions
+    public static class HttpRequestExtensions
     {
         public static bool IsGetPath(this HttpRequest request, string path)
         {

@@ -1,6 +1,6 @@
 ﻿namespace DocaLabs.HybridPortBridge
 {
-    public interface IConnectionForwarder
+    public interface IForwarder
     {
         void Stop();
         void Start();
