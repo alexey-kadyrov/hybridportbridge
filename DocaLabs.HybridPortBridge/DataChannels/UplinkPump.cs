@@ -27,11 +27,6 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             _localReader.IgnoreException(x => x.Dispose());
         }
 
-        public void Stop()
-        {
-            _stopped = true;
-        }
-
         public async Task<UplinkPump> RunAsync()
         {
             _log.Debug("ConnectionId: {connectionId}. Running uplink pump", ConnectionId);
@@ -41,8 +36,11 @@ namespace DocaLabs.HybridPortBridge.DataChannels
                 while (true)
                 {
                     var (bytesRead, data) = await _localReader.ReadAsync();
-                    if(bytesRead <= 0)
+                    if (bytesRead <= 0)
+                    {
+                        _log.Verbose("ConnectionId: {connectionId}. Read 0 bytes from local, the pump will be stopped", ConnectionId);
                         break;
+                    }
 
                     if (_stopped)
                     {
