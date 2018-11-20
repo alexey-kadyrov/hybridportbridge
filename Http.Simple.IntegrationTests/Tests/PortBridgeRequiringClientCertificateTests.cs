@@ -28,7 +28,6 @@ namespace Http.Simple.IntegrationTests.Tests
             });
 
             result.Should().NotBeNull();
-            result.Should().NotBeNull();
             result.Id.Should().Be(1);
             result.Category.Should().Be("Hello");
             result.Name.Should().Be("World");
@@ -42,7 +41,6 @@ namespace Http.Simple.IntegrationTests.Tests
 
             var result = await request.GetProductAsync(42);
 
-            result.Should().NotBeNull();
             result.Should().NotBeNull();
             result.Id.Should().Be(42);
             result.Category.Should().Be("Nothing");

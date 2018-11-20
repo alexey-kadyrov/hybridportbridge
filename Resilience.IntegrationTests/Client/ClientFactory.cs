@@ -13,7 +13,8 @@ namespace Resilience.IntegrationTests.Client
             // Ensure that each test gets it's own http client as their setting vary between tests
             return RestService.For<IService>(new HttpClient
             {
-                BaseAddress = baseAddress
+                BaseAddress = baseAddress,
+                Timeout = TimeSpan.FromSeconds(5)
             });
         }
     }

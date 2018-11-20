@@ -20,7 +20,6 @@ namespace Resilience.IntegrationTests
         // port mapping 5021 to 5011
         public const string ServiceBaseAddressForClientAgent = "http://localhost:5021";
         public const string ServiceBaseAddress = "http://localhost:5011/";
-        public const int ServicePort = 5011;
 
         public const string EntityPath = "ovc-cicd-relay-echo";
 
@@ -95,7 +94,7 @@ namespace Resilience.IntegrationTests
                             "5021", new PortMappingOptions
                             {
                                 EntityPath = EntityPath,
-                                RemoteTcpPort = ServicePort,
+                                RemoteTcpPort = 5011,
                                 AcceptFromIpAddresses =
                                 {
                                     "127.0.0.1"
@@ -109,8 +108,8 @@ namespace Resilience.IntegrationTests
 
 
         private IWebHost _serviceHost;
-        private AgentHost _serviceAgent;
-        private AgentHost _clientAgent;
+        private static AgentHost _serviceAgent;
+        private static AgentHost _clientAgent;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -120,12 +119,6 @@ namespace Resilience.IntegrationTests
             ServicePointManager.FindServicePoint(ServiceBaseAddressForClientAgent, null).ConnectionLeaseTimeout = (int)TimeSpan.FromSeconds(5).TotalMilliseconds;
 
             await StartService();
-
-            StartServiceAgent();
-
-            StartClientAgent();
-
-            await Task.Delay(TimeSpan.FromSeconds(5));
         }
 
         [OneTimeTearDown]
@@ -140,7 +133,7 @@ namespace Resilience.IntegrationTests
             await StopService();
         }
 
-        private async Task StartService()
+        public async Task StartService()
         {
             try
             {
@@ -157,14 +150,14 @@ namespace Resilience.IntegrationTests
             }
         }
 
-        private void StartServiceAgent()
+        public static void StartServiceAgent()
         {
             _serviceAgent = DocaLabs.HybridPortBridge.ServiceAgent.Console.PortBridgeServiceForwarderHost.Configure(ServiceAgentArgs);
 
             _serviceAgent.Start();
         }
 
-        private void StartClientAgent()
+        public static void StartClientAgent()
         {
             _clientAgent = DocaLabs.HybridPortBridge.ClientAgent.Console.PortBridgeClientForwarderHost.Configure(ClientAgentArgs);
 
@@ -184,7 +177,7 @@ namespace Resilience.IntegrationTests
             }
         }
 
-        private void StopServiceAgent()
+        public static void StopServiceAgent()
         {
             try
             {
@@ -196,7 +189,7 @@ namespace Resilience.IntegrationTests
             }
         }
 
-        private void StopClientAgent()
+        public static void StopClientAgent()
         {
             try
             {

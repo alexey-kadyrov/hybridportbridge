@@ -61,7 +61,6 @@ namespace Http.Simple.IntegrationTests.Tests
                 var result = await request.GetProductAsync(42);
 
                 result.Should().NotBeNull();
-                result.Should().NotBeNull();
                 result.Id.Should().Be(42);
                 result.Category.Should().Be("Nothing");
                 result.Name.Should().Be("Product");
@@ -87,7 +86,6 @@ namespace Http.Simple.IntegrationTests.Tests
                     Price = 9.49M
                 });
 
-                result.Should().NotBeNull();
                 result.Should().NotBeNull();
                 result.Id.Should().Be(i);
                 result.Category.Should().Be("Hello");
@@ -115,7 +113,6 @@ namespace Http.Simple.IntegrationTests.Tests
                         var result = await request.GetProductAsync(42);
 
                         result.Should().NotBeNull();
-                        result.Should().NotBeNull();
                         result.Id.Should().Be(42);
                         result.Category.Should().Be("Nothing");
                         result.Name.Should().Be("Product");
@@ -132,7 +129,6 @@ namespace Http.Simple.IntegrationTests.Tests
                             Price = 9.49M
                         });
 
-                        result.Should().NotBeNull();
                         result.Should().NotBeNull();
                         result.Id.Should().Be(i);
                         result.Category.Should().Be("Hello");
@@ -177,7 +173,6 @@ namespace Http.Simple.IntegrationTests.Tests
                         var result = await request.GetProductAsync(42);
 
                         result.Should().NotBeNull();
-                        result.Should().NotBeNull();
                         result.Id.Should().Be(42);
                         result.Category.Should().Be("Nothing");
                         result.Name.Should().Be("Product");
@@ -190,7 +185,6 @@ namespace Http.Simple.IntegrationTests.Tests
 
                         var result = await request.GetProductAsync(42);
 
-                        result.Should().NotBeNull();
                         result.Should().NotBeNull();
                         result.Id.Should().Be(42);
                         result.Category.Should().Be("Nothing");
@@ -211,7 +205,6 @@ namespace Http.Simple.IntegrationTests.Tests
                         });
 
                         result.Should().NotBeNull();
-                        result.Should().NotBeNull();
                         result.Id.Should().Be(i);
                         result.Category.Should().Be("Hello");
                         result.Name.Should().Be("World");
@@ -230,7 +223,6 @@ namespace Http.Simple.IntegrationTests.Tests
                             Price = 9.49M
                         });
 
-                        result.Should().NotBeNull();
                         result.Should().NotBeNull();
                         result.Id.Should().Be(i);
                         result.Category.Should().Be("Hello");

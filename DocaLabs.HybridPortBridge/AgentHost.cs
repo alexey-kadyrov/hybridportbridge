@@ -21,7 +21,7 @@ namespace DocaLabs.HybridPortBridge
 
             _closing.WaitOne();
 
-            _forwarder.Stop();
+            Console.CancelKeyPress -= CancelKeyPress;
         }
 
         public void Start()
@@ -31,6 +31,8 @@ namespace DocaLabs.HybridPortBridge
 
         public void Stop()
         {
+            _forwarder.Stop();
+
             _closing.Set();
         }
 
