@@ -9,7 +9,7 @@ namespace MySql.IntegrationTests.Tests
     [TestFixture]
     public class PortBridgeTests
     {
-        private const string ConnectionString = "server=localhost;user id=root;password=password;port=3306;database=test-db";
+        private const string ConnectionString = "Server=127.0.0.1;Port=3305;Protocol=TCP;Username=root;Password=password;Database=test-db";
         private const string CreateTableClause = "CREATE TABLE Records(Id int NOT NULL, RecordValue int NOT NULL)";
 
         private const string DropTableClause = "DROP TABLE Records";
@@ -18,7 +18,7 @@ namespace MySql.IntegrationTests.Tests
         [Test]
         public async Task Should_execute_queries_against_mysql_behind_port_bridge()
         {
-            using (var connection = new MySqlConnection { ConnectionString = ConnectionString })
+            using (var connection = new MySqlConnection(ConnectionString))
             {
                 try
                 {
