@@ -29,13 +29,13 @@ namespace Resilience.IntegrationTests.Tests
 
             TestEnvironmentSetup.StopServiceAgent();
 
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await Task.Delay(TimeSpan.FromSeconds(5));
 
             await ExecuteFailingRequest();
 
             TestEnvironmentSetup.StartServiceAgent();
 
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await Task.Delay(TimeSpan.FromSeconds(5));
         }
 
         [Then]
@@ -63,13 +63,15 @@ namespace Resilience.IntegrationTests.Tests
 
         private static Task ExecuteFailingRequest()
         {
-            Assert.ThrowsAsync<HttpRequestException>(() => _request.PostProductAsync(new Product
+            var exception = Assert.CatchAsync(() => _request.PostProductAsync(new Product
             {
                 Id = 1,
                 Category = "Hello",
                 Name = "World",
                 Price = 9.49M
             }));
+
+            exception.Should().NotBeNull();
 
             return Task.CompletedTask;
         }
