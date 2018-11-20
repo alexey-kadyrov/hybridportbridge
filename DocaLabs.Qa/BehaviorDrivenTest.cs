@@ -3,7 +3,6 @@ using NUnit.Framework;
 
 namespace DocaLabs.Qa
 {
-    [TestFixture]
     public abstract class BehaviorDrivenTest
     {
         [OneTimeSetUp]

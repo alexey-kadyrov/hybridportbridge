@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using DocaLabs.Qa;
 using FluentAssertions;
@@ -8,16 +7,23 @@ using Resilience.IntegrationTests.Client;
 
 namespace Resilience.IntegrationTests.Tests
 {
-    public class WhenClientAgentStopsAndThenStartsAgain : BehaviorDrivenTest
+    [TestFixture]
+    public class WhenClientAgentStopsAndThenStartsAgain : ServiceBehaviorDrivenTest<IService>
     {
-        private static IService _request;
+        protected override async Task Cleanup()
+        {
+            TestEnvironmentSetup.StopClientAgent();
+            TestEnvironmentSetup.StopServiceAgent();
+
+            await Task.Delay(TimeSpan.FromSeconds(5));
+
+            await base.Cleanup();
+        }
 
         protected override Task Given()
         {
             TestEnvironmentSetup.StartClientAgent();
             TestEnvironmentSetup.StartServiceAgent();
-
-            _request = ClientFactory.CreateRequest();
 
             return Task.CompletedTask;
         }
@@ -43,9 +49,9 @@ namespace Resilience.IntegrationTests.Tests
             await ExecuteSuccessfullRequest();
         }
 
-        private static async Task ExecuteSuccessfullRequest()
+        private async Task ExecuteSuccessfullRequest()
         {
-            var result = await _request.PostProductAsync(new Product
+            var result = await Service.PostProductAsync(new Product
             {
                 Id = 1,
                 Category = "Hello",
@@ -60,9 +66,9 @@ namespace Resilience.IntegrationTests.Tests
             result.Price.Should().Be(9.49M);
         }
 
-        private static Task ExecuteFailingRequest()
+        private Task ExecuteFailingRequest()
         {
-            var exception = Assert.CatchAsync(() => _request.PostProductAsync(new Product
+            var exception = Assert.CatchAsync(() => Service.PostProductAsync(new Product
             {
                 Id = 1,
                 Category = "Hello",

@@ -10,7 +10,9 @@ using DocaLabs.HybridPortBridge.ServiceAgent.Config;
 using DocaLabs.Qa;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using Resilience.IntegrationTests.Client;
 
 namespace Resilience.IntegrationTests
 {
@@ -117,6 +119,11 @@ namespace Resilience.IntegrationTests
             Console.WriteLine("Setting up test environment...");
 
             ServicePointManager.FindServicePoint(ServiceBaseAddressForClientAgent, null).ConnectionLeaseTimeout = (int)TimeSpan.FromSeconds(5).TotalMilliseconds;
+
+            ServiceLocator.Initialize((services, configuration) =>
+            {
+                services.AddScoped(sp => ClientFactory.CreateRequest());
+            });
 
             await StartService();
         }

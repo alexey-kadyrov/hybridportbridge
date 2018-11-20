@@ -3,7 +3,7 @@ using Refit;
 
 namespace Resilience.IntegrationTests.Client
 {
-    internal interface IService
+    public interface IService
     {
         [Post("/api/echo/products")]
         Task<Product> PostProductAsync(Product product);
