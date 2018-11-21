@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostgreSQL.IntegrationTests
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resilience.IntegrationTests", "Resilience.IntegrationTests\Resilience.IntegrationTests.csproj", "{6FC0A58C-C9AC-455E-8DB4-1C68154AD918}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlSever.IntegrationTests", "SqlSever.IntegrationTests\SqlSever.IntegrationTests.csproj", "{B2F1ED3B-4AA4-4925-9653-5D136D83891D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,10 @@ Global
 		{6FC0A58C-C9AC-455E-8DB4-1C68154AD918}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FC0A58C-C9AC-455E-8DB4-1C68154AD918}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FC0A58C-C9AC-455E-8DB4-1C68154AD918}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2F1ED3B-4AA4-4925-9653-5D136D83891D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2F1ED3B-4AA4-4925-9653-5D136D83891D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2F1ED3B-4AA4-4925-9653-5D136D83891D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2F1ED3B-4AA4-4925-9653-5D136D83891D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -81,6 +87,7 @@ Global
 		{A86F5D19-B48E-4095-81E1-DF1CE54C45D5} = {BD6C7E1C-2E9E-488E-8834-28C78A09FDE9}
 		{94350BB5-7DFE-49AE-B02E-DDE4160801A3} = {BD6C7E1C-2E9E-488E-8834-28C78A09FDE9}
 		{6FC0A58C-C9AC-455E-8DB4-1C68154AD918} = {BD6C7E1C-2E9E-488E-8834-28C78A09FDE9}
+		{B2F1ED3B-4AA4-4925-9653-5D136D83891D} = {BD6C7E1C-2E9E-488E-8834-28C78A09FDE9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8AE01F8D-91A0-4DA3-BE19-2C422E090709}
