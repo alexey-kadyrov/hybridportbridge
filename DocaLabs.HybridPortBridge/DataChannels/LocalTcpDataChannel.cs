@@ -21,7 +21,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
         private readonly Stream _stream;
         private readonly byte[] _buffer;
 
-        public LocalTcpDataChannel(ILogger log, MetricsFactory metrics, string instance, MetricTags tags, TcpClient endpoint)
+        public LocalTcpDataChannel(ILogger log, MetricsRegistry metrics, string instance, MetricTags tags, TcpClient endpoint)
         {
             _log = log.ForContext(GetType());
             _endpoint = endpoint;
@@ -29,11 +29,11 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             _stream = _endpoint.GetStream();
             _buffer = new byte[BufferSize];
 
-            _failures = metrics.MakeMeter(MetricsFactory.LocalFailuresOptions, tags);
-            _frameRead = metrics.MakeMeter(MetricsFactory.LocalFrameReadOptions, tags);
-            _frameWritten = metrics.MakeMeter(MetricsFactory.LocalFrameWrittenOptions, tags);
-            _bytesRead = metrics.MakeMeter(MetricsFactory.LocalBytesReadOptions, tags);
-            _bytesWritten = metrics.MakeMeter(MetricsFactory.LocalBytesWrittenOptions, tags);
+            _failures = metrics.MakeMeter(MetricsRegistry.LocalFailuresOptions, tags);
+            _frameRead = metrics.MakeMeter(MetricsRegistry.LocalFrameReadOptions, tags);
+            _frameWritten = metrics.MakeMeter(MetricsRegistry.LocalFrameWrittenOptions, tags);
+            _bytesRead = metrics.MakeMeter(MetricsRegistry.LocalBytesReadOptions, tags);
+            _bytesWritten = metrics.MakeMeter(MetricsRegistry.LocalBytesWrittenOptions, tags);
 
             _log.Debug("Local: {local} is initialized", _instance);
         }

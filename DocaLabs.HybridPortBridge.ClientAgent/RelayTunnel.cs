@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using App.Metrics;
 using DocaLabs.HybridPortBridge.Config;
 using DocaLabs.HybridPortBridge.DataChannels;
+using DocaLabs.HybridPortBridge.Metrics;
 using Microsoft.Azure.Relay;
 using Serilog;
 
@@ -22,11 +23,12 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
         private readonly TimeSpan _ttl;
         private DateTime _canAcceptUntil;
         private readonly TunnelPreamble _tunnelPreamble;
+        private readonly MetricsRegistry _metricsRegistry;
         private readonly MetricTags _metricTags;
 
         public Action<RelayTunnel> OnDataChannelClosed { get; set; }
 
-        public RelayTunnel(ILogger logger, MetricTags metricTags, ServiceNamespaceOptions serviceNamespace, string entityPath, int remoteTcpPort, int ttlSeconds)
+        public RelayTunnel(ILogger logger, MetricsRegistry metricsRegistry, MetricTags metricTags, ServiceNamespaceOptions serviceNamespace, string entityPath, int remoteTcpPort, int ttlSeconds)
         {
             if (string.IsNullOrWhiteSpace(entityPath))
                 throw new ArgumentNullException(nameof(entityPath));
@@ -40,6 +42,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             _ttl = TimeSpan.FromSeconds(ttlSeconds);
             _tunnelPreamble = new TunnelPreamble(TunnelFlags.Tcp, remoteTcpPort);
             _canAcceptUntil = DateTime.MaxValue;
+            _metricsRegistry = metricsRegistry;
             _metricTags = metricTags;
         }
 
@@ -96,7 +99,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
 
         private void EnsureDownlinkPump(HybridConnectionStream stream)
         {
-            _dataChannel = new RemoteRelayDataChannel(_log, MetricsRegistry.Factory, _metricTags, stream);
+            _dataChannel = new RemoteRelayDataChannel(_log, _metricsRegistry, _metricTags, stream);
 
             _downlinkPump = new DownlinkPump(_log, _dataChannel, _frameDispatcher);
 
@@ -105,7 +108,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
 
         private void EnsureUplinkPump(TcpClient endpoint, ConnectionId connectionId)
         {
-            var localDataChannel = new LocalTcpDataChannel(_log, MetricsRegistry.Factory, connectionId.ToString(), _metricTags, endpoint);
+            var localDataChannel = new LocalTcpDataChannel(_log, _metricsRegistry, connectionId.ToString(), _metricTags, endpoint);
 
             var uplinkPump = new UplinkPump(_log, connectionId, localDataChannel, _dataChannel);
 

@@ -11,25 +11,27 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
     internal sealed class RelayTunnelFactory
     {
         private readonly ILogger _log;
+        private readonly MetricsRegistry _metricsRegistry;
         private readonly string _targetHost;
         private readonly TunnelCompleted _tunnelCompleted;
         private readonly MetricTags _baseMetricTags;
         private readonly MeterMetric _localConnections;
 
-        public RelayTunnelFactory(ILogger logger, MetricTags baseMetricTags, string targetHost, TunnelCompleted tunnelCompleted)
+        public RelayTunnelFactory(ILogger logger, MetricsRegistry metricsRegistry, MetricTags baseMetricTags, string targetHost, TunnelCompleted tunnelCompleted)
         {
             _log = logger.ForContext(GetType());
+            _metricsRegistry = metricsRegistry;
             _targetHost = targetHost;
             _tunnelCompleted = tunnelCompleted;
 
             _baseMetricTags = baseMetricTags;
 
-            _localConnections = MetricsRegistry.Factory.MakeMeter(MetricsFactory.LocalEstablishedConnectionsOptions, _baseMetricTags);
+            _localConnections = _metricsRegistry.MakeMeter(MetricsRegistry.LocalEstablishedConnectionsOptions, _baseMetricTags);
         }
 
         public RelayTunnel Create(HybridConnectionStream stream, int targetPort)
         {
-            return new RelayTunnel(_log, _baseMetricTags, stream, targetPort, CreateLocalDataChannel, _tunnelCompleted);
+            return new RelayTunnel(_log, _metricsRegistry, _baseMetricTags, stream, targetPort, CreateLocalDataChannel, _tunnelCompleted);
         }
 
         private async Task<LocalDataChannel> CreateLocalDataChannel(ConnectionId connectionId, int targetPort, MetricTags metricTags)
@@ -46,7 +48,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
             await tcpClient.ConnectAsync(_targetHost, targetPort);
 
-            return new LocalTcpDataChannel(_log, MetricsRegistry.Factory, connectionId.ToString(), metricTags, tcpClient);
+            return new LocalTcpDataChannel(_log, _metricsRegistry, connectionId.ToString(), metricTags, tcpClient);
         }
     }
 }

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace DocaLabs.HybridPortBridge.Metrics
 {
-    public sealed class MetricsFactory : IDisposable
+    public sealed class MetricsRegistry : IDisposable
     {
         public static readonly MeterOptions RemoteEstablishedTunnelsOptions = new MeterOptions
         {
@@ -87,7 +87,7 @@ namespace DocaLabs.HybridPortBridge.Metrics
 
         private ReportScheduler _reportScheduler;
 
-        public MetricsFactory(IConfiguration configuration, Action<IMetricsBuilder> customBuild = null)
+        public MetricsRegistry(IConfiguration configuration, Action<IMetricsBuilder> customBuild = null)
         {
             var options = configuration.GetSection("AgentMetrics")
                 ?.Get<AgentMetricsOptions>() ?? new AgentMetricsOptions();

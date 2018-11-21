@@ -21,16 +21,16 @@ namespace DocaLabs.HybridPortBridge.DataChannels
         private readonly SemaphoreSlim _writeLock;
         private readonly HybridConnectionStream _dataChannel;
 
-        public RemoteRelayDataChannel(ILogger logger, MetricsFactory metrics, MetricTags tags, HybridConnectionStream dataChannel)
+        public RemoteRelayDataChannel(ILogger logger, MetricsRegistry metrics, MetricTags tags, HybridConnectionStream dataChannel)
         {
             _log = logger.ForContext(GetType());
             _dataChannel = dataChannel;
 
-            _failures = metrics.MakeMeter(MetricsFactory.RemoteFailuresOptions, tags);
-            _frameRead = metrics.MakeMeter(MetricsFactory.RemoteFrameReadOptions, tags);
-            _frameWritten = metrics.MakeMeter(MetricsFactory.RemoteFrameWrittenOptions, tags);
-            _bytesRead = metrics.MakeMeter(MetricsFactory.RemoteBytesReadOptions, tags);
-            _bytesWritten = metrics.MakeMeter(MetricsFactory.RemoteBytesWrittenOptions, tags);
+            _failures = metrics.MakeMeter(MetricsRegistry.RemoteFailuresOptions, tags);
+            _frameRead = metrics.MakeMeter(MetricsRegistry.RemoteFrameReadOptions, tags);
+            _frameWritten = metrics.MakeMeter(MetricsRegistry.RemoteFrameWrittenOptions, tags);
+            _bytesRead = metrics.MakeMeter(MetricsRegistry.RemoteBytesReadOptions, tags);
+            _bytesWritten = metrics.MakeMeter(MetricsRegistry.RemoteBytesWrittenOptions, tags);
 
             _writeLock = new SemaphoreSlim(1, 1);
         }

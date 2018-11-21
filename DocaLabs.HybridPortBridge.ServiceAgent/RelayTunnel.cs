@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using App.Metrics;
 using DocaLabs.HybridPortBridge.DataChannels;
+using DocaLabs.HybridPortBridge.Metrics;
 using Microsoft.Azure.Relay;
 using Serilog;
 
@@ -25,7 +26,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
         private readonly int _targetPort;
         private readonly MetricTags _baseMetricTags;
 
-        public RelayTunnel(ILogger logger, MetricTags baseTags, HybridConnectionStream relayStream, int targetPort, CreateLocalDataChannel createDataChannelFactory, TunnelCompleted tunnelCompleted)
+        public RelayTunnel(ILogger logger, MetricsRegistry metricsRegistry, MetricTags baseTags, HybridConnectionStream relayStream, int targetPort, CreateLocalDataChannel createDataChannelFactory, TunnelCompleted tunnelCompleted)
         {
             _log = logger.ForContext(GetType());
 
@@ -37,7 +38,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
             _baseMetricTags = MakeMetricTags(baseTags);
 
-            _relayDataChannel = new RemoteRelayDataChannel(logger, MetricsRegistry.Factory, _baseMetricTags, relayStream);
+            _relayDataChannel = new RemoteRelayDataChannel(logger, metricsRegistry, _baseMetricTags, relayStream);
 
             _downlinkPump = new DownlinkPump(logger, _relayDataChannel, _frameDispatcher);
         }

@@ -23,7 +23,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
         private readonly ConcurrentDictionary<object, RelayTunnel> _tunnels;
         private readonly MeterMetric _establishedTunnels;
 
-        private ServiceConnectionForwarder(ILogger logger, int forwarderIdx, HybridConnectionListener listener, RelayMetadata metadata, string entityPath)
+        private ServiceConnectionForwarder(ILogger logger, MetricsRegistry metricsRegistry, int forwarderIdx, HybridConnectionListener listener, RelayMetadata metadata, string entityPath)
         {
             _log = logger.ForContext(GetType());
 
@@ -35,12 +35,12 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
             var metricTags = new MetricTags(new[] { nameof(entityPath), nameof(forwarderIdx) }, new[] { entityPath, forwarderIdx.ToString() });
 
-            _establishedTunnels = MetricsRegistry.Factory.MakeMeter(MetricsFactory.RemoteEstablishedTunnelsOptions, metricTags);
+            _establishedTunnels = metricsRegistry.MakeMeter(MetricsRegistry.RemoteEstablishedTunnelsOptions, metricTags);
 
-            _tunnelFactory = new RelayTunnelFactory(logger, metricTags, _metadata.TargetHost, OnTunnelCompleted);
+            _tunnelFactory = new RelayTunnelFactory(logger, metricsRegistry, metricTags, _metadata.TargetHost, OnTunnelCompleted);
         }
 
-        public static async Task<ServiceConnectionForwarder> Create(ILogger logger, ServiceNamespaceOptions serviceNamespace, string entityPath)
+        public static async Task<ServiceConnectionForwarder> Create(ILogger logger, MetricsRegistry metricsRegistry, ServiceNamespaceOptions serviceNamespace, string entityPath)
         {
             var forwarderIdx = Interlocked.Increment(ref _idx);
 
@@ -52,7 +52,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
             var metadata = await RelayMetadata.Parse(relayListener);
 
-            return new ServiceConnectionForwarder(logger, forwarderIdx, relayListener, metadata, entityPath);
+            return new ServiceConnectionForwarder(logger, metricsRegistry, forwarderIdx, relayListener, metadata, entityPath);
         }
 
         public void Start()

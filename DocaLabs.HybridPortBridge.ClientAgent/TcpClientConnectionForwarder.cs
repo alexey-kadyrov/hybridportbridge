@@ -20,7 +20,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
         private TcpListener _endpointListener;
         private readonly MeterMetric _acceptedConnections;
 
-        public TcpClientConnectionForwarder(ILogger logger, ServiceNamespaceOptions serviceNamespace, int fromPort, PortMappingOptions portMappings)
+        public TcpClientConnectionForwarder(ILogger logger, MetricsRegistry metricsRegistry, ServiceNamespaceOptions serviceNamespace, int fromPort, PortMappingOptions portMappings)
         {
             _log = logger.ForContext(GetType());
             _firewallRules = new FirewallRules(portMappings);
@@ -30,9 +30,9 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             var metricTags = new MetricTags(
                 new [] {"entityPath", "fromPort" }, new [] { portMappings.EntityPath, fromPort.ToString() });
 
-            _acceptedConnections = MetricsRegistry.Factory.MakeMeter(MetricsFactory.LocalEstablishedConnectionsOptions, metricTags);
+            _acceptedConnections = metricsRegistry.MakeMeter(MetricsRegistry.LocalEstablishedConnectionsOptions, metricTags);
 
-            _relayFactory = new RelayTunnelFactory(logger, metricTags, serviceNamespace, portMappings);
+            _relayFactory = new RelayTunnelFactory(logger, metricsRegistry, metricTags, serviceNamespace, portMappings);
         }
 
         public void Start()
