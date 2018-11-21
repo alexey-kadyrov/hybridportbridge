@@ -105,13 +105,21 @@ namespace PostgreSQL.IntegrationTests
         [OneTimeSetUp]
         public async Task Setup()
         {
-            Console.WriteLine("Setting up test environment...");
-
-            StartServiceAgent();
-
-            StartClientAgent();
-
-            await Task.Delay(TimeSpan.FromSeconds(5));
+            try
+            {
+                Console.WriteLine("Setting up test environment...");
+    
+                StartServiceAgent();
+    
+                StartClientAgent();
+    
+                await Task.Delay(TimeSpan.FromSeconds(5));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         [OneTimeTearDown]

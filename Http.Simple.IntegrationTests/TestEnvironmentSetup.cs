@@ -147,20 +147,28 @@ namespace Http.Simple.IntegrationTests
         [OneTimeSetUp]
         public async Task Setup()
         {
-            Console.WriteLine("Setting up test environment...");
-
-            ServicePointManager.FindServicePoint(ServiceRequiringClientCertificateBaseAddressForClientAgent, null).ConnectionLeaseTimeout = (int)TimeSpan.FromSeconds(5).TotalMilliseconds;
-            ServicePointManager.FindServicePoint(ServiceBaseAddressForClientAgent, null).ConnectionLeaseTimeout = (int)TimeSpan.FromSeconds(5).TotalMilliseconds;
-
-            await StartService();
-
-            await StartServiceRequiringClientCertificate();
-
-            StartServiceAgent();
-
-            StartClientAgent();
-
-            await Task.Delay(TimeSpan.FromSeconds(5));
+            try
+            {
+                Console.WriteLine("Setting up test environment...");
+    
+                ServicePointManager.FindServicePoint(ServiceRequiringClientCertificateBaseAddressForClientAgent, null).ConnectionLeaseTimeout = (int)TimeSpan.FromSeconds(5).TotalMilliseconds;
+                ServicePointManager.FindServicePoint(ServiceBaseAddressForClientAgent, null).ConnectionLeaseTimeout = (int)TimeSpan.FromSeconds(5).TotalMilliseconds;
+    
+                await StartService();
+    
+                await StartServiceRequiringClientCertificate();
+    
+                StartServiceAgent();
+    
+                StartClientAgent();
+    
+                await Task.Delay(TimeSpan.FromSeconds(5));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         [OneTimeTearDown]

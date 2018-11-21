@@ -30,7 +30,7 @@ namespace Resilience.IntegrationTests.Tests
 
         protected override async Task When()
         {
-            await ExecuteSuccessfullRequest();
+            await ExecuteSuccessfulRequest();
 
             TestEnvironmentSetup.StopServiceAgent();
 
@@ -46,10 +46,10 @@ namespace Resilience.IntegrationTests.Tests
         [Then]
         public async Task It_should_execute_request_after_service_agent_restarted()
         {
-            await ExecuteSuccessfullRequest();
+            await ExecuteSuccessfulRequest();
         }
 
-        private async Task ExecuteSuccessfullRequest()
+        private async Task ExecuteSuccessfulRequest()
         {
             var result = await Service.PostProductAsync(new Product
             {

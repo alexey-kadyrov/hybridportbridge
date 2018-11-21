@@ -115,14 +115,22 @@ namespace Resilience.IntegrationTests
         [OneTimeSetUp]
         public async Task Setup()
         {
-            Console.WriteLine("Setting up test environment...");
-
-            ServiceLocator.Initialize((services, configuration) =>
+            try
             {
-                services.AddScoped(sp => ClientFactory.CreateRequest());
-            });
+                Console.WriteLine("Setting up test environment...");
 
-            await StartService();
+                ServiceLocator.Initialize((services, configuration) =>
+                {
+                    services.AddScoped(sp => ClientFactory.CreateRequest());
+                });
+
+                await StartService();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         [OneTimeTearDown]
