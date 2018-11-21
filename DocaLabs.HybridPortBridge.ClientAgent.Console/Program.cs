@@ -6,7 +6,7 @@
         {
             System.Console.Title = "DocaLabs.HybridPortBridge.ClientAgent.Console";
 
-            var host = PortBridgeClientForwarderHost.Configure(args);
+            var host = ClientForwarderHost.Build(args);
 
             host.Run();
         }

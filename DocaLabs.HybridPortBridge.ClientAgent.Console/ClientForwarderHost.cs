@@ -1,28 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DocaLabs.HybridPortBridge.ClientAgent.Config;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 
 namespace DocaLabs.HybridPortBridge.ClientAgent.Console
 {
-    public class PortBridgeClientForwarderHost : IForwarder
+    public class ClientForwarderHost : IForwarder
     {
         public ICollection<IForwarder> Forwarders { get; }
 
-        private PortBridgeClientForwarderHost(ICollection<IForwarder> forwarders)
+        private ClientForwarderHost(ICollection<IForwarder> forwarders)
         {
             Forwarders = forwarders;
         }
 
-        public static AgentHost Configure(string[] args)
+        public static AgentHost Build(string[] args)
         {
             var configuration = args.BuildConfiguration();
 
             return new AgentHost(Create(configuration));
         }
 
-        private static PortBridgeClientForwarderHost Create(IConfiguration configuration)
+        private static ClientForwarderHost Create(IConfiguration configuration)
         {
             var options = configuration.GetSection("PortBridge").Get<ClientAgentOptions>();
 
@@ -30,7 +29,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent.Console
 
             MetricsRegistry.Build(configuration);
 
-            return new PortBridgeClientForwarderHost(BuildPortForwarders(loggerFactory, options));
+            return new ClientForwarderHost(BuildPortForwarders(loggerFactory, options));
         }
 
         public void Start()
@@ -57,7 +56,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent.Console
 
             foreach (var mapping in options.PortMappings)
             {
-                if (!Int32.TryParse(mapping.Key, out var port))
+                if (!int.TryParse(mapping.Key, out var port))
                     throw new ConfigurationErrorException($"Invalid {mapping.Key} port number");
 
                 forwarders.Add(new TcpClientConnectionForwarder(loggerFactory, options.ServiceNamespace, port, mapping.Value));

@@ -156,14 +156,14 @@ namespace Resilience.IntegrationTests
 
         public static void StartServiceAgent()
         {
-            _serviceAgent = DocaLabs.HybridPortBridge.ServiceAgent.Console.PortBridgeServiceForwarderHost.Configure(ServiceAgentArgs);
+            _serviceAgent = DocaLabs.HybridPortBridge.ServiceAgent.Console.ServiceForwarderHost.Build(ServiceAgentArgs);
 
             _serviceAgent.Start();
         }
 
         public static void StartClientAgent()
         {
-            _clientAgent = DocaLabs.HybridPortBridge.ClientAgent.Console.PortBridgeClientForwarderHost.Configure(ClientAgentArgs);
+            _clientAgent = DocaLabs.HybridPortBridge.ClientAgent.Console.ClientForwarderHost.Build(ClientAgentArgs);
 
             _clientAgent.Start();
         }

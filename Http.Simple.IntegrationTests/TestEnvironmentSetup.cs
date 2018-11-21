@@ -226,14 +226,14 @@ namespace Http.Simple.IntegrationTests
 
         private void StartServiceAgent()
         {
-            _serviceAgent = DocaLabs.HybridPortBridge.ServiceAgent.Console.PortBridgeServiceForwarderHost.Configure(ServiceAgentArgs);
+            _serviceAgent = DocaLabs.HybridPortBridge.ServiceAgent.Console.ServiceForwarderHost.Build(ServiceAgentArgs);
 
             _serviceAgent.Start();
         }
 
         private void StartClientAgent()
         {
-            _clientAgent = DocaLabs.HybridPortBridge.ClientAgent.Console.PortBridgeClientForwarderHost.Configure(ClientAgentArgs);
+            _clientAgent = DocaLabs.HybridPortBridge.ClientAgent.Console.ClientForwarderHost.Build(ClientAgentArgs);
 
             _clientAgent.Start();
         }

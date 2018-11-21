@@ -6,16 +6,16 @@ using Serilog;
 
 namespace DocaLabs.HybridPortBridge.ServiceAgent.Console
 {
-    public class PortBridgeServiceForwarderHost : IForwarder
+    public class ServiceForwarderHost : IForwarder
     {
         public IReadOnlyCollection<ServiceConnectionForwarder> Forwarders { get; }
 
-        private PortBridgeServiceForwarderHost(IReadOnlyCollection<ServiceConnectionForwarder> forwarders)
+        private ServiceForwarderHost(IReadOnlyCollection<ServiceConnectionForwarder> forwarders)
         {
             Forwarders = forwarders;
         }
 
-        public static AgentHost Configure(string[] args)
+        public static AgentHost Build(string[] args)
         {
             var configuration = args.BuildConfiguration();
 
@@ -26,7 +26,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent.Console
             return new AgentHost(forwarderHost);
         }
 
-        private static async Task<PortBridgeServiceForwarderHost> Create(IConfiguration configuration)
+        private static async Task<ServiceForwarderHost> Create(IConfiguration configuration)
         {
             var options = configuration.GetSection("PortBridge").Get<ServiceAgentOptions>();
 
@@ -36,7 +36,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent.Console
 
             var forwarders = await BuildServiceForwarders(logger, options);
 
-            return new PortBridgeServiceForwarderHost(forwarders);
+            return new ServiceForwarderHost(forwarders);
         }
 
         public void Start()
