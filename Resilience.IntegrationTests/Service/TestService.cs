@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Resilience.IntegrationTests.Service
 {
-    internal class TestService
+    internal static class TestService
     {
         public static async Task ProcessRequest(HttpContext context, Func<Task> next)
         {

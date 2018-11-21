@@ -1,6 +1,5 @@
 ﻿using System;
 using App.Metrics;
-using App.Metrics.Counter;
 using App.Metrics.Meter;
 using DocaLabs.HybridPortBridge.Config;
 using Microsoft.Extensions.Configuration;
@@ -81,12 +80,10 @@ namespace DocaLabs.HybridPortBridge.Metrics
             MeasurementUnit = Unit.Bytes
         };
 
-        public IMetricsRoot Metrics { get; }
-        public IMeasureCounterMetrics Counters { get; }
-        public IMeasureMeterMetrics Meters { get; }
-
+        private readonly IMetricsRoot _metrics;
+        private readonly IMeasureMeterMetrics _meters;
         private ReportScheduler _reportScheduler;
-
+        
         public MetricsRegistry(IConfiguration configuration, Action<IMetricsBuilder> customBuild = null)
         {
             var options = configuration.GetSection("AgentMetrics")
@@ -99,10 +96,9 @@ namespace DocaLabs.HybridPortBridge.Metrics
 
             customBuild?.Invoke(builder);
 
-            Metrics = builder.Build();
+            _metrics = builder.Build();
 
-            Counters = Metrics.Measure.Counter;
-            Meters = Metrics.Measure.Meter;
+            _meters = _metrics.Measure.Meter;
 
             StartReportScheduler(options);
         }
@@ -113,7 +109,7 @@ namespace DocaLabs.HybridPortBridge.Metrics
                 ? TimeSpan.FromSeconds(300)
                 : TimeSpan.FromSeconds(options.ReportingOptions.ReportingFlushIntervalSeconds);
 
-            _reportScheduler = new ReportScheduler(Metrics, flushInterval);
+            _reportScheduler = new ReportScheduler(_metrics, flushInterval);
         }
 
         private static void BuildReporting(IMetricsBuilder builder, MetricsReportingOptions options)
@@ -127,7 +123,7 @@ namespace DocaLabs.HybridPortBridge.Metrics
 
         public MeterMetric MakeMeter(MeterOptions options, MetricTags tags)
         {
-            return new MeterMetric(Meters, options, tags);
+            return new MeterMetric(_meters, options, tags);
         }
 
         public void Dispose()

@@ -9,18 +9,18 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 {
     internal sealed class RelayMetadata
     {
+        private readonly AllowedPorts _allowedPorts;
         public string TargetHost { get; }
-        public AllowedPorts AllowedPorts { get; }
 
         private RelayMetadata(string targetHost, AllowedPorts allowedPorts)
         {
             TargetHost = targetHost;
-            AllowedPorts = allowedPorts;
+            _allowedPorts = allowedPorts;
         }
 
         public bool IsPortAllowed(int port)
         {
-            return AllowedPorts.IsAllowed(port);
+            return _allowedPorts.IsAllowed(port);
         }
 
         public static async Task<RelayMetadata> Parse(HybridConnectionListener listener)

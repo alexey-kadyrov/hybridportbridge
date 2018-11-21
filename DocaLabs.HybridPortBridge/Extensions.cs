@@ -22,7 +22,7 @@ namespace DocaLabs.HybridPortBridge
             return values.Any(x => Equals(value, x));
         }
 
-        public static void DisposeItems<T>(this ICollection<T> items) where T : class, IDisposable
+        private static void DisposeItems<T>(this ICollection<T> items) where T : class, IDisposable
         {
             if(items == null)
                 return;

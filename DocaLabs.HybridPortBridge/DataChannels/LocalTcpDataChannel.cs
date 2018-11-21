@@ -40,7 +40,8 @@ namespace DocaLabs.HybridPortBridge.DataChannels
 
         protected override void Dispose(bool disposing)
         {
-            _endpoint.IgnoreException(x => x.Dispose());
+            if(disposing)
+                _endpoint.IgnoreException(x => x.Dispose());
         }
 
         public override async Task WriteAsync(Frame frame)

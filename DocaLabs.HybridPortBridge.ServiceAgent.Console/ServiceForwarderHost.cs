@@ -9,14 +9,13 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent.Console
 {
     public class ServiceForwarderHost : IForwarder
     {
-        public MetricsRegistry MetricsRegistry { get; }
-
-        public IReadOnlyCollection<ServiceConnectionForwarder> Forwarders { get; }
+        private readonly MetricsRegistry _metricsRegistry;
+        private readonly IReadOnlyCollection<ServiceConnectionForwarder> _forwarders;
 
         private ServiceForwarderHost(MetricsRegistry metricsRegistry, IReadOnlyCollection<ServiceConnectionForwarder> forwarders)
         {
-            MetricsRegistry = metricsRegistry;
-            Forwarders = forwarders;
+            _metricsRegistry = metricsRegistry;
+            _forwarders = forwarders;
         }
 
         public static AgentHost Build(string[] args)
@@ -45,7 +44,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent.Console
 
         public void Start()
         {
-            foreach (var forwarder in Forwarders)
+            foreach (var forwarder in _forwarders)
             {
                 forwarder.Start();
             }
@@ -53,12 +52,12 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent.Console
 
         public void Stop()
         {
-            foreach (var forwarder in Forwarders)
+            foreach (var forwarder in _forwarders)
             {
                 forwarder.Stop();
             }
 
-            MetricsRegistry.Dispose();
+            _metricsRegistry.Dispose();
         }
 
         private static async Task<IReadOnlyCollection<ServiceConnectionForwarder>> BuildServiceForwarders(ILogger logger, MetricsRegistry metricsRegistry, ServiceAgentOptions options)

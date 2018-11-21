@@ -140,7 +140,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             return new Preamble(connectionId, frameSize);
         }
 
-        public static void CopyPreamble(ConnectionId connectionId, int count, byte[] buffer)
+        private static void CopyPreamble(ConnectionId connectionId, int count, byte[] buffer)
         {
             connectionId.WriteTo(buffer);
 

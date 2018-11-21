@@ -42,9 +42,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
                         return this;
                     }
 
-#pragma warning disable 4014
                     _frameDispatcher.DispatchFrame(frame);
-#pragma warning restore 4014
                 }
             }
             catch (Exception e)

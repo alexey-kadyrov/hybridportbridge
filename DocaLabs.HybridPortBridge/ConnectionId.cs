@@ -7,11 +7,11 @@ namespace DocaLabs.HybridPortBridge
         // Guid serialized as bytearray takes 16 bytes
         public const int ByteSize = 16;
 
-        public Guid Id { get; }
+        private readonly Guid _id;
 
         private ConnectionId(Guid id)
         {
-            Id = id;
+            _id = id;
         }
 
         public static ConnectionId New()
@@ -34,11 +34,9 @@ namespace DocaLabs.HybridPortBridge
             return new ConnectionId(new Guid(buffer));
         }
 
-        public int WriteTo(byte[] buffer)
+        public void WriteTo(byte[] buffer)
         {
-            Buffer.BlockCopy(Id.ToByteArray(), 0, buffer, 0, ByteSize);
-
-            return ByteSize;
+            Buffer.BlockCopy(_id.ToByteArray(), 0, buffer, 0, ByteSize);
         }
 
         public override bool Equals(object obj)
@@ -46,19 +44,19 @@ namespace DocaLabs.HybridPortBridge
             return obj is ConnectionId id && Equals(id);
         }
 
-        public bool Equals(ConnectionId other)
+        private bool Equals(ConnectionId other)
         {
-            return Id.Equals(other.Id);
+            return _id.Equals(other._id);
         }
 
         public override int GetHashCode()
         {
-            return Id.GetHashCode();
+            return _id.GetHashCode();
         }
 
         public override string ToString()
         {
-            return Id.ToString("N");
+            return _id.ToString("N");
         }
     }
 }

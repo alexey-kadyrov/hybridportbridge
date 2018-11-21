@@ -7,7 +7,7 @@ namespace DocaLabs.HybridPortBridge
     public sealed class TunnelPreamble
     {
         // the last 16 bits are reserved for a future use as a length of the rest of the preamble's data
-        public const int ByteSize = sizeof(TunnelFlags) + sizeof(int) + sizeof(ushort);
+        private const int ByteSize = sizeof(TunnelFlags) + sizeof(int) + sizeof(ushort);
 
         public TunnelFlags Flags { get; }
         public int Port { get; }

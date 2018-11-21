@@ -36,7 +36,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             CompleteLocalWriter(connectionId);
         }
 
-        public Task DispatchFrame(Frame frame)
+        public void DispatchFrame(Frame frame)
         {
             FrameQueue queue;
 
@@ -45,7 +45,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
                 if (!_queues.TryGetValue(frame.ConnectionId, out queue))
                 {
                     _log.Warning("CorrelationId: {correlationId}. There is no local writer for the frame");
-                    return Task.CompletedTask;
+                    return;
                 }
             }
             else
@@ -54,7 +54,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
                     k => new FrameQueue(_log, _correlateLocalWriter(frame.ConnectionId).GetAwaiter().GetResult(), CompleteLocalWriter));
             }
 
-            return queue.ProcessAsync(frame);
+            queue.ProcessAsync(frame);
         }
 
         private void CompleteLocalWriter(ConnectionId connectionId)
