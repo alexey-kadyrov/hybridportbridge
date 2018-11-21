@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <Import Project="../common.props" />
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net472</TargetFramework>
+        <ProjectGuid>6E87022A-FCB3-4BB1-B322-71EA54809E5D</ProjectGuid>
+        <DebugType>Full</DebugType>
+    </PropertyGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\DocaLabs.HybridPortBridge.ClientAgent\DocaLabs.HybridPortBridge.ClientAgent.csproj" />
+    </ItemGroup>
+
+</Project>

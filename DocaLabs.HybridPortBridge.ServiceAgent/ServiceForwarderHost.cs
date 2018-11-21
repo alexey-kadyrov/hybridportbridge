@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using DocaLabs.HybridPortBridge.Hosting;
 using DocaLabs.HybridPortBridge.Metrics;
 using DocaLabs.HybridPortBridge.ServiceAgent.Config;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 
-namespace DocaLabs.HybridPortBridge.ServiceAgent.Console
+namespace DocaLabs.HybridPortBridge.ServiceAgent
 {
     public class ServiceForwarderHost : IForwarder
     {
@@ -18,7 +19,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent.Console
             _forwarders = forwarders;
         }
 
-        public static AgentHost Build(string[] args)
+        public static ConsoleAgentHost Build(string[] args)
         {
             var configuration = args.BuildConfiguration();
 
@@ -26,10 +27,10 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent.Console
                 .GetAwaiter()
                 .GetResult();
 
-            return new AgentHost(forwarderHost);
+            return new ConsoleAgentHost(forwarderHost);
         }
 
-        private static async Task<ServiceForwarderHost> Create(IConfiguration configuration)
+        public static async Task<IForwarder> Create(IConfiguration configuration)
         {
             var options = configuration.GetSection("PortBridge").Get<ServiceAgentOptions>();
 

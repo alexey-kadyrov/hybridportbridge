@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using DocaLabs.HybridPortBridge.ClientAgent.Config;
+using DocaLabs.HybridPortBridge.Hosting;
 using DocaLabs.HybridPortBridge.Metrics;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 
-namespace DocaLabs.HybridPortBridge.ClientAgent.Console
+namespace DocaLabs.HybridPortBridge.ClientAgent
 {
     public class ClientForwarderHost : IForwarder
     {
@@ -17,14 +18,14 @@ namespace DocaLabs.HybridPortBridge.ClientAgent.Console
             _forwarders = forwarders;
         }
 
-        public static AgentHost Build(string[] args)
+        public static ConsoleAgentHost Build(string[] args)
         {
             var configuration = args.BuildConfiguration();
 
-            return new AgentHost(Create(configuration));
+            return new ConsoleAgentHost(Create(configuration));
         }
 
-        private static ClientForwarderHost Create(IConfiguration configuration)
+        public static ClientForwarderHost Create(IConfiguration configuration)
         {
             var options = configuration.GetSection("PortBridge").Get<ClientAgentOptions>();
 

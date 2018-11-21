@@ -8,9 +8,16 @@ namespace DocaLabs.HybridPortBridge
     {
         public static IConfiguration BuildConfiguration(this string[] args)
         {
-            var environmentName = Environment.GetEnvironmentVariable("Hosting:Environment");
+            return new ConfigurationBuilder()
+                .BuildConfiguration(args)
+                .Build();
+        }
 
-            var builder = new ConfigurationBuilder()
+        public static IConfigurationBuilder BuildConfiguration(this IConfigurationBuilder builder, string[] args)
+        {
+            var environmentName = Environment.GetEnvironmentVariable("Hosting:Environment");
+            
+            builder
                 .SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("appsettings.json", true);
 
@@ -22,8 +29,7 @@ namespace DocaLabs.HybridPortBridge
             if (args != null && args.Any())
                 builder.AddCommandLine(args);
 
-            return builder.Build();
+            return builder;
         }
-
     }
 }

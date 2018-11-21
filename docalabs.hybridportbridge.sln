@@ -27,6 +27,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resilience.IntegrationTests
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlSever.IntegrationTests", "SqlSever.IntegrationTests\SqlSever.IntegrationTests.csproj", "{B2F1ED3B-4AA4-4925-9653-5D136D83891D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocaLabs.HybridPortBridge.Hosting", "DocaLabs.HybridPortBridge.Hosting\DocaLabs.HybridPortBridge.Hosting.csproj", "{B2246ACC-86C1-4EED-8048-08750C468E66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocaLabs.HybridPortBridge.ClientAgent.WindowsService", "DocaLabs.HybridPortBridge.ClientAgent.WindowsService\DocaLabs.HybridPortBridge.ClientAgent.WindowsService.csproj", "{48632223-DBFC-4085-A888-E7873850493A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocaLabs.HybridPortBridge.ServiceAgent.WindowsService", "DocaLabs.HybridPortBridge.ServiceAgent.WindowsService\DocaLabs.HybridPortBridge.ServiceAgent.WindowsService.csproj", "{61C952AB-3CF5-46E4-8FE0-010534913110}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +79,18 @@ Global
 		{B2F1ED3B-4AA4-4925-9653-5D136D83891D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2F1ED3B-4AA4-4925-9653-5D136D83891D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2F1ED3B-4AA4-4925-9653-5D136D83891D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2246ACC-86C1-4EED-8048-08750C468E66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2246ACC-86C1-4EED-8048-08750C468E66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2246ACC-86C1-4EED-8048-08750C468E66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2246ACC-86C1-4EED-8048-08750C468E66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48632223-DBFC-4085-A888-E7873850493A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48632223-DBFC-4085-A888-E7873850493A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48632223-DBFC-4085-A888-E7873850493A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48632223-DBFC-4085-A888-E7873850493A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61C952AB-3CF5-46E4-8FE0-010534913110}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61C952AB-3CF5-46E4-8FE0-010534913110}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61C952AB-3CF5-46E4-8FE0-010534913110}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61C952AB-3CF5-46E4-8FE0-010534913110}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -88,6 +106,9 @@ Global
 		{94350BB5-7DFE-49AE-B02E-DDE4160801A3} = {BD6C7E1C-2E9E-488E-8834-28C78A09FDE9}
 		{6FC0A58C-C9AC-455E-8DB4-1C68154AD918} = {BD6C7E1C-2E9E-488E-8834-28C78A09FDE9}
 		{B2F1ED3B-4AA4-4925-9653-5D136D83891D} = {BD6C7E1C-2E9E-488E-8834-28C78A09FDE9}
+		{B2246ACC-86C1-4EED-8048-08750C468E66} = {1CDE62C0-15F1-41AA-9C8D-1518CD342A2F}
+		{48632223-DBFC-4085-A888-E7873850493A} = {1CDE62C0-15F1-41AA-9C8D-1518CD342A2F}
+		{61C952AB-3CF5-46E4-8FE0-010534913110} = {1CDE62C0-15F1-41AA-9C8D-1518CD342A2F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8AE01F8D-91A0-4DA3-BE19-2C422E090709}

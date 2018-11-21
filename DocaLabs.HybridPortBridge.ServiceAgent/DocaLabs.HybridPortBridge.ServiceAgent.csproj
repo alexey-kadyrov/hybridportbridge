@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DocaLabs.HybridPortBridge\DocaLabs.HybridPortBridge.csproj" />
+    <ProjectReference Include="..\DocaLabs.HybridPortBridge.Hosting\DocaLabs.HybridPortBridge.Hosting.csproj" />
   </ItemGroup>
 
 </Project>

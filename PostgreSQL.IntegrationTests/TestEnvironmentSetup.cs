@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using DocaLabs.HybridPortBridge;
 using DocaLabs.HybridPortBridge.ClientAgent.Config;
 using DocaLabs.HybridPortBridge.Config;
+using DocaLabs.HybridPortBridge.Hosting;
 using DocaLabs.HybridPortBridge.ServiceAgent.Config;
 using DocaLabs.Qa;
 using NUnit.Framework;
@@ -99,8 +99,8 @@ namespace PostgreSQL.IntegrationTests
             .ToConfigurationArgs());
 
 
-        private AgentHost _serviceAgent;
-        private AgentHost _clientAgent;
+        private ConsoleAgentHost _serviceConsoleAgent;
+        private ConsoleAgentHost _clientAgent;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -134,14 +134,14 @@ namespace PostgreSQL.IntegrationTests
 
         private void StartServiceAgent()
         {
-            _serviceAgent = DocaLabs.HybridPortBridge.ServiceAgent.Console.ServiceForwarderHost.Build(ServiceAgentArgs);
+            _serviceConsoleAgent = DocaLabs.HybridPortBridge.ServiceAgent.ServiceForwarderHost.Build(ServiceAgentArgs);
 
-            _serviceAgent.Start();
+            _serviceConsoleAgent.Start();
         }
 
         private void StartClientAgent()
         {
-            _clientAgent = DocaLabs.HybridPortBridge.ClientAgent.Console.ClientForwarderHost.Build(ClientAgentArgs);
+            _clientAgent = DocaLabs.HybridPortBridge.ClientAgent.ClientForwarderHost.Build(ClientAgentArgs);
 
             _clientAgent.Start();
         }
@@ -150,7 +150,7 @@ namespace PostgreSQL.IntegrationTests
         {
             try
             {
-                _serviceAgent?.Stop();
+                _serviceConsoleAgent?.Stop();
             }
             catch (Exception e)
             {

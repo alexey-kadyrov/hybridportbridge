@@ -2,9 +2,9 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using DocaLabs.HybridPortBridge;
 using DocaLabs.HybridPortBridge.ClientAgent.Config;
 using DocaLabs.HybridPortBridge.Config;
+using DocaLabs.HybridPortBridge.Hosting;
 using DocaLabs.HybridPortBridge.ServiceAgent.Config;
 using DocaLabs.Qa;
 using Microsoft.AspNetCore;
@@ -109,8 +109,8 @@ namespace Resilience.IntegrationTests
 
 
         private IWebHost _serviceHost;
-        private static AgentHost _serviceAgent;
-        private static AgentHost _clientAgent;
+        private static ConsoleAgentHost _serviceConsoleAgent;
+        private static ConsoleAgentHost _clientAgent;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -164,14 +164,14 @@ namespace Resilience.IntegrationTests
 
         public static void StartServiceAgent()
         {
-            _serviceAgent = DocaLabs.HybridPortBridge.ServiceAgent.Console.ServiceForwarderHost.Build(ServiceAgentArgs);
+            _serviceConsoleAgent = DocaLabs.HybridPortBridge.ServiceAgent.ServiceForwarderHost.Build(ServiceAgentArgs);
 
-            _serviceAgent.Start();
+            _serviceConsoleAgent.Start();
         }
 
         public static void StartClientAgent()
         {
-            _clientAgent = DocaLabs.HybridPortBridge.ClientAgent.Console.ClientForwarderHost.Build(ClientAgentArgs);
+            _clientAgent = DocaLabs.HybridPortBridge.ClientAgent.ClientForwarderHost.Build(ClientAgentArgs);
 
             _clientAgent.Start();
         }
@@ -193,7 +193,7 @@ namespace Resilience.IntegrationTests
         {
             try
             {
-                _serviceAgent?.Stop();
+                _serviceConsoleAgent?.Stop();
             }
             catch (Exception e)
             {

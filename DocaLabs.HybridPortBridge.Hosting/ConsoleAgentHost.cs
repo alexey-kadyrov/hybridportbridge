@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Threading;
 
-namespace DocaLabs.HybridPortBridge
+namespace DocaLabs.HybridPortBridge.Hosting
 {
-    public class AgentHost
+    public class ConsoleAgentHost
     {
         private readonly AutoResetEvent _closing = new AutoResetEvent(false);
         private readonly IForwarder _forwarder;
 
-        public AgentHost(IForwarder forwarder)
+        public ConsoleAgentHost(IForwarder forwarder)
         {
             _forwarder = forwarder;
         }
