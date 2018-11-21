@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using DocaLabs.Qa;
 using FluentAssertions;
@@ -12,6 +11,16 @@ namespace PostgreSQL.IntegrationTests.Tests
     public class WhenExecutingQueriesAgainstPostgreSqlBehindPortBridge : BehaviorDrivenTest
     {
         private static readonly List<(int Id, int RecordValue)> Result = new List<(int, int)>();
+
+        protected override async Task Cleanup()
+        {
+            using (var connection = new NpgsqlConnection(DbUtils.ConnectionString))
+            {
+                await connection.OpenAsync();
+
+                await connection.DropTable();
+            }
+        }
 
         protected override async Task Given()
         {
@@ -27,38 +36,31 @@ namespace PostgreSQL.IntegrationTests.Tests
         {
             using (var connection = new NpgsqlConnection(DbUtils.ConnectionString))
             {
-                try
+                await connection.OpenAsync();
+
+                await connection.AddRecord(1, 11);
+                await connection.AddRecord(2, 12);
+                await connection.AddRecord(3, 13);
+                await connection.AddRecord(4, 14);
+                await connection.AddRecord(5, 15);
+            }
+            
+            using (var connection = new NpgsqlConnection(DbUtils.ConnectionString))
+            {
+                await connection.OpenAsync();
+
+                var command = new NpgsqlCommand("SELECT Id, RecordValue FROM Records ORDER BY Id", connection);
+
+                using (var reader = await command.ExecuteReaderAsync())
                 {
-                    await connection.OpenAsync();
-
-                    await connection.AddRecord(1, 11);
-                    await connection.AddRecord(2, 12);
-                    await connection.AddRecord(3, 13);
-                    await connection.AddRecord(4, 14);
-                    await connection.AddRecord(5, 15);
-
-                    var command = new NpgsqlCommand("SELECT Id, RecordValue FROM Records ORDER BY Id", connection);
-
-                    using (var reader = await command.ExecuteReaderAsync())
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
-                        {
-                            var id = (int) reader["Id"];
+                        var id = (int) reader["Id"];
 
-                            var recordValue = (int) reader["RecordValue"];
+                        var recordValue = (int) reader["RecordValue"];
 
-                            Result.Add((id, recordValue));
-                        }
+                        Result.Add((id, recordValue));
                     }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    throw;
-                }
-                finally
-                {
-                    await connection.DropTable();
                 }
             }
         }
