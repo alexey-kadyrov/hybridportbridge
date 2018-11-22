@@ -1,8 +1,8 @@
 ﻿namespace DocaLabs.HybridPortBridge.ClientAgent.Console
 {
-    internal static class Program
+    public static class Program
     {
-        private static void Main(string[] args)
+        public static void Main(string[] args)
         {
             System.Console.Title = "DocaLabs.HybridPortBridge.ClientAgent.Console";
 

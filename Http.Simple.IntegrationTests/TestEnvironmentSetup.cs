@@ -141,8 +141,8 @@ namespace Http.Simple.IntegrationTests
 
         private IWebHost _serviceHost;
         private IWebHost _serviceHostRequiringClientCertificate;
-        private ConsoleAgentHost _serviceConsoleAgent;
-        private ConsoleAgentHost _clientAgent;
+        private Thread _serviceAgent;
+        private Thread _clientAgent;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -234,15 +234,21 @@ namespace Http.Simple.IntegrationTests
 
         private void StartServiceAgent()
         {
-            _serviceConsoleAgent = DocaLabs.HybridPortBridge.ServiceAgent.ServiceForwarderHost.Build(ServiceAgentArgs);
-
-            _serviceConsoleAgent.Start();
+            _serviceAgent = new Thread(() =>  DocaLabs.HybridPortBridge.ServiceAgent.Console.Program.Main(ServiceAgentArgs))
+            {
+                IsBackground = true
+            };
+            
+            _serviceAgent.Start();
         }
 
         private void StartClientAgent()
         {
-            _clientAgent = DocaLabs.HybridPortBridge.ClientAgent.ClientForwarderHost.Build(ClientAgentArgs);
-
+            _clientAgent = new Thread(() => DocaLabs.HybridPortBridge.ClientAgent.Console.Program.Main(ClientAgentArgs))
+            {
+                IsBackground = true
+            };
+            
             _clientAgent.Start();
         }
 
@@ -263,8 +269,7 @@ namespace Http.Simple.IntegrationTests
         {
             try
             {
-                await _serviceHost
-                    .StopAsync(new  CancellationTokenSource(TimeSpan.FromSeconds(5)).Token);
+                await _serviceHost.StopAsync(new  CancellationTokenSource(TimeSpan.FromSeconds(5)).Token);
             }
             catch (Exception e)
             {
@@ -276,7 +281,7 @@ namespace Http.Simple.IntegrationTests
         {
             try
             {
-                _serviceConsoleAgent?.Stop();
+                _serviceAgent.Abort();
             }
             catch (Exception e)
             {
@@ -288,7 +293,7 @@ namespace Http.Simple.IntegrationTests
         {
             try
             {
-                _clientAgent?.Stop();
+                _clientAgent.Abort();
             }
             catch (Exception e)
             {
