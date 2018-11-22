@@ -51,7 +51,7 @@ namespace Http.Simple.IntegrationTests.Tests
             if (failed > 0)
                 Assert.Fail($"Fail {failed} times out of {total} iterations, which gives {(1.0 - (double)failed/total) * 100.0}% Success Rate, Run for {overallTimer.ElapsedMilliseconds} milliseconds");
             else
-                Assert.Pass($"Test completed in {overallTimer.ElapsedMilliseconds} milliseconds");
+                Assert.Pass($"Test completed for {total} iterations in {overallTimer.ElapsedMilliseconds} milliseconds");
         }
 
         private static async Task<TestOutcome> Do(string testCase, int iterations, Func<int, Task> action)
