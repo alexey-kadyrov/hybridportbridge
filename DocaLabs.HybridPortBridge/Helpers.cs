@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace DocaLabs.HybridPortBridge
 {
-    public static class Extensions
+    public static class Helpers
     {
         public static TException Find<TException>(this Exception exception, Func<TException, bool> predicate) where TException : Exception
         {
@@ -20,17 +18,6 @@ namespace DocaLabs.HybridPortBridge
         public static bool In<T>(this T value, params T[] values)
         {
             return values.Any(x => Equals(value, x));
-        }
-
-        private static void DisposeItems<T>(this ICollection<T> items) where T : class, IDisposable
-        {
-            if(items == null)
-                return;
-
-            foreach (var item in items)
-            {
-                item.IgnoreException(x => x.Dispose());
-            }
         }
 
         public static void DisposeAndClear<TKey, TValue>(this IDictionary<TKey, TValue> dictionary) where TValue : class, IDisposable
@@ -61,17 +48,14 @@ namespace DocaLabs.HybridPortBridge
             }
         }
 
-        public static async Task ExecuteAction(this SemaphoreSlim locker, Func<Task> action)
+        private static void DisposeItems<T>(this ICollection<T> items) where T : class, IDisposable
         {
-            await locker.WaitAsync();
+            if (items == null)
+                return;
 
-            try
+            foreach (var item in items)
             {
-                await action();
-            }
-            finally
-            {
-                locker.Release();
+                item.IgnoreException(x => x.Dispose());
             }
         }
     }

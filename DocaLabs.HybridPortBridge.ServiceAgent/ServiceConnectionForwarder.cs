@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using App.Metrics;
 using DocaLabs.HybridPortBridge.Config;
+using DocaLabs.HybridPortBridge.DataChannels;
 using DocaLabs.HybridPortBridge.Metrics;
 using Microsoft.Azure.Relay;
 using Serilog;

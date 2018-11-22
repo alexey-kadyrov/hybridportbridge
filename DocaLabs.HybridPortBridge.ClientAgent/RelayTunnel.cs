@@ -53,7 +53,9 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
 
         public async Task EnsureRelayConnection(TcpClient endpoint, ConnectionId connectionId)
         {
-            await _establishLock.ExecuteAction(async () =>
+            await _establishLock.WaitAsync();
+
+            try
             {
                 if (_dataChannel != null)
                 {
@@ -61,13 +63,17 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
                     return;
                 }
 
-                await InitializeDatachannel();
-            });
+                await InitializeDataChannel();
+            }
+            finally
+            {
+                _establishLock.Release();
+            }
 
             EnsureUplinkPump(endpoint, connectionId);
         }
 
-        private async Task InitializeDatachannel()
+        private async Task InitializeDataChannel()
         {
             var dataChannelFactory = new HybridConnectionClient(_relay, _tokenProvider);
 

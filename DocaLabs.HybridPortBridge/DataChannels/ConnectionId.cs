@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DocaLabs.HybridPortBridge
+namespace DocaLabs.HybridPortBridge.DataChannels
 {
     public struct ConnectionId
     {

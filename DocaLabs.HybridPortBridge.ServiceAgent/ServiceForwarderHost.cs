@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using DocaLabs.HybridPortBridge.Config;
 using DocaLabs.HybridPortBridge.Hosting;
 using DocaLabs.HybridPortBridge.Metrics;
 using DocaLabs.HybridPortBridge.ServiceAgent.Config;

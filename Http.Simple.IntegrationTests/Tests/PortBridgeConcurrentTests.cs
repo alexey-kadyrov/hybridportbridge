@@ -24,248 +24,272 @@ namespace Http.Simple.IntegrationTests.Tests
 
             var tasks = new[]
             {
-                Post(2000, request1),
-                Get(2000, request1),
-                Post(2000, request2),
-                Get(2000, request2),
-                Post(2000, requestWithClientCert),
-                Get(2000, requestWithClientCert),
-                Mix(1000, request1),
-                Mix(1000, request2),
-                Mix(1000, requestWithClientCert),
+                Do("Post-1", 2000, i => Post(i, request1)),
+                Do("Get-1", 2000, i => Get(request1)),
+                Do("Post-2", 2000, i => Post(i, request2)),
+                Do("Get-2", 2000, i => Get(request2)),
+                Do("Post-with-client-cert", 2000, i => Post(i, requestWithClientCert)),
+                Do("Get-with-client-cert", 2000, i => Get(requestWithClientCert)),
+                Do("Mix-1", 1000, i => Mix(i, request1)),
+                Do("Mix-2", 1000, i => Mix(i, request2)),
+                Do("Mix-with-client-cert", 1000, i => Mix(i, requestWithClientCert)),
 
                 // be conservative here in order not to exhaust the socket connections
-                IndividualMix(50), 
-                IndividualMix(50)
+                Do("IndividualMix-1", 50, IndividualMix),
+                Do("IndividualMix-2", 50, IndividualMix)
             };
 
             await Task.WhenAll(tasks);
 
             overallTimer.Stop();
 
-            var message = $"Test completed in {overallTimer.ElapsedMilliseconds} milliseconds{Environment.NewLine}";
+            Console.WriteLine(string.Join(Environment.NewLine, tasks.Select(t => t.Result)));
 
-            message += string.Join(Environment.NewLine, tasks.Select(t => t.Result));
+            var total = tasks.Sum(t => t.Result.TotalIterations);
+            var failed = tasks.Sum(t => t.Result.FailedIterations);
 
-            Console.WriteLine(message);
-
-            Assert.Pass();
+            if (failed > 0)
+                Assert.Fail($"Fail {failed} times out of {total} iterations, which gives {(1.0 - (double)failed/total) * 100.0}% Success Rate, Run for {overallTimer.ElapsedMilliseconds} milliseconds");
+            else
+                Assert.Pass($"Test completed in {overallTimer.ElapsedMilliseconds} milliseconds");
         }
 
-        private static async Task<string> Get(int iterations, IService request)
+        private static async Task<TestOutcome> Do(string testCase, int iterations, Func<int, Task> action)
         {
+            var outcome = new TestOutcome
+            {
+                TestCase = testCase,
+                TotalIterations = iterations,
+                FirstFailed = int.MaxValue,
+                LastFailed = int.MinValue
+            };
+
             var timer = Stopwatch.StartNew();
 
             for (var i = 0; i < iterations; i++)
             {
-                var result = await request.GetProductAsync(42);
-
-                result.Should().NotBeNull();
-                result.Id.Should().Be(42);
-                result.Category.Should().Be("Nothing");
-                result.Name.Should().Be("Product");
-                result.Price.Should().Be(1.99M);
-            }
-
-            timer.Stop();
-
-            return $"Get task completed in {timer.ElapsedMilliseconds} milliseconds for {iterations} iterations, {(double)timer.ElapsedMilliseconds / iterations} per iteration";
-        }
-
-        private static async Task<string> Post(int iterations, IService request)
-        {
-            var timer = Stopwatch.StartNew();
-
-            for (var i = 0; i < iterations; i++)
-            {
-                var result = await request.PostProductAsync(new Product
+                try
                 {
-                    Id = i,
-                    Category = "Hello",
-                    Name = "World",
-                    Price = 9.49M
-                });
-
-                result.Should().NotBeNull();
-                result.Id.Should().Be(i);
-                result.Category.Should().Be("Hello");
-                result.Name.Should().Be("World");
-                result.Price.Should().Be(9.49M);
-            }
-
-            timer.Stop();
-
-            return $"Post task completed in {timer.ElapsedMilliseconds} milliseconds for {iterations} iterations, {(double)timer.ElapsedMilliseconds / iterations} per iteration";
-        }
-
-        private static async Task<string> Mix(int iterations, IService request)
-        {
-            var timer = Stopwatch.StartNew();
-
-            var random = new Random();
-
-            for (var i = 0; i < iterations; i++)
-            {
-                switch (random.Next(3))
+                    await action(i);
+                }
+                catch (Exception e)
                 {
-                    case 0:
-                    {
-                        var result = await request.GetProductAsync(42);
+                    if (outcome.FirstFailed > i)
+                        outcome.FirstFailed = i;
 
-                        result.Should().NotBeNull();
-                        result.Id.Should().Be(42);
-                        result.Category.Should().Be("Nothing");
-                        result.Name.Should().Be("Product");
-                        result.Price.Should().Be(1.99M);
-                        break;
-                    }
-                    case 1:
-                    {
-                        var result = await request.PostProductAsync(new Product
-                        {
-                            Id = i,
-                            Category = "Hello",
-                            Name = "World",
-                            Price = 9.49M
-                        });
+                    if (outcome.LastFailed < i)
+                        outcome.LastFailed = i;
 
-                        result.Should().NotBeNull();
-                        result.Id.Should().Be(i);
-                        result.Category.Should().Be("Hello");
-                        result.Name.Should().Be("World");
-                        result.Price.Should().Be(9.49M);
-                        break;
-                    }
-                    case 2:
-                    {
-                        var data = LargeDataProvider.Next();
+                    outcome.FailedIterations++;
 
-                        var result = await request.PostLargeDataAsync(new MemoryStream(data));
-
-                        result.Should().NotBeNull();
-                        (await LargeDataProvider.Compare(data, result)).Should().BeTrue();
-                        break;
-                    }
+                    if (string.IsNullOrWhiteSpace(outcome.FirstError))
+                        outcome.FirstError = e.ToString();
                 }
             }
 
             timer.Stop();
 
-            return $"Mix task completed in {timer.ElapsedMilliseconds} milliseconds for {iterations} iterations, {(double)timer.ElapsedMilliseconds / iterations} per iteration";
+            outcome.ElapsedMilliseconds = timer.ElapsedMilliseconds;
+
+            return outcome;
         }
 
-        private static async Task<string> IndividualMix(int iterations)
+        private static async Task Get(IService request)
         {
-            var timer = Stopwatch.StartNew();
+            var result = await request.GetProductAsync(42);
 
-            var random = new Random();
+            result.Should().NotBeNull();
+            result.Id.Should().Be(42);
+            result.Category.Should().Be("Nothing");
+            result.Name.Should().Be("Product");
+            result.Price.Should().Be(1.99M);
+        }
 
-            for (var i = 0; i < iterations; i++)
+        private static async Task Post(int i, IService request)
+        {
+            var result = await request.PostProductAsync(new Product
             {
-                var value = random.Next(8);
+                Id = i,
+                Category = "Hello",
+                Name = "World",
+                Price = 9.49M
+            });
 
-                switch (value)
+            result.Should().NotBeNull();
+            result.Id.Should().Be(i);
+            result.Category.Should().Be("Hello");
+            result.Name.Should().Be("World");
+            result.Price.Should().Be(9.49M);
+        }
+
+        private static async Task Mix(int i, IService request)
+        {
+            switch (i % 3)
+            {
+                case 0:
                 {
-                    case 0:
+                    var result = await request.GetProductAsync(42);
+
+                    result.Should().NotBeNull();
+                    result.Id.Should().Be(42);
+                    result.Category.Should().Be("Nothing");
+                    result.Name.Should().Be("Product");
+                    result.Price.Should().Be(1.99M);
+                    break;
+                }
+                case 1:
+                {
+                    var result = await request.PostProductAsync(new Product
                     {
-                        var request = ClientFactory.CreateRequest();
+                        Id = i,
+                        Category = "Hello",
+                        Name = "World",
+                        Price = 9.49M
+                    });
 
-                        var result = await request.GetProductAsync(42);
+                    result.Should().NotBeNull();
+                    result.Id.Should().Be(i);
+                    result.Category.Should().Be("Hello");
+                    result.Name.Should().Be("World");
+                    result.Price.Should().Be(9.49M);
+                    break;
+                }
+                case 2:
+                {
+                    var data = LargeDataProvider.Next();
 
-                        result.Should().NotBeNull();
-                        result.Id.Should().Be(42);
-                        result.Category.Should().Be("Nothing");
-                        result.Name.Should().Be("Product");
-                        result.Price.Should().Be(1.99M);
-                        break;
-                    }
-                    case 3:
-                    {
-                        var request = ClientFactory.CreateRequestWithClientCertificate();
+                    var result = await request.PostLargeDataAsync(new MemoryStream(data));
 
-                        var result = await request.GetProductAsync(42);
-
-                        result.Should().NotBeNull();
-                        result.Id.Should().Be(42);
-                        result.Category.Should().Be("Nothing");
-                        result.Name.Should().Be("Product");
-                        result.Price.Should().Be(1.99M);
-                        break;
-                    }
-                    case 1:
-                    {
-                        var request = ClientFactory.CreateRequest();
-
-                        var result = await request.PostProductAsync(new Product
-                        {
-                            Id = i,
-                            Category = "Hello",
-                            Name = "World",
-                            Price = 9.49M
-                        });
-
-                        result.Should().NotBeNull();
-                        result.Id.Should().Be(i);
-                        result.Category.Should().Be("Hello");
-                        result.Name.Should().Be("World");
-                        result.Price.Should().Be(9.49M);
-                        break;
-                    }
-                    case 4:
-                    {
-                        var request = ClientFactory.CreateRequestWithClientCertificate();
-
-                        var result = await request.PostProductAsync(new Product
-                        {
-                            Id = i,
-                            Category = "Hello",
-                            Name = "World",
-                            Price = 9.49M
-                        });
-
-                        result.Should().NotBeNull();
-                        result.Id.Should().Be(i);
-                        result.Category.Should().Be("Hello");
-                        result.Name.Should().Be("World");
-                        result.Price.Should().Be(9.49M);
-                        break;
-                    }
-                    case 2:
-                    {
-                        var request = ClientFactory.CreateRequest();
-
-                        var data = LargeDataProvider.Next();
-
-                        var result = await request.PostLargeDataAsync(new MemoryStream(data));
-
-                        result.Should().NotBeNull();
-                        (await LargeDataProvider.Compare(data, result)).Should().BeTrue();
-                        break;
-                    }
-                    case 5:
-                    {
-                        var request = ClientFactory.CreateRequestWithClientCertificate();
-
-                        var data = LargeDataProvider.Next();
-
-                        var result = await request.PostLargeDataAsync(new MemoryStream(data));
-
-                        result.Should().NotBeNull();
-                        (await LargeDataProvider.Compare(data, result)).Should().BeTrue();
-                        break;
-                    }
-                    case 6:
-                    {
-                        var request = ClientFactory.CreateRequestWithClientCertificate(TestEnvironmentSetup.ServerCertificate, TestEnvironmentSetup.ServerCertificatePassword);
-                        Assert.ThrowsAsync<HttpRequestException>(async () => await request.GetProductAsync(42));
-                        break;
-                    }
+                    result.Should().NotBeNull();
+                    (await LargeDataProvider.Compare(data, result)).Should().BeTrue();
+                    break;
                 }
             }
+        }
 
-            timer.Stop();
+        private static async Task IndividualMix(int i)
+        {
+            switch (i % 8)
+            {
+                case 0:
+                {
+                    var request = ClientFactory.CreateRequest();
 
-            return $"Individual Mix task completed in {timer.ElapsedMilliseconds} milliseconds for {iterations} iterations, {(double)timer.ElapsedMilliseconds / iterations} per iteration";
+                    var result = await request.GetProductAsync(42);
+
+                    result.Should().NotBeNull();
+                    result.Id.Should().Be(42);
+                    result.Category.Should().Be("Nothing");
+                    result.Name.Should().Be("Product");
+                    result.Price.Should().Be(1.99M);
+                    break;
+                }
+                case 3:
+                {
+                    var request = ClientFactory.CreateRequestWithClientCertificate();
+
+                    var result = await request.GetProductAsync(42);
+
+                    result.Should().NotBeNull();
+                    result.Id.Should().Be(42);
+                    result.Category.Should().Be("Nothing");
+                    result.Name.Should().Be("Product");
+                    result.Price.Should().Be(1.99M);
+                    break;
+                }
+                case 1:
+                {
+                    var request = ClientFactory.CreateRequest();
+
+                    var result = await request.PostProductAsync(new Product
+                    {
+                        Id = i,
+                        Category = "Hello",
+                        Name = "World",
+                        Price = 9.49M
+                    });
+
+                    result.Should().NotBeNull();
+                    result.Id.Should().Be(i);
+                    result.Category.Should().Be("Hello");
+                    result.Name.Should().Be("World");
+                    result.Price.Should().Be(9.49M);
+                    break;
+                }
+                case 4:
+                {
+                    var request = ClientFactory.CreateRequestWithClientCertificate();
+
+                    var result = await request.PostProductAsync(new Product
+                    {
+                        Id = i,
+                        Category = "Hello",
+                        Name = "World",
+                        Price = 9.49M
+                    });
+
+                    result.Should().NotBeNull();
+                    result.Id.Should().Be(i);
+                    result.Category.Should().Be("Hello");
+                    result.Name.Should().Be("World");
+                    result.Price.Should().Be(9.49M);
+                    break;
+                }
+                case 2:
+                {
+                    var request = ClientFactory.CreateRequest();
+
+                    var data = LargeDataProvider.Next();
+
+                    var result = await request.PostLargeDataAsync(new MemoryStream(data));
+
+                    result.Should().NotBeNull();
+                    (await LargeDataProvider.Compare(data, result)).Should().BeTrue();
+                    break;
+                }
+                case 5:
+                {
+                    var request = ClientFactory.CreateRequestWithClientCertificate();
+
+                    var data = LargeDataProvider.Next();
+
+                    var result = await request.PostLargeDataAsync(new MemoryStream(data));
+
+                    result.Should().NotBeNull();
+                    (await LargeDataProvider.Compare(data, result)).Should().BeTrue();
+                    break;
+                }
+                case 6:
+                {
+                    var request = ClientFactory.CreateRequestWithClientCertificate(TestEnvironmentSetup.ServerCertificate, TestEnvironmentSetup.ServerCertificatePassword);
+                    Assert.ThrowsAsync<HttpRequestException>(async () => await request.GetProductAsync(42));
+                    break;
+                }
+            }
+        }
+
+        public struct TestOutcome
+        {
+            public string TestCase;
+            public int TotalIterations;
+            public int FailedIterations;
+            public int FirstFailed;
+            public int LastFailed;
+            public string FirstError;
+            public long ElapsedMilliseconds;
+
+            public override string ToString()
+            {
+                var message = $"{TestCase} task completed in {ElapsedMilliseconds} milliseconds for {TotalIterations} iterations, {(double) ElapsedMilliseconds / TotalIterations} per iteration";
+
+                if (FailedIterations <= 0)
+                    return message;
+
+                message += Environment.NewLine + $"Failed {FailedIterations} times with first failure in {FirstFailed} and last in {LastFailed} with first error:";
+                message += Environment.NewLine + FirstError;
+
+                return message;
+            }
         }
     }
 }

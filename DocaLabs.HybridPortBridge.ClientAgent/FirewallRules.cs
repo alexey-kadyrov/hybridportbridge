@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using DocaLabs.HybridPortBridge.ClientAgent.Config;
+using DocaLabs.HybridPortBridge.Config;
 
 namespace DocaLabs.HybridPortBridge.ClientAgent
 {

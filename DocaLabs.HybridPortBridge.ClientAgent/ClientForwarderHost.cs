@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DocaLabs.HybridPortBridge.ClientAgent.Config;
+using DocaLabs.HybridPortBridge.Config;
 using DocaLabs.HybridPortBridge.Hosting;
 using DocaLabs.HybridPortBridge.Metrics;
 using Microsoft.Extensions.Configuration;

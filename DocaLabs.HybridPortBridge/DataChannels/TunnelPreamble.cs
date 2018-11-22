@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace DocaLabs.HybridPortBridge
+namespace DocaLabs.HybridPortBridge.DataChannels
 {
     public sealed class TunnelPreamble
     {

@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 
-namespace DocaLabs.HybridPortBridge
+namespace DocaLabs.HybridPortBridge.Config
 {
     public static class ConfigurationExtensions
     {

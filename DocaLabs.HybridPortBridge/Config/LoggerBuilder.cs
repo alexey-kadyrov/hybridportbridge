@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Serilog;
 
-namespace DocaLabs.HybridPortBridge
+namespace DocaLabs.HybridPortBridge.Config
 {
     public static class LoggerBuilder
     {

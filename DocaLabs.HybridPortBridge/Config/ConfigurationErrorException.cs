@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace DocaLabs.HybridPortBridge
+namespace DocaLabs.HybridPortBridge.Config
 {
     [Serializable]
     public class ConfigurationErrorException : Exception

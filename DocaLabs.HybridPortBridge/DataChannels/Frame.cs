@@ -1,4 +1,4 @@
-﻿namespace DocaLabs.HybridPortBridge
+﻿namespace DocaLabs.HybridPortBridge.DataChannels
 {
     public sealed class Frame
     {
