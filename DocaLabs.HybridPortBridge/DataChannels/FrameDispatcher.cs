@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
 
@@ -13,6 +15,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
         private readonly ILogger _log;
         private readonly CorrelateLocalWriter _correlateLocalWriter;
         private readonly ConcurrentDictionary<ConnectionId, FrameQueue> _queues;
+        private bool _stopped;
 
         public FrameDispatcher(ILogger logger, CorrelateLocalWriter correlateLocalWriter)
             : this(logger)
@@ -38,6 +41,9 @@ namespace DocaLabs.HybridPortBridge.DataChannels
 
         public void DispatchFrame(Frame frame)
         {
+            if(_stopped)
+                return;
+            
             FrameQueue queue;
 
             if (_correlateLocalWriter == null)
@@ -71,14 +77,34 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             }
         }
 
-        public void Clear()
+        public void Drain()
         {
-            _queues.DisposeAndClear();
+            try
+            {
+                if(_stopped)
+                    return;
+                
+                _stopped = true;
+
+                var tokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+                
+                var tasks = _queues.Select(q => q.Value.Drain(tokenSource.Token));
+                
+                Task.WhenAll(tasks).GetAwaiter().GetResult();
+                
+                _queues.Clear();
+            }
+            catch
+            {
+                // intentional
+            }
         }
 
         public void Dispose()
         {
-            Clear();
+            Drain();
+            
+            _queues.DisposeAndClear();
         }
     }
 }

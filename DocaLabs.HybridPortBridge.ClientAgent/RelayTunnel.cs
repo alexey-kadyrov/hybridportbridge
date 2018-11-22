@@ -148,7 +148,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             {
                 _log.Information("Relay: {relay}. Closing the data channel", _relay);
 
-                _frameDispatcher.Clear();
+                _frameDispatcher.Drain();
                 _downlinkPump?.Stop();
                 _downlinkPump = null;
 

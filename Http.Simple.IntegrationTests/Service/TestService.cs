@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using DocaLabs.Qa;
 using Http.Simple.IntegrationTests.Client;
@@ -11,38 +12,46 @@ namespace Http.Simple.IntegrationTests.Service
     {
         public static async Task ProcessRequest(HttpContext context, Func<Task> next)
         {
-            // emulate some work
-            await Task.Delay(10);
+            try
+            {
+                // emulate some work
+                await Task.Delay(10);
 
-            if (context.Request.IsGetPath("/api/echo/products/42"))
-            {
-                context.Response.StatusCode = 200;
-                context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync(JsonConvert.SerializeObject(new Product
+                if (context.Request.IsGetPath("/api/echo/products/42"))
                 {
-                    Id = 42,
-                    Category = "Nothing",
-                    Name = "Product",
-                    Price = 1.99M
-                }));
+                    context.Response.StatusCode = 200;
+                    context.Response.ContentType = "application/json";
+                    await context.Response.WriteAsync(JsonConvert.SerializeObject(new Product
+                    {
+                        Id = 42,
+                        Category = "Nothing",
+                        Name = "Product",
+                        Price = 1.99M
+                    }));
+                }
+                else if (context.Request.IsPostPath("/api/echo/products"))
+                {
+                    context.Response.StatusCode = 200;
+                    context.Response.ContentType = context.Request.ContentType;
+                    await context.Request.Body.CopyToAsync(context.Response.Body);
+                    await context.Response.Body.FlushAsync();
+                }
+                else if (context.Request.IsPostPath("/api/echo/large"))
+                {
+                    context.Response.StatusCode = 200;
+                    context.Response.ContentType = context.Request.ContentType;
+                    await context.Request.Body.CopyToAsync(context.Response.Body);
+                    await context.Response.Body.FlushAsync();
+                }
+                else
+                {
+                    await next.Invoke();
+                }
             }
-            else if (context.Request.IsPostPath("/api/echo/products"))
+            catch (Exception e)
             {
-                context.Response.StatusCode = 200;
-                context.Response.ContentType = context.Request.ContentType;
-                await context.Request.Body.CopyToAsync(context.Response.Body);
-                await context.Response.Body.FlushAsync();
-            }
-            else if (context.Request.IsPostPath("/api/echo/large"))
-            {
-                context.Response.StatusCode = 200;
-                context.Response.ContentType = context.Request.ContentType;
-                await context.Request.Body.CopyToAsync(context.Response.Body);
-                await context.Response.Body.FlushAsync();
-            }
-            else
-            {
-                await next.Invoke();
+                File.AppendAllText(Path.Combine(AppContext.BaseDirectory, "service.log"), e.ToString());
+                throw;
             }
         }
     }

@@ -66,6 +66,17 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             }
         }
 
+        public Task Drain(CancellationToken token)
+        {
+            while (!_frames.IsEmpty)
+            {
+                if(token.IsCancellationRequested)
+                    break;
+            }
+            
+            return Task.CompletedTask;
+        }
+        
         public void Dispose()
         {
             _locker.IgnoreException(x => x.Dispose());

@@ -98,7 +98,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             {
                 _log.Information("Closing the data channel");
 
-                _frameDispatcher.Clear();
+                _frameDispatcher.Drain();
                 _downlinkPump?.Stop();
                 _downlinkPump.IgnoreException(x => x.Dispose());
             }

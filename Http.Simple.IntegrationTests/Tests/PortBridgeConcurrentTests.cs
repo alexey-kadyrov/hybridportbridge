@@ -268,7 +268,7 @@ namespace Http.Simple.IntegrationTests.Tests
             }
         }
 
-        public struct TestOutcome
+        private struct TestOutcome
         {
             public string TestCase;
             public int TotalIterations;
