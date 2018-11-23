@@ -85,7 +85,7 @@ namespace SqlSever.IntegrationTests
                             "14334", new PortMappingOptions
                             {
                                 EntityPath = EntityPath,
-                                RemoteTcpPort = 14333,
+                                RemoteConfigurationKey = 14333,
                                 AcceptFromIpAddresses =
                                 {
                                     "0.0.0.0-255.255.255.255"

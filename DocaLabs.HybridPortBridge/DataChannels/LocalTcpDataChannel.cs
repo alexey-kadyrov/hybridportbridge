@@ -2,8 +2,6 @@
 using System.IO;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using App.Metrics;
-using DocaLabs.HybridPortBridge.Metrics;
 using Serilog;
 
 namespace DocaLabs.HybridPortBridge.DataChannels
@@ -11,31 +9,21 @@ namespace DocaLabs.HybridPortBridge.DataChannels
     public sealed class LocalTcpDataChannel : LocalDataChannel
     {
         private readonly ILogger _log;
-        private readonly MeterMetric _failures;
-        private readonly MeterMetric _frameRead;
-        private readonly MeterMetric _frameWritten;
-        private readonly MeterMetric _bytesRead;
-        private readonly MeterMetric _bytesWritten;
         private readonly string _instance;
+        private readonly LocalDataChannelMetrics _metrics;
         private readonly TcpClient _endpoint;
         private readonly Stream _stream;
         private readonly byte[] _buffer;
 
-        public LocalTcpDataChannel(ILogger log, MetricsRegistry metrics, string instance, MetricTags tags, TcpClient endpoint)
+        public LocalTcpDataChannel(ILogger log, LocalDataChannelMetrics metrics, string instance, TcpClient endpoint)
         {
             _log = log.ForContext(GetType());
+            _metrics = metrics;
             _endpoint = endpoint;
             _instance = instance;
             _stream = _endpoint.GetStream();
             _buffer = new byte[BufferSize];
-
-            _failures = metrics.MakeMeter(MetricsRegistry.LocalFailuresOptions, tags);
-            _frameRead = metrics.MakeMeter(MetricsRegistry.LocalFrameReadOptions, tags);
-            _frameWritten = metrics.MakeMeter(MetricsRegistry.LocalFrameWrittenOptions, tags);
-            _bytesRead = metrics.MakeMeter(MetricsRegistry.LocalBytesReadOptions, tags);
-            _bytesWritten = metrics.MakeMeter(MetricsRegistry.LocalBytesWrittenOptions, tags);
-
-            _log.Debug("Local: {local} is initialized", _instance);
+            _log.Debug("Local: {localInstance} is initialized", _instance);
         }
 
         protected override void Dispose(bool disposing)
@@ -50,13 +38,11 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             {
                 await _stream.WriteAsync(frame.Buffer, 0, frame.Size);
 
-                _frameWritten.Increment();
-
-                _bytesWritten.Increment(frame.Size);
+                _metrics.FrameWritten(frame.Size);
             }
             catch (Exception e)
             {
-                _failures.Increment();
+                _metrics.Failed();
 
                 _log.Error(e, "ConnectId: {connectionId}. Failed to write", frame.ConnectionId);
 
@@ -70,17 +56,15 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             {
                 var count = await _stream.ReadAsync(_buffer, RemoteRelayDataChannel.PreambleByteSize, BufferSize - RemoteRelayDataChannel.PreambleByteSize);
 
-                _frameRead.Increment();
-
-                _bytesRead.Increment(count);
+                _metrics.FrameRead(count);
 
                 return (count, _buffer);
             }
             catch (Exception e)
             {
-                _failures.Increment();
+                _metrics.Failed();
 
-                _log.Error(e, "Local: {local}. Failed to read", _instance);
+                _log.Error(e, "Local: {localInstance}. Failed to read", _instance);
 
                 throw;
             }

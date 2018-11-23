@@ -19,7 +19,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             _port = port;
         }
 
-        public async Task<LocalDataChannel> Create(ILogger logger, MetricsRegistry metricsRegistry, MetricTags metricTags, ConnectionId connectionId)
+        public async Task<LocalDataChannel> Create(ILogger logger, MetricsRegistry metrics, ConnectionId connectionId)
         {
             var tcpClient = new TcpClient(AddressFamily.InterNetwork)
             {

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using App.Metrics;
-using DocaLabs.HybridPortBridge.Metrics;
 using Microsoft.Azure.Relay;
 using Serilog;
 
@@ -13,25 +11,15 @@ namespace DocaLabs.HybridPortBridge.DataChannels
         public const int PreambleByteSize = ConnectionId.ByteSize + sizeof(ushort);
 
         private readonly ILogger _log;
-        private readonly MeterMetric _failures;
-        private readonly MeterMetric _frameRead;
-        private readonly MeterMetric _frameWritten;
-        private readonly MeterMetric _bytesRead;
-        private readonly MeterMetric _bytesWritten;
+        private readonly RemoteDataChannelMetrics _metrics;
         private readonly SemaphoreSlim _writeLock;
         private readonly HybridConnectionStream _dataChannel;
 
-        public RemoteRelayDataChannel(ILogger logger, MetricsRegistry metrics, MetricTags tags, HybridConnectionStream dataChannel)
+        public RemoteRelayDataChannel(ILogger logger, RemoteDataChannelMetrics metrics, HybridConnectionStream dataChannel)
         {
             _log = logger.ForContext(GetType());
             _dataChannel = dataChannel;
-
-            _failures = metrics.MakeMeter(MetricsRegistry.RemoteFailuresOptions, tags);
-            _frameRead = metrics.MakeMeter(MetricsRegistry.RemoteFrameReadOptions, tags);
-            _frameWritten = metrics.MakeMeter(MetricsRegistry.RemoteFrameWrittenOptions, tags);
-            _bytesRead = metrics.MakeMeter(MetricsRegistry.RemoteBytesReadOptions, tags);
-            _bytesWritten = metrics.MakeMeter(MetricsRegistry.RemoteBytesWrittenOptions, tags);
-
+            _metrics = metrics;
             _writeLock = new SemaphoreSlim(1, 1);
         }
 
@@ -74,7 +62,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             }
             catch (Exception e)
             {
-                _failures.Increment();
+                _metrics.Failed();
 
                 _log.Error(e, "Failed to read");
 
@@ -94,7 +82,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             }
             catch (Exception e)
             {
-                _failures.Increment();
+                _metrics.Failed();
 
                 _log.Error(e, "ConnectionId: {connectionId}. Failed to write", connectionId);
 
@@ -105,9 +93,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
                 _writeLock.Release();
             }
 
-            _frameWritten.Increment();
-
-            _bytesWritten.Increment(count);
+            _metrics.FrameWritten(count);
 
             _log.Verbose("ConnectionId: {connectionId}. Wrote bytes: {bytesWritten}, and preamble: {preambleSize}", connectionId, count, PreambleByteSize);
         }
@@ -118,10 +104,9 @@ namespace DocaLabs.HybridPortBridge.DataChannels
 
             var bytesRead = await _dataChannel.ReadAsync(buffer, 0, PreambleByteSize);
 
-            _frameRead.Increment();
-
             if (bytesRead == 0)
             {
+                _metrics.FrameRead(0);
                 _log.Debug("Received empty frame");
                 return null;
             }
@@ -135,7 +120,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
 
             var frameSize = BitConverter.ToUInt16(buffer, ConnectionId.ByteSize);
 
-            _bytesRead.Increment(PreambleByteSize + frameSize);
+            _metrics.FrameRead(frameSize);
 
             return new Preamble(connectionId, frameSize);
         }

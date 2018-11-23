@@ -86,7 +86,7 @@ namespace PostgreSQL.IntegrationTests
                             "5041", new PortMappingOptions
                             {
                                 EntityPath = EntityPath,
-                                RemoteTcpPort = 5432,
+                                RemoteConfigurationKey = 5432,
                                 AcceptFromIpAddresses =
                                 {
                                     "127.0.0.1"

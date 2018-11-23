@@ -28,12 +28,12 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             _fromPort = fromPort;
             _bindTo = portMappings.BindToAddress;
 
-            var metricTags = new MetricTags(
-                new [] {"entityPath", "fromPort" }, new [] { portMappings.EntityPath, fromPort.ToString() });
+            var metrics = metricsRegistry.Merge(new MetricTags(
+                new [] {"entityPath", "fromPort" }, new [] { portMappings.EntityPath, fromPort.ToString() }));
 
-            _acceptedConnections = metricsRegistry.MakeMeter(MetricsRegistry.LocalEstablishedConnectionsOptions, metricTags);
+            _acceptedConnections = metrics.MakeMeter(MetricsRegistry.LocalEstablishedConnectionsOptions);
 
-            _relayFactory = new RelayTunnelFactory(logger, metricsRegistry, metricTags, serviceNamespace, portMappings);
+            _relayFactory = new RelayTunnelFactory(logger, metrics, serviceNamespace, portMappings);
         }
 
         public void Start()

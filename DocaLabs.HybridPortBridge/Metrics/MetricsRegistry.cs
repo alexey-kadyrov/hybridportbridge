@@ -82,6 +82,8 @@ namespace DocaLabs.HybridPortBridge.Metrics
 
         private readonly IMetricsRoot _metrics;
         private readonly IMeasureMeterMetrics _meters;
+        private readonly MetricTags _tags;
+        
         private ReportScheduler _reportScheduler;
         
         public MetricsRegistry(IConfiguration configuration, Action<IMetricsBuilder> customBuild = null)
@@ -103,6 +105,18 @@ namespace DocaLabs.HybridPortBridge.Metrics
             StartReportScheduler(options);
         }
 
+        private MetricsRegistry(IMetricsRoot metrics, MetricTags tags)
+        {
+            _tags = MetricTags.Concat(_tags, tags);
+            _metrics = metrics;
+            _meters = _metrics.Measure.Meter;
+        }
+        
+        public MetricsRegistry Merge(MetricTags tags)
+        {
+            return new MetricsRegistry(_metrics, tags);
+        }
+        
         private void StartReportScheduler(AgentMetricsOptions options)
         {
             var flushInterval = options.ReportingOptions.ReportingFlushIntervalSeconds <= 0
@@ -121,9 +135,9 @@ namespace DocaLabs.HybridPortBridge.Metrics
                 builder.Report.ToTextFile(options.ReportFile);
         }
 
-        public MeterMetric MakeMeter(MeterOptions options, MetricTags tags)
+        public MeterMetric MakeMeter(MeterOptions options)
         {
-            return new MeterMetric(_meters, options, tags);
+            return new MeterMetric(_meters, options, _tags);
         }
 
         public void Dispose()

@@ -115,7 +115,8 @@ namespace Http.Simple.IntegrationTests
                             "5020", new PortMappingOptions
                             {
                                 EntityPath = EntityPath,
-                                RemoteTcpPort = ServiceRequiringClientCertificatePort,
+                                RemoteConfigurationKey = ServiceRequiringClientCertificatePort,
+                                RelayConnectionTtlSeconds = 12,
                                 AcceptFromIpAddresses =
                                 {
                                     "127.0.0.1"
@@ -126,7 +127,8 @@ namespace Http.Simple.IntegrationTests
                             "5021", new PortMappingOptions
                             {
                                 EntityPath = EntityPath,
-                                RemoteTcpPort = ServicePort,
+                                RemoteConfigurationKey = ServicePort,
+                                RelayConnectionTtlSeconds = 12,
                                 AcceptFromIpAddresses =
                                 {
                                     "127.0.0.1"

@@ -95,7 +95,7 @@ namespace Resilience.IntegrationTests
                             "5021", new PortMappingOptions
                             {
                                 EntityPath = EntityPath,
-                                RemoteTcpPort = 5011,
+                                RemoteConfigurationKey = 5011,
                                 AcceptFromIpAddresses =
                                 {
                                     "127.0.0.1"

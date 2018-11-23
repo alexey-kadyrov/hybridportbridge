@@ -2,6 +2,7 @@
 using App.Metrics;
 using DocaLabs.HybridPortBridge.ClientAgent.Config;
 using DocaLabs.HybridPortBridge.Config;
+using DocaLabs.HybridPortBridge.DataChannels;
 using DocaLabs.HybridPortBridge.Metrics;
 using Serilog;
 
@@ -9,34 +10,35 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
 {
     internal sealed class RelayTunnelFactory
     {
-        private readonly MetricsRegistry _metricsRegistry;
         private readonly ServiceNamespaceOptions _serviceNamespace;
         private readonly PortMappingOptions _portMappings;
         private readonly ILogger _log;
         private readonly object _poolLocker;
         private readonly RelayTunnel[] _tunnels;
-        private readonly MetricTags[] _metricTags;
+        private readonly (LocalDataChannelMetrics Local, RemoteDataChannelMetrics Remote)[] _metrics;
         private readonly ConcurrentDictionary<object, RelayTunnel> _replacedTunnels;
         private long _counter;
 
-        public RelayTunnelFactory(ILogger logger, MetricsRegistry metricsRegistry, MetricTags metricTags, ServiceNamespaceOptions serviceNamespace, PortMappingOptions portMappings)
+        public RelayTunnelFactory(ILogger logger, MetricsRegistry metricsRegistry, ServiceNamespaceOptions serviceNamespace, PortMappingOptions portMappings)
         {
             _log = logger?.ForContext(GetType());
 
             _poolLocker = new object();
-            _metricsRegistry = metricsRegistry;
             _serviceNamespace = serviceNamespace;
             _portMappings = portMappings;
 
             _replacedTunnels = new ConcurrentDictionary<object, RelayTunnel>();
 
             _tunnels = new RelayTunnel[portMappings.RelayChannelCount];
-            _metricTags = new MetricTags[portMappings.RelayChannelCount];
+            _metrics = new (LocalDataChannelMetrics, RemoteDataChannelMetrics)[portMappings.RelayChannelCount];
 
             for (var i = 0; i < portMappings.RelayChannelCount; i++)
             {
-                _metricTags[i] = MetricTags.Concat(metricTags, new MetricTags("idx", i.ToString()));
-                _tunnels[i] = new RelayTunnel(logger, _metricsRegistry, _metricTags[i], serviceNamespace, portMappings.EntityPath, portMappings.RemoteTcpPort, portMappings.RelayConnectionTtlSeconds);
+                var tag = new MetricTags("idx", i.ToString());
+                
+                _metrics[i] = (new LocalDataChannelMetrics(metricsRegistry.Merge(tag)), new RemoteDataChannelMetrics(metricsRegistry.Merge(tag)));
+                
+                _tunnels[i] = new RelayTunnel(logger, _metrics[i], serviceNamespace, portMappings.EntityPath, portMappings.RemoteConfigurationKey, portMappings.RelayConnectionTtlSeconds);
             }
         }
 
@@ -70,7 +72,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
 
             replacing.OnDataChannelClosed = OnReplacedTunnelDataChannelClosed;
 
-            return _tunnels[idx] = new RelayTunnel(_log, _metricsRegistry, _metricTags[idx], _serviceNamespace, _portMappings.EntityPath, _portMappings.RemoteTcpPort, _portMappings.RelayConnectionTtlSeconds);
+            return _tunnels[idx] = new RelayTunnel(_log, _metrics[idx], _serviceNamespace, _portMappings.EntityPath, _portMappings.RemoteConfigurationKey, _portMappings.RelayConnectionTtlSeconds);
         }
 
         private void OnReplacedTunnelDataChannelClosed(RelayTunnel tunnel)
