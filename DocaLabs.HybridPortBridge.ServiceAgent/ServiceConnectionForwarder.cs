@@ -101,15 +101,17 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
                     if (preamble.Flags.HasFlag(TunnelFlags.Tcp))
                     {
-                        if (!_metadata.IsPortAllowed(preamble.Port))
+                        var factory = _metadata.GetDataChannelFactory(preamble.ConfigurationKey);
+
+                        if(factory == null)
                         {
-                            CloseRelayStream(relayStream, $"Incoming connection for port {preamble.Port} not permitted");
+                            CloseRelayStream(relayStream, $"Incoming connection for {preamble.ConfigurationKey} is not permitted");
                             return;
                         }
 
-                        _log.Debug("Relay: {idx}:{relay}. Incoming connection for port {port}", _forwarderIdx, _relayListener.Address, preamble.Port);
+                        _log.Debug("Relay: {idx}:{relay}. Incoming connection for {configurationKey}", _forwarderIdx, _relayListener.Address, preamble.ConfigurationKey);
 
-                        EstablishTunnel(relayStream, preamble.Port);
+                        EstablishTunnel(relayStream, preamble.ConfigurationKey);
                     }
                     else
                     {

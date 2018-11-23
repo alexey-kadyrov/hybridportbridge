@@ -10,12 +10,12 @@ namespace DocaLabs.HybridPortBridge.DataChannels
         private const int ByteSize = sizeof(TunnelFlags) + sizeof(int) + sizeof(ushort);
 
         public TunnelFlags Flags { get; }
-        public int Port { get; }
+        public int ConfigurationKey { get; }
 
-        public TunnelPreamble(TunnelFlags flags, int port)
+        public TunnelPreamble(TunnelFlags flags, int configurationKey)
         {
             Flags = flags;
-            Port = port;
+            ConfigurationKey = configurationKey;
         }
 
         public static async Task<TunnelPreamble> ReadAsync(Stream stream)
@@ -45,7 +45,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             var bytes = BitConverter.GetBytes((ushort)Flags);
             Buffer.BlockCopy(bytes, 0, buffer, 0, sizeof(ushort));
 
-            bytes = BitConverter.GetBytes(Port);
+            bytes = BitConverter.GetBytes(ConfigurationKey);
             Buffer.BlockCopy(bytes, 0, buffer, sizeof(ushort), sizeof(int));
 
             return stream.WriteAsync(buffer, 0, ByteSize);
@@ -53,7 +53,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
 
         public override string ToString()
         {
-            return $"Flags={Flags}, Port={Port}";
+            return $"Flags={Flags}, Port={ConfigurationKey}";
         }
     }
 

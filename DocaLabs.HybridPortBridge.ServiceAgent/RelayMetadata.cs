@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,18 +11,18 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 {
     internal sealed class RelayMetadata
     {
-        private readonly AllowedPorts _allowedPorts;
-        public string TargetHost { get; }
+        private readonly Dictionary<int, ILocalDataChannelFactory> _channelFactories;
 
-        private RelayMetadata(string targetHost, AllowedPorts allowedPorts)
+        private RelayMetadata(Dictionary<int, ILocalDataChannelFactory> channelFactories)
         {
-            TargetHost = targetHost;
-            _allowedPorts = allowedPorts;
+            _channelFactories = channelFactories;
         }
 
-        public bool IsPortAllowed(int port)
+        public ILocalDataChannelFactory GetDataChannelFactory(int configurationKey)
         {
-            return _allowedPorts.IsAllowed(port);
+            return _channelFactories.TryGetValue(configurationKey, out var factory)
+                ? factory
+                : null;
         }
 
         public static async Task<RelayMetadata> Parse(HybridConnectionListener listener)
@@ -30,26 +31,45 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
             try
             {
+                var channelFactories = new Dictionary<int, ILocalDataChannelFactory>();
+
                 var metadata = JArray.Parse(info.UserMetadata);
 
-                var endpoint = metadata.FirstOrDefault(x => x["key"].Value<string>() == "endpoint");
-                if (endpoint == null)
-                    throw new ConfigurationErrorException($"Expected endpoint key was not found in the {listener.Address} relay user metadata");
+                foreach (var item in metadata)
+                {
+                    var key = item["key"].Value<string>();
+                    if(!int.TryParse(key, out var configurationKey))
+                        continue;
 
-                var targetHostInfo = endpoint["value"].Value<string>();
-                if (string.IsNullOrWhiteSpace(targetHostInfo))
-                    throw new ConfigurationErrorException($"The endpoint value is null or empty string in the {listener.Address} relay user metadata");
+                    var factory = ParseEndpoint(item["value"].Value<string>(), listener.Address);
+                    if (factory != null)
+                        channelFactories[configurationKey] = factory;
+                }
 
-                var parts = targetHostInfo.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length != 2)
-                    throw new ConfigurationErrorException($"Wrong format of the endpoint {targetHostInfo} value in the {listener.Address} relay user metadata");
+                if(!channelFactories.Any())
+                    throw new ConfigurationErrorException($"There is no any endpoint configured for {listener.Address}");
 
-                return new RelayMetadata(parts[0], new AllowedPorts(parts[1]));
+                return new RelayMetadata(channelFactories);
             }
             catch (Exception e) when(!(e is ConfigurationErrorException))
             {
                 throw new ConfigurationErrorException($"Failed to parse the {listener.Address} relay user metadata", e);
             }
+        }
+
+        private static ILocalDataChannelFactory ParseEndpoint(string endpoint, Uri listenerAddress)
+        {
+            var parts = endpoint.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length != 3)
+                throw new ConfigurationErrorException($"Wrong format of the endpoint {endpoint} value in the {listenerAddress} relay user metadata");
+
+            if(!string.Equals(parts[0], "tcp"))
+                throw new ConfigurationErrorException($"Unsupported protocol {parts[0]} for the endpoint {endpoint} value in the {listenerAddress} relay user metadata");
+
+            if(!int.TryParse(parts[2], out var port))
+                throw new ConfigurationErrorException($"Wrong port format {parts[2]} for the endpoint {endpoint} value in the {listenerAddress} relay user metadata");
+
+            return new TcpLocalDataChannelFactory(parts[1], port);
         }
     }
 }
