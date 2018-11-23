@@ -28,7 +28,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
 
         public Action<RelayTunnel> OnDataChannelClosed { get; set; }
 
-        public RelayTunnel(ILogger logger, MetricsRegistry metricsRegistry, MetricTags metricTags, ServiceNamespaceOptions serviceNamespace, string entityPath, int remoteTcpPort, int ttlSeconds)
+        public RelayTunnel(ILogger logger, MetricsRegistry metricsRegistry, MetricTags metricTags, ServiceNamespaceOptions serviceNamespace, string entityPath, int remoteConfigurationKey, int ttlSeconds)
         {
             if (string.IsNullOrWhiteSpace(entityPath))
                 throw new ArgumentNullException(nameof(entityPath));
@@ -40,7 +40,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             _tokenProvider = serviceNamespace.CreateSasTokenProvider();
             _frameDispatcher = new FrameDispatcher(_log);
             _ttl = TimeSpan.FromSeconds(ttlSeconds);
-            _tunnelPreamble = new TunnelPreamble(TunnelFlags.Tcp, remoteTcpPort);
+            _tunnelPreamble = new TunnelPreamble(remoteConfigurationKey);
             _canAcceptUntil = DateTime.MaxValue;
             _metricsRegistry = metricsRegistry;
             _metricTags = metricTags;

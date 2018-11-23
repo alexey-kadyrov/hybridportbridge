@@ -38,7 +38,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
             _establishedTunnels = metricsRegistry.MakeMeter(MetricsRegistry.RemoteEstablishedTunnelsOptions, metricTags);
 
-            _tunnelFactory = new RelayTunnelFactory(logger, metricsRegistry, metricTags, _metadata.TargetHost, OnTunnelCompleted);
+            _tunnelFactory = new RelayTunnelFactory(logger, metricsRegistry, metricTags, OnTunnelCompleted);
         }
 
         public static async Task<ServiceConnectionForwarder> Create(ILogger logger, MetricsRegistry metricsRegistry, ServiceNamespaceOptions serviceNamespace, string entityPath)
@@ -99,24 +99,17 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
                 {
                     var preamble = await TunnelPreamble.ReadAsync(relayStream);
 
-                    if (preamble.Flags.HasFlag(TunnelFlags.Tcp))
+                    var localFactory = _metadata.GetDataChannelFactory(preamble.ConfigurationKey);
+
+                    if(localFactory == null)
                     {
-                        var factory = _metadata.GetDataChannelFactory(preamble.ConfigurationKey);
-
-                        if(factory == null)
-                        {
-                            CloseRelayStream(relayStream, $"Incoming connection for {preamble.ConfigurationKey} is not permitted");
-                            return;
-                        }
-
-                        _log.Debug("Relay: {idx}:{relay}. Incoming connection for {configurationKey}", _forwarderIdx, _relayListener.Address, preamble.ConfigurationKey);
-
-                        EstablishTunnel(relayStream, preamble.ConfigurationKey);
+                        CloseRelayStream(relayStream, $"Incoming connection for {preamble.ConfigurationKey} is not permitted");
+                        return;
                     }
-                    else
-                    {
-                        CloseRelayStream(relayStream, $"Unable to handle connection for {preamble}");
-                    }
+
+                    _log.Debug("Relay: {idx}:{relay}. Incoming connection for {configurationKey}", _forwarderIdx, _relayListener.Address, preamble.ConfigurationKey);
+
+                    EstablishTunnel(relayStream, localFactory);
                 }
             }
             catch (Exception e)
@@ -125,9 +118,9 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             }
         }
 
-        private void EstablishTunnel(HybridConnectionStream stream, int port)
+        private void EstablishTunnel(HybridConnectionStream stream, ILocalDataChannelFactory localFactory)
         {
-            var tunnel = _tunnelFactory.Create(stream, port);
+            var tunnel = _tunnelFactory.Create(stream, localFactory);
 
             _tunnels[tunnel] = tunnel;
 

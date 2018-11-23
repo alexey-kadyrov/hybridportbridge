@@ -7,14 +7,12 @@ namespace DocaLabs.HybridPortBridge.DataChannels
     public sealed class TunnelPreamble
     {
         // the last 16 bits are reserved for a future use as a length of the rest of the preamble's data
-        private const int ByteSize = sizeof(TunnelFlags) + sizeof(int) + sizeof(ushort);
+        private const int ByteSize = sizeof(ushort) + sizeof(int) + sizeof(ushort);
 
-        public TunnelFlags Flags { get; }
         public int ConfigurationKey { get; }
 
-        public TunnelPreamble(TunnelFlags flags, int configurationKey)
+        public TunnelPreamble(int configurationKey)
         {
-            Flags = flags;
             ConfigurationKey = configurationKey;
         }
 
@@ -32,17 +30,16 @@ namespace DocaLabs.HybridPortBridge.DataChannels
                 bytesRead += await stream.ReadAsync(buffer, bytesRead, ByteSize - bytesRead);
             }
 
-            var flags = BitConverter.ToUInt16(buffer, 0);
-            var port = BitConverter.ToInt32(buffer, sizeof(TunnelFlags));
+            var port = BitConverter.ToInt32(buffer, sizeof(ushort));
 
-            return new TunnelPreamble((TunnelFlags)flags, port);
+            return new TunnelPreamble(port);
         }
 
         public Task WriteAsync(Stream stream)
         {
             var buffer = new byte[ByteSize];
 
-            var bytes = BitConverter.GetBytes((ushort)Flags);
+            var bytes = BitConverter.GetBytes(0);
             Buffer.BlockCopy(bytes, 0, buffer, 0, sizeof(ushort));
 
             bytes = BitConverter.GetBytes(ConfigurationKey);
@@ -53,15 +50,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
 
         public override string ToString()
         {
-            return $"Flags={Flags}, Port={ConfigurationKey}";
+            return $"ConfigurationKey={ConfigurationKey}";
         }
-    }
-
-    [Flags]
-    public enum TunnelFlags : ushort
-    {
-        None = 0,
-        Tcp = 1,
-        Encrypted = 2
     }
 }

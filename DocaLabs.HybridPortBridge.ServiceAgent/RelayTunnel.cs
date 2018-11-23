@@ -11,33 +11,34 @@ using Serilog;
 namespace DocaLabs.HybridPortBridge.ServiceAgent
 {
     internal delegate Task TunnelCompleted(RelayTunnel tunnel);
-    internal delegate Task<LocalDataChannel> CreateLocalDataChannel(ConnectionId connectionId, int targetPort, MetricTags metricTags);
 
     internal sealed class RelayTunnel : IDisposable
     {
         private readonly ILogger _log;
-        private readonly CreateLocalDataChannel _createDataChannelFactory;
+        private readonly ILocalDataChannelFactory _localDataChannelFactory;
         private readonly TunnelCompleted _tunnelCompleted;
         private readonly DownlinkPump _downlinkPump;
         private readonly RemoteRelayDataChannel _relayDataChannel;
         private readonly ConcurrentDictionary<object, UplinkPump> _uplinkPumps;
         private readonly FrameDispatcher _frameDispatcher;
         private static long _dowlinkPumpCounter;
-        private readonly int _targetPort;
         private readonly MetricTags _baseMetricTags;
+        private readonly MeterMetric _localConnections;
+        private readonly MetricsRegistry _metricsRegistry;
 
-        public RelayTunnel(ILogger logger, MetricsRegistry metricsRegistry, MetricTags baseTags, HybridConnectionStream relayStream, int targetPort, CreateLocalDataChannel createDataChannelFactory, TunnelCompleted tunnelCompleted)
+        public RelayTunnel(ILogger logger, MetricsRegistry metricsRegistry, MetricTags baseTags, HybridConnectionStream relayStream, ILocalDataChannelFactory localFactory, TunnelCompleted tunnelCompleted)
         {
             _log = logger.ForContext(GetType());
 
             _uplinkPumps = new ConcurrentDictionary<object, UplinkPump>();
-            _createDataChannelFactory = createDataChannelFactory;
+            _localDataChannelFactory = localFactory;
             _tunnelCompleted = tunnelCompleted;
             _frameDispatcher = new FrameDispatcher(_log, CorrelateLocalDataChannel);
-            _targetPort = targetPort;
-
+            _metricsRegistry = metricsRegistry;
             _baseMetricTags = MakeMetricTags(baseTags);
 
+            _localConnections = _metricsRegistry.MakeMeter(MetricsRegistry.LocalEstablishedConnectionsOptions, _baseMetricTags);
+            
             _relayDataChannel = new RemoteRelayDataChannel(logger, metricsRegistry, _baseMetricTags, relayStream);
 
             _downlinkPump = new DownlinkPump(logger, _relayDataChannel, _frameDispatcher);
@@ -59,7 +60,9 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
         private async Task<ILocalDataChannelWriter> CorrelateLocalDataChannel(ConnectionId connectionId)
         {
-            var localDataChannel = await _createDataChannelFactory(connectionId, _targetPort, _baseMetricTags);
+            _localConnections.Increment();
+            
+            var localDataChannel = await _localDataChannelFactory.Create(_log, _metricsRegistry, _baseMetricTags, connectionId);
 
             var uplinkPump = new UplinkPump(_log, connectionId, localDataChannel, _relayDataChannel);
 
