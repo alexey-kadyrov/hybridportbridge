@@ -58,12 +58,9 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             try
             {
                 if (_dataChannel != null)
-                {
                     _log.Debug("Relay: {relay}. Using established data channel", _relay);
-                    return;
-                }
-
-                await InitializeDataChannel();
+                else
+                    await InitializeDataChannel();
             }
             finally
             {

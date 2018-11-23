@@ -66,7 +66,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             }
         }
 
-        public Task Drain(CancellationToken token)
+        public Task WaitToDrain(CancellationToken token)
         {
             while (!_frames.IsEmpty)
             {

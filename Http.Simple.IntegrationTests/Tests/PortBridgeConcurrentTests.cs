@@ -83,7 +83,7 @@ namespace Http.Simple.IntegrationTests.Tests
                     outcome.FailedIterations++;
 
                     if (string.IsNullOrWhiteSpace(outcome.FirstError))
-                        outcome.FirstError = e.ToString();
+                        outcome.FirstError = e.Message;
                 }
             }
 

@@ -88,7 +88,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
 
                 var tokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
                 
-                var tasks = _queues.Select(q => q.Value.Drain(tokenSource.Token));
+                var tasks = _queues.Select(q => q.Value.WaitToDrain(tokenSource.Token));
                 
                 Task.WhenAll(tasks).GetAwaiter().GetResult();
                 

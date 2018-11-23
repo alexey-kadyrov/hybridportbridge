@@ -141,8 +141,12 @@ namespace Http.Simple.IntegrationTests
 
         private IWebHost _serviceHost;
         private IWebHost _serviceHostRequiringClientCertificate;
-        private Thread _serviceAgent;
-        private Thread _clientAgent;
+
+        private ConsoleAgentHost _serviceAgent;
+        private Thread _serviceAgentThread;
+
+        private ConsoleAgentHost _clientAgent;
+        private Thread _clientAgentThread;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -234,30 +238,37 @@ namespace Http.Simple.IntegrationTests
 
         private void StartServiceAgent()
         {
-            _serviceAgent = new Thread(() =>  DocaLabs.HybridPortBridge.ServiceAgent.Console.Program.Main(ServiceAgentArgs))
+            _serviceAgentThread = new Thread(() =>
+            {
+                _serviceAgent = DocaLabs.HybridPortBridge.ServiceAgent.ServiceForwarderHost.Build(ServiceAgentArgs);
+                _serviceAgent.Start();
+            })
             {
                 IsBackground = true
             };
             
-            _serviceAgent.Start();
+            _serviceAgentThread.Start();
         }
 
         private void StartClientAgent()
         {
-            _clientAgent = new Thread(() => DocaLabs.HybridPortBridge.ClientAgent.Console.Program.Main(ClientAgentArgs))
+            _clientAgentThread = new Thread(() =>
+            {
+               _clientAgent = DocaLabs.HybridPortBridge.ClientAgent.ClientForwarderHost.Build(ClientAgentArgs);
+               _clientAgent.Start();
+            })
             {
                 IsBackground = true
             };
             
-            _clientAgent.Start();
+            _clientAgentThread.Start();
         }
 
         private async Task StopServiceRequiringClientCertificate()
         {
             try
             {
-                await _serviceHostRequiringClientCertificate
-                    .StopAsync(new CancellationTokenSource(TimeSpan.FromSeconds(5)).Token);
+                await _serviceHostRequiringClientCertificate.StopAsync(new CancellationTokenSource(TimeSpan.FromSeconds(5)).Token);
             }
             catch (Exception e)
             {
@@ -281,7 +292,10 @@ namespace Http.Simple.IntegrationTests
         {
             try
             {
-                _serviceAgent.Abort();
+                _serviceAgent.Stop();
+
+                if(!_serviceAgentThread.Join(TimeSpan.FromSeconds(5)))
+                    _serviceAgentThread.Abort();
             }
             catch (Exception e)
             {
@@ -293,7 +307,10 @@ namespace Http.Simple.IntegrationTests
         {
             try
             {
-                _clientAgent.Abort();
+                _clientAgent.Stop();
+
+                if(!_clientAgentThread.Join(TimeSpan.FromSeconds(5)))
+                    _clientAgentThread.Abort();
             }
             catch (Exception e)
             {
