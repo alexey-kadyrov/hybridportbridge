@@ -166,7 +166,7 @@ namespace Http.Simple.IntegrationTests
     
                 StartClientAgent();
     
-                await Task.Delay(TimeSpan.FromSeconds(5));
+                await Task.Delay(TimeSpan.FromSeconds(10));
             }
             catch (Exception e)
             {
