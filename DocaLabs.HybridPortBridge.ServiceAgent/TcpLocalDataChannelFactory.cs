@@ -1,7 +1,5 @@
-﻿using System;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Threading.Tasks;
-using App.Metrics;
 using DocaLabs.HybridPortBridge.DataChannels;
 using DocaLabs.HybridPortBridge.Metrics;
 using Serilog;
@@ -19,7 +17,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             _port = port;
         }
 
-        public async Task<LocalDataChannel> Create(ILogger logger, MetricsRegistry metrics, ConnectionId connectionId)
+        public async Task<LocalDataChannel> Create(ILogger logger, LocalDataChannelMetrics metrics, ConnectionId connectionId)
         {
             var tcpClient = new TcpClient(AddressFamily.InterNetwork)
             {
@@ -29,7 +27,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
             await tcpClient.ConnectAsync(_host, _port);
 
-            return new LocalTcpDataChannel(logger, metricsRegistry, connectionId.ToString(), metricTags, tcpClient);
+            return new LocalTcpDataChannel(logger, metrics, connectionId.ToString(), tcpClient);
         }
     }
 }

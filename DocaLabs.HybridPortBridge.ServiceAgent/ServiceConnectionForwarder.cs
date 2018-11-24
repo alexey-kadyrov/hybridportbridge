@@ -22,9 +22,8 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
         private readonly RelayMetadata _metadata;
         private readonly RelayTunnelFactory _tunnelFactory;
         private readonly ConcurrentDictionary<object, RelayTunnel> _tunnels;
-        private readonly MeterMetric _establishedTunnels;
 
-        private ServiceConnectionForwarder(ILogger logger, MetricsRegistry metricsRegistry, int forwarderIdx, HybridConnectionListener listener, RelayMetadata metadata, string entityPath)
+        private ServiceConnectionForwarder(ILogger logger, MetricsRegistry registry, int forwarderIdx, HybridConnectionListener listener, RelayMetadata metadata, string entityPath)
         {
             _log = logger.ForContext(GetType());
 
@@ -34,11 +33,11 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
             _tunnels = new ConcurrentDictionary<object, RelayTunnel>();
 
-            var metricTags = new MetricTags(new[] { nameof(entityPath), nameof(forwarderIdx) }, new[] { entityPath, forwarderIdx.ToString() });
+            var metricTags = new MetricTags(new[] { nameof(entityPath) }, new[] { entityPath });
 
-            _establishedTunnels = metricsRegistry.MakeMeter(MetricsRegistry.RemoteEstablishedTunnelsOptions, metricTags);
-
-            _tunnelFactory = new RelayTunnelFactory(logger, metricsRegistry, metricTags, OnTunnelCompleted);
+            var metrics = new TunnelMetrics(registry, metricTags);
+            
+            _tunnelFactory = new RelayTunnelFactory(logger, metrics, OnTunnelCompleted);
         }
 
         public static async Task<ServiceConnectionForwarder> Create(ILogger logger, MetricsRegistry metricsRegistry, ServiceNamespaceOptions serviceNamespace, string entityPath)
@@ -123,8 +122,6 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             var tunnel = _tunnelFactory.Create(stream, localFactory);
 
             _tunnels[tunnel] = tunnel;
-
-            _establishedTunnels.Increment();
 
             tunnel.Start();
         }
