@@ -37,7 +37,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
             var logger = LoggerBuilder.Initialize(configuration);
 
-            var metricsRegistry = new MetricsRegistry(configuration);
+            var metricsRegistry = MetricsRegistry.CreateRoot(configuration);
 
             var forwarders = await BuildServiceForwarders(logger, metricsRegistry, options);
 

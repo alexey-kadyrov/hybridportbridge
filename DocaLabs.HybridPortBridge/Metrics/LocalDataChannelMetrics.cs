@@ -35,6 +35,7 @@ namespace DocaLabs.HybridPortBridge.Metrics
             MeasurementUnit = Unit.Bytes
         };
         
+        private readonly MetricsRegistry _registry;
         private readonly MeterMetric _failures;
         private readonly MeterMetric _frameRead;
         private readonly MeterMetric _frameWritten;
@@ -43,13 +44,19 @@ namespace DocaLabs.HybridPortBridge.Metrics
 
         public LocalDataChannelMetrics(MetricsRegistry registry)
         {
-            _failures = registry.MakeMeter(LocalFailuresOptions);
-            _frameRead = registry.MakeMeter(LocalFrameReadOptions);
-            _frameWritten = registry.MakeMeter(LocalFrameWrittenOptions);
-            _bytesRead = registry.MakeMeter(LocalBytesReadOptions);
-            _bytesWritten = registry.MakeMeter(LocalBytesWrittenOptions);
+            _registry = registry;
+            _failures = _registry.MakeMeter(LocalFailuresOptions);
+            _frameRead = _registry.MakeMeter(LocalFrameReadOptions);
+            _frameWritten = _registry.MakeMeter(LocalFrameWrittenOptions);
+            _bytesRead = _registry.MakeMeter(LocalBytesReadOptions);
+            _bytesWritten = _registry.MakeMeter(LocalBytesWrittenOptions);
         }
 
+        public LocalDataChannelMetrics Merge(MetricTags tags)
+        {
+            return new LocalDataChannelMetrics(_registry.Merge(tags));
+        }
+        
         public void FrameWritten(int size)
         {
             _frameWritten.Increment();

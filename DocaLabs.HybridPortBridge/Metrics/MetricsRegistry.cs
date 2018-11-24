@@ -13,11 +13,23 @@ namespace DocaLabs.HybridPortBridge.Metrics
         private readonly MetricTags _tags;
         
         private ReportScheduler _reportScheduler;
-        
-        public MetricsRegistry(IConfiguration configuration, Action<IMetricsBuilder> customBuild = null)
+
+        private MetricsRegistry(IMetricsRoot metrics, MetricTags tags)
         {
-            var options = configuration.GetSection("AgentMetrics")
-                ?.Get<AgentMetricsOptions>() ?? new AgentMetricsOptions();
+            _tags = MetricTags.Concat(_tags, tags);
+            _metrics = metrics;
+            _meters = _metrics.Measure.Meter;
+        }
+
+        private MetricsRegistry(IMetricsRoot metrics)
+        {
+            _metrics = metrics;
+            _meters = _metrics.Measure.Meter;
+        }
+
+        public static MetricsRegistry CreateRoot(IConfiguration configuration, Action<IMetricsBuilder> customBuild = null)
+        {
+            var options = configuration.GetSection("AgentMetrics")?.Get<AgentMetricsOptions>() ?? new AgentMetricsOptions();
 
             var builder = new MetricsBuilder()
                 .Configuration.Configure(options.MetricsOptions);
@@ -25,19 +37,12 @@ namespace DocaLabs.HybridPortBridge.Metrics
             BuildReporting(builder, options.ReportingOptions);
 
             customBuild?.Invoke(builder);
+            
+            var registry = new MetricsRegistry(builder.Build());
+            
+            registry.StartReportScheduler(options);
 
-            _metrics = builder.Build();
-
-            _meters = _metrics.Measure.Meter;
-
-            StartReportScheduler(options);
-        }
-
-        private MetricsRegistry(IMetricsRoot metrics, MetricTags tags)
-        {
-            _tags = MetricTags.Concat(_tags, tags);
-            _metrics = metrics;
-            _meters = _metrics.Measure.Meter;
+            return registry;
         }
         
         public MetricsRegistry Merge(MetricTags tags)

@@ -19,7 +19,9 @@ namespace DocaLabs.HybridPortBridge.Config
             
             builder
                 .SetBasePath(AppContext.BaseDirectory)
-                .AddJsonFile("appsettings.json", true);
+                .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("/settings/appsettings.json", true)
+                .AddJsonFile("/secrets/appsettings.json", true);
 
             if (!string.IsNullOrWhiteSpace(environmentName))
                 builder.AddJsonFile($"appsettings.{environmentName}.json", true);
