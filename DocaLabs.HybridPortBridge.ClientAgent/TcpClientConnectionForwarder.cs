@@ -19,19 +19,16 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
         private readonly FirewallRules _firewallRules;
         private readonly RelayTunnelFactory _relayFactory;
         private TcpListener _endpointListener;
-        private readonly MeterMetric _acceptedConnections;
 
-        public TcpClientConnectionForwarder(ILogger logger, MetricsRegistry metricsRegistry, ServiceNamespaceOptions serviceNamespace, int fromPort, PortMappingOptions portMappings)
+        public TcpClientConnectionForwarder(ILogger logger, MetricsRegistry registry, ServiceNamespaceOptions serviceNamespace, int fromPort, PortMappingOptions portMappings)
         {
             _log = logger.ForContext(GetType());
             _firewallRules = new FirewallRules(portMappings);
             _fromPort = fromPort;
             _bindTo = portMappings.BindToAddress;
 
-            var metrics = metricsRegistry.Merge(new MetricTags(
+            var metrics = new TunnelMetrics(registry, new MetricTags(
                 new [] {"entityPath", "fromPort" }, new [] { portMappings.EntityPath, fromPort.ToString() }));
-
-            _acceptedConnections = metrics.MakeMeter(MetricsRegistry.LocalEstablishedConnectionsOptions);
 
             _relayFactory = new RelayTunnelFactory(logger, metrics, serviceNamespace, portMappings);
         }
@@ -108,8 +105,6 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
                     await _relayFactory
                         .Get()
                         .EnsureRelayConnection(endpoint, connectionId);
-
-                    _acceptedConnections.Increment();
 
                     _log.Debug("ConnectionId: {connectionId}. Pumps started on port {port} from {remoteIPEndpoint}", connectionId, _fromPort, remoteIPEndpoint.Address);
                 }

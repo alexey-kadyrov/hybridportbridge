@@ -13,7 +13,7 @@ namespace PostgreSQL.IntegrationTests
     [SetUpFixture]
     public class TestEnvironmentSetup
     {
-        public const string EntityPath = "ovc-cicd-test-sql";
+        private const string EntityPath = "ovc-cicd-test-sql";
 
         private const string ClientAgentName = "PostgeSQL.ClientAgent";
         private const string ServiceAgentName = "PostgeSQL.MySqlServiceAgent";

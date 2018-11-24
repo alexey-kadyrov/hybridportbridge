@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DocaLabs.HybridPortBridge.ClientAgent.Console\DocaLabs.HybridPortBridge.ClientAgent.Console.csproj" />
-    <ProjectReference Include="..\DocaLabs.HybridPortBridge.ServiceAgent.Console\DocaLabs.HybridPortBridge.ServiceAgent.Console.csproj" />
+    <ProjectReference Include="..\DocaLabs.HybridPortBridge.ClientAgent\DocaLabs.HybridPortBridge.ClientAgent.csproj" />
+    <ProjectReference Include="..\DocaLabs.HybridPortBridge.ServiceAgent\DocaLabs.HybridPortBridge.ServiceAgent.csproj" />
     <ProjectReference Include="..\DocaLabs.Qa\DocaLabs.Qa.csproj" />
   </ItemGroup>
 

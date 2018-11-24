@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using DocaLabs.HybridPortBridge.Metrics;
 using Serilog;
 
 namespace DocaLabs.HybridPortBridge.DataChannels

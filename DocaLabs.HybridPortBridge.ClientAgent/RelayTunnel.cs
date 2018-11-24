@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DocaLabs.HybridPortBridge.Config;
 using DocaLabs.HybridPortBridge.DataChannels;
+using DocaLabs.HybridPortBridge.Metrics;
 using Microsoft.Azure.Relay;
 using Serilog;
 
@@ -21,12 +22,12 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
         private readonly TimeSpan _ttl;
         private DateTime _canAcceptUntil;
         private readonly TunnelPreamble _tunnelPreamble;
-        private readonly (LocalDataChannelMetrics Local, RemoteDataChannelMetrics Remote) _metrics;
+        private readonly TunnelMetrics _metrics;
 
         public Action<RelayTunnel> OnDataChannelClosed { get; set; }
 
         public RelayTunnel(
-            ILogger logger, (LocalDataChannelMetrics Local, RemoteDataChannelMetrics Remote) metrics,
+            ILogger logger, TunnelMetrics metrics,
             ServiceNamespaceOptions serviceNamespace, string entityPath, int remoteConfigurationKey, int ttlSeconds)
         {
             if (string.IsNullOrWhiteSpace(entityPath))
@@ -104,17 +105,21 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
 
             _downlinkPump = new DownlinkPump(_log, _dataChannel, _frameDispatcher);
 
+            _metrics.RemoteEstablishedTunnels.Increment();
+            
             _downlinkPump.RunAsync().ContinueWith(OnDownlinkPumpCompleted);
         }
 
         private void EnsureUplinkPump(TcpClient endpoint, ConnectionId connectionId)
         {
-            var localDataChannel = new LocalTcpDataChannel(_log, _metrics.Local, connectionId, endpoint);
+            var localDataChannel = new LocalTcpDataChannel(_log, _metrics.Local, connectionId.ToString(), endpoint);
 
             var uplinkPump = new UplinkPump(_log, connectionId, localDataChannel, _dataChannel);
 
             _frameDispatcher.AddQueue(connectionId, localDataChannel);
 
+            _metrics.LocalEstablishedConnections.Increment();
+            
             uplinkPump.RunAsync().ContinueWith(OnUplinkPumpCompleted);
         }
 

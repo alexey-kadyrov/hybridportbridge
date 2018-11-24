@@ -20,9 +20,9 @@ namespace Resilience.IntegrationTests
     {
         // port mapping 5021 to 5011
         public const string ServiceBaseAddressForClientAgent = "http://localhost:5021";
-        public const string ServiceBaseAddress = "http://localhost:5011/";
+        private const string ServiceBaseAddress = "http://localhost:5011/";
 
-        public const string EntityPath = "ovc-cicd-relay-echo";
+        private const string EntityPath = "ovc-cicd-relay-echo";
 
         private const string ClientAgentName = "ClientAgent";
         private const string ServiceAgentName = "ServiceAgent";
