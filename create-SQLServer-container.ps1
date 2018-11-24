@@ -2,7 +2,7 @@ Param
 (
     [Parameter(Mandatory=$False)] [string] $ResourceGroupName = "docalabs.hybridportbridge.cicd",
     [Parameter(Mandatory=$False)] [string] $Name = "test-sql",
-    [Parameter(Mandatory=$False)] [string] $Image = "microsoft/mssql-server-linux:2017-CU12"
+    [Parameter(Mandatory=$False)] [string] $Image = "mcr.microsoft.com/mssql/server:2017-latest"
 )
 
 $DnsName = "$ResourceGroupName-$Name".Replace(".", "-")
