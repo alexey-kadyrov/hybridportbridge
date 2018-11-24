@@ -12,4 +12,4 @@ New-AzureRmContainerGroup -ResourceGroupName $ResourceGroupName -Name $Name -Ima
  -OsType Linux `
  -IpAddressType Public `
  -EnvironmentVariable @{"POSTGRES_PASSWORD"="password"} `
- -Port @(5432; 5432)
+ -Port @(5432)

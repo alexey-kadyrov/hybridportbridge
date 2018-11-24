@@ -12,4 +12,4 @@ New-AzureRmContainerGroup -ResourceGroupName $ResourceGroupName -Name $Name -Ima
  -OsType Linux `
  -IpAddressType Public `
  -EnvironmentVariable @{"SA_PASSWORD"="MyEdition2017!";"ACCEPT_EULA"="Y"} `
- -Port @(14333; 1433)
+ -Port @(1433)
