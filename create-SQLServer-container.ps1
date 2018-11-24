@@ -5,7 +5,7 @@ Param
     [Parameter(Mandatory=$False)] [string] $Image = "microsoft/mssql-server-linux:2017-CU12"
 )
 
-$DnsName = "$ResourceGroupName-$Name"
+$DnsName = "$ResourceGroupName-$Name".Replace(".", "-")
 
 New-AzureRmContainerGroup -ResourceGroupName $ResourceGroupName -Name $Name -Image $Image `
  -DnsNameLabel $DnsName `

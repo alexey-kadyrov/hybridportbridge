@@ -5,7 +5,7 @@ Param
     [Parameter(Mandatory=$False)] [string] $Image = "postgres:11.1-alpine"
 )
 
-$DnsName = "$ResourceGroupName-$Name"
+$DnsName = "$ResourceGroupName-$Name".Replace(".", "-")
 
 New-AzureRmContainerGroup -ResourceGroupName $ResourceGroupName -Name $Name -Image $Image `
  -DnsNameLabel $DnsName `
