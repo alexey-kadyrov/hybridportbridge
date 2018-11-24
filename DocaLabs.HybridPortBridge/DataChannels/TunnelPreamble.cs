@@ -6,7 +6,8 @@ namespace DocaLabs.HybridPortBridge.DataChannels
 {
     public sealed class TunnelPreamble
     {
-        // the last 16 bits are reserved for a future use as a length of the rest of the preamble's data
+        // the first 16 bits are reserved for future flags and the last 16 bits are reserved for a future use
+        // as a length of the rest of the preamble's data
         private const int ByteSize = sizeof(ushort) + sizeof(int) + sizeof(ushort);
 
         public int ConfigurationKey { get; }

@@ -36,15 +36,15 @@ namespace Http.Simple.IntegrationTests.Tests
 
             _results = new []
             {
-                Do("Post-1", 2000, i => Post(i, _client1)),
-                Do("Get-1", 2000, i => Get(_client1)),
-                Do("Post-2", 2000, i => Post(i, _client2)),
-                Do("Get-2", 2000, i => Get(_client2)),
-                Do("Post-with-client-cert", 2000, i => Post(i, _clientWithCert)),
-                Do("Get-with-client-cert", 2000, i => Get(_clientWithCert)),
-                Do("Mix-1", 1000, i => Mix(i, _client1)),
-                Do("Mix-2", 1000, i => Mix(i, _client2)),
-                Do("Mix-with-client-cert", 1000, i => Mix(i, _clientWithCert)),
+                Do("Post-1", 2500, i => Post(i, _client1)),
+                Do("Get-1", 2500, i => Get(_client1)),
+                Do("Post-2", 2500, i => Post(i, _client2)),
+                Do("Get-2", 2500, i => Get(_client2)),
+                Do("Post-with-client-cert", 2500, i => Post(i, _clientWithCert)),
+                Do("Get-with-client-cert", 2500, i => Get(_clientWithCert)),
+                Do("Mix-1", 2500, i => Mix(i, _client1)),
+                Do("Mix-2", 2500, i => Mix(i, _client2)),
+                Do("Mix-with-client-cert", 2500, i => Mix(i, _clientWithCert)),
 
                 // be conservative here in order not to exhaust the socket connections
                 Do("IndividualMix-1", 50, IndividualMix),

@@ -44,21 +44,8 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             if(_stopped)
                 return;
             
-            FrameQueue queue;
-
-            if (_correlateLocalWriter == null)
-            {
-                if (!_queues.TryGetValue(frame.ConnectionId, out queue))
-                {
-                    _log.Warning("CorrelationId: {correlationId}. There is no local writer for the frame");
-                    return;
-                }
-            }
-            else
-            {
-                queue = _queues.GetOrAdd(frame.ConnectionId,
-                    k => new FrameQueue(_log, _correlateLocalWriter(frame.ConnectionId).GetAwaiter().GetResult(), CompleteLocalWriter));
-            }
+            var queue = _queues.GetOrAdd(frame.ConnectionId,
+                k => new FrameQueue(_log, _correlateLocalWriter(frame.ConnectionId).GetAwaiter().GetResult(), CompleteLocalWriter));
 
             queue.ProcessAsync(frame);
         }
