@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using App.Metrics;
 using DocaLabs.HybridPortBridge.ClientAgent.Config;
 using DocaLabs.HybridPortBridge.Config;
 using DocaLabs.HybridPortBridge.Metrics;
@@ -9,9 +8,9 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
 {
     internal sealed class RelayTunnelFactory
     {
+        private readonly ILogger _log;
         private readonly ServiceNamespaceOptions _serviceNamespace;
         private readonly PortMappingOptions _portMappings;
-        private readonly ILogger _log;
         private readonly object _poolLocker;
         private readonly RelayTunnel[] _tunnels;
         private readonly TunnelMetrics _metrics;

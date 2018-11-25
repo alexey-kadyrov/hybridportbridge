@@ -21,7 +21,6 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
         private readonly HybridConnectionListener _relayListener;
         private readonly RelayMetadata _metadata;
         private readonly RelayTunnelFactory _tunnelFactory;
-        private readonly ConcurrentDictionary<object, RelayTunnel> _tunnels;
 
         private ServiceForwarder(ILogger logger, MetricsRegistry registry, int forwarderIdx, HybridConnectionListener listener, RelayMetadata metadata, string entityPath)
         {
@@ -31,13 +30,11 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             _relayListener = listener;
             _metadata = metadata;
 
-            _tunnels = new ConcurrentDictionary<object, RelayTunnel>();
+            var tags = new MetricTags(nameof(entityPath), entityPath);
 
-            var metricTags = new MetricTags(new[] { nameof(entityPath) }, new[] { entityPath });
-
-            var metrics = new TunnelMetrics(registry, metricTags);
+            var metrics = new TunnelMetrics(registry, tags);
             
-            _tunnelFactory = new RelayTunnelFactory(logger, metrics, OnTunnelCompleted);
+            _tunnelFactory = new RelayTunnelFactory(logger, metrics);
         }
 
         public static async Task<ServiceForwarder> Create(ILogger logger, MetricsRegistry metricsRegistry, ServiceNamespaceOptions serviceNamespace, string entityPath)
@@ -76,7 +73,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
         {
             _log.Information("Relay: {idx}:{relay}. Closing relay listener connection", _forwarderIdx, _relayListener.Address);
 
-            _tunnels.DisposeAndClear();
+            _tunnelFactory.Dispose();
 
             _relayListener.CloseAsync(CancellationToken.None).GetAwaiter().GetResult();
         }
@@ -121,17 +118,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
         {
             var tunnel = _tunnelFactory.Create(stream, localFactory);
 
-            _tunnels[tunnel] = tunnel;
-
             tunnel.Start();
-        }
-
-        private Task OnTunnelCompleted(RelayTunnel tunnel)
-        {
-            if (_tunnels.TryRemove(tunnel, out _))
-                tunnel.IgnoreException(x => x.Dispose());
-
-            return Task.CompletedTask;
         }
 
         private void CloseRelayStream(Stream stream, string reason)

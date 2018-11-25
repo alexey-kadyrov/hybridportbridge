@@ -7,20 +7,20 @@ using Serilog;
 
 namespace DocaLabs.HybridPortBridge.DataChannels
 {
-    public delegate Task<ILocalDataChannelWriter> CorrelateLocalWriter(ConnectionId id);
+    public delegate Task<ILocalDataChannelWriter> LocalWriterFactory(ConnectionId id);
     public delegate void CompleteLocalWriter(ConnectionId id);
 
     public sealed class FrameDispatcher : IDisposable
     {
         private readonly ILogger _log;
-        private readonly CorrelateLocalWriter _correlateLocalWriter;
+        private readonly LocalWriterFactory _localWriterFactory;
         private readonly ConcurrentDictionary<ConnectionId, FrameQueue> _queues;
         private bool _stopped;
 
-        public FrameDispatcher(ILogger logger, CorrelateLocalWriter correlateLocalWriter)
+        public FrameDispatcher(ILogger logger, LocalWriterFactory localWriterFactory)
             : this(logger)
         {
-            _correlateLocalWriter = correlateLocalWriter;
+            _localWriterFactory = localWriterFactory;
         }
 
         public FrameDispatcher(ILogger logger)
@@ -45,7 +45,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
                 return;
             
             var queue = _queues.GetOrAdd(frame.ConnectionId,
-                k => new FrameQueue(_log, _correlateLocalWriter(frame.ConnectionId).GetAwaiter().GetResult(), CompleteLocalWriter));
+                k => new FrameQueue(_log, _localWriterFactory(frame.ConnectionId).GetAwaiter().GetResult(), CompleteLocalWriter));
 
             queue.ProcessAsync(frame);
         }

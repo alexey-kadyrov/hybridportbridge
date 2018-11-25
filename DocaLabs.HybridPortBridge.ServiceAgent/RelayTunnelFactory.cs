@@ -1,25 +1,45 @@
-﻿using DocaLabs.HybridPortBridge.Metrics;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using DocaLabs.HybridPortBridge.Metrics;
 using Microsoft.Azure.Relay;
 using Serilog;
 
 namespace DocaLabs.HybridPortBridge.ServiceAgent
 {
-    internal sealed class RelayTunnelFactory
+    internal sealed class RelayTunnelFactory : IDisposable
     {
         private readonly ILogger _log;
-        private readonly TunnelCompleted _tunnelCompleted;
         private readonly TunnelMetrics _metrics;
+        private readonly ConcurrentDictionary<object, RelayTunnel> _tunnels;
 
-        public RelayTunnelFactory(ILogger logger, TunnelMetrics metrics, TunnelCompleted tunnelCompleted)
+        public RelayTunnelFactory(ILogger logger, TunnelMetrics metrics)
         {
             _log = logger.ForContext(GetType());
             _metrics = metrics;
-            _tunnelCompleted = tunnelCompleted;
+            _tunnels = new ConcurrentDictionary<object, RelayTunnel>();
         }
 
         public RelayTunnel Create(HybridConnectionStream stream, ILocalDataChannelFactory localFactory)
         {
-            return new RelayTunnel(_log, _metrics, stream, localFactory, _tunnelCompleted);
+            var tunnel = new RelayTunnel(_log, _metrics, stream, localFactory, OnTunnelCompleted);
+
+            _tunnels[tunnel] = tunnel;
+
+            return tunnel;
+        }
+
+        private Task OnTunnelCompleted(RelayTunnel tunnel)
+        {
+            if (_tunnels.TryRemove(tunnel, out _))
+                tunnel.IgnoreException(x => x.Dispose());
+
+            return Task.CompletedTask;
+        }
+
+        public void Dispose()
+        {
+            _tunnels.DisposeAndClear();
         }
     }
 }

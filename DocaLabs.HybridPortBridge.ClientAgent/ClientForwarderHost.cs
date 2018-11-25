@@ -10,12 +10,12 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
 {
     public class ClientForwarderHost : IForwarder
     {
-        private readonly MetricsRegistry _metricsRegistry;
+        private readonly MetricsRegistry _metrics;
         private readonly IReadOnlyCollection<IForwarder> _forwarders;
 
-        private ClientForwarderHost(MetricsRegistry metricsRegistry, IReadOnlyCollection<IForwarder> forwarders)
+        private ClientForwarderHost(MetricsRegistry metrics, IReadOnlyCollection<IForwarder> forwarders)
         {
-            _metricsRegistry = metricsRegistry;
+            _metrics = metrics;
             _forwarders = forwarders;
         }
 
@@ -30,11 +30,11 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
         {
             var options = configuration.GetSection("PortBridge").Get<ClientAgentOptions>();
 
-            var loggerFactory = LoggerBuilder.Initialize(configuration);
+            var logger = LoggerBuilder.Initialize(configuration);
 
             var metricsRegistry = MetricsRegistry.CreateRoot(configuration);
 
-            var forwarders = BuildPortForwarders(loggerFactory, metricsRegistry, options);
+            var forwarders = BuildPortForwarders(logger, metricsRegistry, options);
 
             return new ClientForwarderHost(metricsRegistry, forwarders);
         }
@@ -54,10 +54,10 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
                 forwarder.Stop();
             }
 
-            _metricsRegistry.Dispose();
+            _metrics.Dispose();
         }
 
-        private static IReadOnlyCollection<IForwarder> BuildPortForwarders(ILogger loggerFactory, MetricsRegistry metricsRegistry, ClientAgentOptions options)
+        private static IReadOnlyCollection<IForwarder> BuildPortForwarders(ILogger logger, MetricsRegistry metrics, ClientAgentOptions options)
         {
             var forwarders = new List<IForwarder>();
 
@@ -66,7 +66,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
                 if (!int.TryParse(mapping.Key, out var port))
                     throw new ConfigurationErrorException($"Invalid {mapping.Key} port number");
 
-                forwarders.Add(new TcpClientConnectionForwarder(loggerFactory, metricsRegistry, options.ServiceNamespace, port, mapping.Value));
+                forwarders.Add(new ClientTcpForwarder(logger, metrics, options.ServiceNamespace, port, mapping.Value));
             }
 
             return forwarders;

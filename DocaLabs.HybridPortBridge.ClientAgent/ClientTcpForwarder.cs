@@ -11,7 +11,7 @@ using Serilog;
 
 namespace DocaLabs.HybridPortBridge.ClientAgent
 {
-    public sealed class TcpClientConnectionForwarder : IDisposable, IForwarder
+    public sealed class ClientTcpForwarder : IDisposable, IForwarder
     {
         private readonly ILogger _log;
         private readonly int _fromPort;
@@ -20,7 +20,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
         private readonly RelayTunnelFactory _relayFactory;
         private TcpListener _endpointListener;
 
-        public TcpClientConnectionForwarder(ILogger logger, MetricsRegistry registry, ServiceNamespaceOptions serviceNamespace, int fromPort, PortMappingOptions portMappings)
+        public ClientTcpForwarder(ILogger logger, MetricsRegistry registry, ServiceNamespaceOptions serviceNamespace, int fromPort, PortMappingOptions portMappings)
         {
             _log = logger.ForContext(GetType());
             _firewallRules = new FirewallRules(portMappings);

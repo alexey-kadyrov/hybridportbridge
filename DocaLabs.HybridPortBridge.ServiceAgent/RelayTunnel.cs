@@ -28,7 +28,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             _uplinkPumps = new ConcurrentDictionary<object, UplinkPump>();
             _localDataChannelFactory = localFactory;
             _tunnelCompleted = tunnelCompleted;
-            _frameDispatcher = new FrameDispatcher(_log, CorrelateLocalDataChannel);
+            _frameDispatcher = new FrameDispatcher(_log, CreateLocalDataChannel);
             _metrics = metrics;
             
             _relayDataChannel = new RemoteRelayDataChannel(logger, metrics.Remote, relayStream);
@@ -38,12 +38,21 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
         public void Dispose()
         {
-            _uplinkPumps.DisposeAndClear();
-
-            CloseDataChannel();
+            try
+            {
+                _log.Information("Closing the data channel");
+                _frameDispatcher.Dispose();
+                _uplinkPumps.DisposeAndClear();
+                _downlinkPump?.Stop();
+                _downlinkPump.IgnoreException(x => x.Dispose());
+            }
+            catch
+            {
+                // intentional
+            }
         }
 
-        private async Task<ILocalDataChannelWriter> CorrelateLocalDataChannel(ConnectionId connectionId)
+        private async Task<ILocalDataChannelWriter> CreateLocalDataChannel(ConnectionId connectionId)
         {
             var localDataChannel = await _localDataChannelFactory.Create(_log, _metrics.Local, connectionId);
 
@@ -80,22 +89,6 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
                 uplinkPump.IgnoreException(x => x.Dispose());
             
             _frameDispatcher.RemoveQueue(uplinkPump.ConnectionId);
-        }
-
-        private void CloseDataChannel()
-        {
-            try
-            {
-                _log.Information("Closing the data channel");
-
-                _frameDispatcher.Drain();
-                _downlinkPump?.Stop();
-                _downlinkPump.IgnoreException(x => x.Dispose());
-            }
-            catch
-            {
-                // intentional
-            }
         }
     }
 }
