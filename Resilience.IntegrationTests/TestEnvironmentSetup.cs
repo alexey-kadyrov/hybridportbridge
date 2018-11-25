@@ -29,7 +29,7 @@ namespace Resilience.IntegrationTests
 
         private static readonly string[] ServiceAgentArgs = QaDefaults
             .GetSerilogConfigurationArgs(ServiceAgentName, QaDefaults.MakeDefaultLogPath(ServiceAgentName))
-            .MergeRange(new
+            .MergeConfigurationArgs(new
             {
                 AgentMetrics = new AgentMetricsOptions
                 {
@@ -49,8 +49,8 @@ namespace Resilience.IntegrationTests
                         ReportFile = Path.Combine(AppContext.BaseDirectory, "metrics-service.txt")
                     }
                 }
-            }.ToConfigurationArgs())
-            .MergeRange(new
+            })
+            .MergeConfigurationArgs(new
             {
                 PortBridge = new ServiceAgentOptions
                 {
@@ -59,12 +59,11 @@ namespace Resilience.IntegrationTests
                         EntityPath
                     }
                 }
-            }
-            .ToConfigurationArgs());
+            });
 
         private static readonly string[] ClientAgentArgs = QaDefaults
             .GetSerilogConfigurationArgs(ClientAgentName, QaDefaults.MakeDefaultLogPath(ClientAgentName))
-            .MergeRange(new
+            .MergeConfigurationArgs(new
             {
                 AgentMetrics = new AgentMetricsOptions
                 {
@@ -84,8 +83,8 @@ namespace Resilience.IntegrationTests
                         ReportFile = Path.Combine(AppContext.BaseDirectory, "metrics-client.txt")
                     }
                 }
-            }.ToConfigurationArgs())
-            .MergeRange(new
+            })
+            .MergeConfigurationArgs(new
             {
                 PortBridge = new ClientAgentOptions
                 {
@@ -104,8 +103,7 @@ namespace Resilience.IntegrationTests
                         }
                     }
                 }
-            }
-            .ToConfigurationArgs());
+            });
 
 
         private IWebHost _serviceHost;

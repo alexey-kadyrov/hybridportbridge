@@ -15,6 +15,7 @@ namespace DocaLabs.Qa
 
             return result;
         }
+        
         public static string[] ToConfigurationArgs(this string input)
         {
             return JsonQaConfigurationParser.Parse(input).ToConfigurationArgs();
@@ -25,6 +26,11 @@ namespace DocaLabs.Qa
             return JsonQaConfigurationParser.Parse(input).ToConfigurationArgs();
         }
 
+        public static string[] MergeConfigurationArgs(this string[] args, object input)
+        {
+            return args.MergeRange(JsonQaConfigurationParser.Parse(input).ToConfigurationArgs());
+        }
+        
         public static T[] MergeRange<T>(this T[] source, ICollection<T> values)
         {
             var result = new List<T>(source);

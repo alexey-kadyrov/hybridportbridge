@@ -5,7 +5,7 @@ Param
     [Parameter(Mandatory=$False)] [string] $Image = "mcr.microsoft.com/mssql/server:2017-latest"
 )
 
-$DnsName = "$ResourceGroupName-$Name".Replace(".", "-")
+$DnsName = "docalabs-portbridge-sqlserver"
 
 New-AzureRmContainerGroup -ResourceGroupName $ResourceGroupName -Name $Name -Image $Image `
  -DnsNameLabel $DnsName `

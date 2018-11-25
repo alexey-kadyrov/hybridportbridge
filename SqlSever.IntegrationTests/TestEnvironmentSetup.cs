@@ -19,7 +19,7 @@ namespace SqlSever.IntegrationTests
 
         private static readonly string[] ServiceAgentArgs = QaDefaults
             .GetSerilogConfigurationArgs(ServiceAgentName, QaDefaults.MakeDefaultLogPath(ServiceAgentName))
-            .MergeRange(new
+            .MergeConfigurationArgs(new
             {
                 AgentMetrics = new AgentMetricsOptions
                 {
@@ -39,8 +39,8 @@ namespace SqlSever.IntegrationTests
                         ReportFile = Path.Combine(AppContext.BaseDirectory, "metrics-service.txt")
                     }
                 }
-            }.ToConfigurationArgs())
-            .MergeRange(new
+            })
+            .MergeConfigurationArgs(new
             {
                 PortBridge = new ServiceAgentOptions
                 {
@@ -49,12 +49,11 @@ namespace SqlSever.IntegrationTests
                         EntityPath
                     }
                 }
-            }
-            .ToConfigurationArgs());
+            });
 
         private static readonly string[] ClientAgentArgs = QaDefaults
             .GetSerilogConfigurationArgs(ClientAgentName, QaDefaults.MakeDefaultLogPath(ClientAgentName))
-            .MergeRange(new
+            .MergeConfigurationArgs(new
             {
                 AgentMetrics = new AgentMetricsOptions
                 {
@@ -74,8 +73,8 @@ namespace SqlSever.IntegrationTests
                         ReportFile = Path.Combine(AppContext.BaseDirectory, "metrics-client.txt")
                     }
                 }
-            }.ToConfigurationArgs())
-            .MergeRange(new
+            })
+            .MergeConfigurationArgs(new
             {
                 PortBridge = new ClientAgentOptions
                 {
@@ -85,7 +84,7 @@ namespace SqlSever.IntegrationTests
                             "14334", new PortMappingOptions
                             {
                                 EntityPath = EntityPath,
-                                RemoteConfigurationKey = 1433,
+                                RemoteConfigurationKey = 14333,
                                 AcceptFromIpAddresses =
                                 {
                                     "0.0.0.0-255.255.255.255"
@@ -94,8 +93,7 @@ namespace SqlSever.IntegrationTests
                         }
                     }
                 }
-            }
-            .ToConfigurationArgs());
+            });
 
 
         private ConsoleAgentHost _serviceConsoleAgent;
