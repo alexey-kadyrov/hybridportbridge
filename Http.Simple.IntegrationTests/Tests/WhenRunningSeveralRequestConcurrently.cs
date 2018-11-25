@@ -61,7 +61,7 @@ namespace Http.Simple.IntegrationTests.Tests
         [Then]
         public void Is_should_complete_all_requests_successfully()
         {
-            Console.WriteLine(string.Join(Environment.NewLine, _results.Select(t => t.Result)));
+            TestContext.WriteLine(string.Join(Environment.NewLine, _results.Select(t => t.Result)));
 
             var total = _results.Sum(t => t.Result.TotalIterations);
             var failed = _results.Sum(t => t.Result.FailedIterations);

@@ -115,7 +115,7 @@ namespace Resilience.IntegrationTests
         {
             try
             {
-                Console.WriteLine("Setting up test environment...");
+                TestContext.WriteLine("Setting up test environment...");
 
                 ServiceLocator.Initialize((services, configuration) =>
                 {
@@ -126,7 +126,7 @@ namespace Resilience.IntegrationTests
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TestContext.WriteLine(e);
                 throw;
             }
         }
@@ -134,7 +134,7 @@ namespace Resilience.IntegrationTests
         [OneTimeTearDown]
         public async Task Cleanup()
         {
-            Console.WriteLine("Cleaning up test environment...");
+            TestContext.WriteLine("Cleaning up test environment...");
 
             StopClientAgent();
 
@@ -156,7 +156,7 @@ namespace Resilience.IntegrationTests
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TestContext.WriteLine(e);
             }
         }
 
@@ -183,7 +183,7 @@ namespace Resilience.IntegrationTests
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TestContext.WriteLine(e);
             }
         }
 
@@ -195,7 +195,7 @@ namespace Resilience.IntegrationTests
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TestContext.WriteLine(e);
             }
         }
 
@@ -207,7 +207,7 @@ namespace Resilience.IntegrationTests
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TestContext.WriteLine(e);
             }
         }
     }

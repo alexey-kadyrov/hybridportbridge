@@ -104,7 +104,7 @@ namespace SqlSever.IntegrationTests
         {
             try
             {
-                Console.WriteLine("Setting up test environment...");
+                TestContext.WriteLine("Setting up test environment...");
     
                 StartServiceAgent();
     
@@ -114,7 +114,7 @@ namespace SqlSever.IntegrationTests
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TestContext.WriteLine(e);
                 throw;
             }
         }
@@ -122,7 +122,7 @@ namespace SqlSever.IntegrationTests
         [OneTimeTearDown]
         public void Cleanup()
         {
-            Console.WriteLine("Cleaning up test environment...");
+            TestContext.WriteLine("Cleaning up test environment...");
 
             StopClientAgent();
 
@@ -151,7 +151,7 @@ namespace SqlSever.IntegrationTests
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TestContext.WriteLine(e);
             }
         }
 
@@ -163,7 +163,7 @@ namespace SqlSever.IntegrationTests
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TestContext.WriteLine(e);
             }
         }
     }

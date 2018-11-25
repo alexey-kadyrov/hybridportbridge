@@ -76,7 +76,7 @@ namespace SqlSever.IntegrationTests.Tests
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    TestContext.WriteLine(e);
                     throw;
                 }
             }
@@ -91,7 +91,7 @@ namespace SqlSever.IntegrationTests.Tests
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    TestContext.WriteLine(e);
                     throw;
                 }
             }

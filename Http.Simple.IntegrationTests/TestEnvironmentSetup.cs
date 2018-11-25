@@ -153,7 +153,7 @@ namespace Http.Simple.IntegrationTests
         {
             try
             {
-                Console.WriteLine("Setting up test environment...");
+                TestContext.WriteLine("Setting up test environment...");
     
                 ServicePointManager.FindServicePoint(ServiceRequiringClientCertificateBaseAddressForClientAgent, null).ConnectionLeaseTimeout = (int)TimeSpan.FromSeconds(5).TotalMilliseconds;
                 ServicePointManager.FindServicePoint(ServiceBaseAddressForClientAgent, null).ConnectionLeaseTimeout = (int)TimeSpan.FromSeconds(5).TotalMilliseconds;
@@ -170,7 +170,7 @@ namespace Http.Simple.IntegrationTests
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TestContext.WriteLine(e);
                 throw;
             }
         }
@@ -178,7 +178,7 @@ namespace Http.Simple.IntegrationTests
         [OneTimeTearDown]
         public async Task Cleanup()
         {
-            Console.WriteLine("Cleaning up test environment...");
+            TestContext.WriteLine("Cleaning up test environment...");
 
             StopClientAgent();
 
@@ -214,7 +214,7 @@ namespace Http.Simple.IntegrationTests
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TestContext.WriteLine(e);
             }
         }
 
@@ -232,7 +232,7 @@ namespace Http.Simple.IntegrationTests
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TestContext.WriteLine(e);
             }
         }
 
@@ -272,7 +272,7 @@ namespace Http.Simple.IntegrationTests
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TestContext.WriteLine(e);
             }
         }
 
@@ -284,7 +284,7 @@ namespace Http.Simple.IntegrationTests
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TestContext.WriteLine(e);
             }
         }
 
@@ -299,7 +299,7 @@ namespace Http.Simple.IntegrationTests
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TestContext.WriteLine(e);
             }
         }
 
@@ -314,7 +314,7 @@ namespace Http.Simple.IntegrationTests
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TestContext.WriteLine(e);
             }
         }
     }

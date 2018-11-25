@@ -105,7 +105,7 @@ namespace PostgreSQL.IntegrationTests
         {
             try
             {
-                Console.WriteLine("Setting up test environment...");
+                TestContext.WriteLine("Setting up test environment...");
     
                 StartServiceAgent();
     
@@ -115,7 +115,7 @@ namespace PostgreSQL.IntegrationTests
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TestContext.WriteLine(e);
                 throw;
             }
         }
@@ -123,7 +123,7 @@ namespace PostgreSQL.IntegrationTests
         [OneTimeTearDown]
         public void Cleanup()
         {
-            Console.WriteLine("Cleaning up test environment...");
+            TestContext.WriteLine("Cleaning up test environment...");
 
             StopClientAgent();
 
@@ -152,7 +152,7 @@ namespace PostgreSQL.IntegrationTests
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TestContext.WriteLine(e);
             }
         }
 
@@ -164,7 +164,7 @@ namespace PostgreSQL.IntegrationTests
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TestContext.WriteLine(e);
             }
         }
     }
