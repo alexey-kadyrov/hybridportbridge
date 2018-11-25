@@ -11,29 +11,31 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 {
     public class ServiceForwarderHost : IForwarder
     {
-        private readonly MetricsRegistry _metricsRegistry;
+        public const string DefaultConfigurationSectionName = "PortBridge";
+        
+        private readonly MetricsRegistry _metrics;
         private readonly IReadOnlyCollection<ServiceForwarder> _forwarders;
 
-        private ServiceForwarderHost(MetricsRegistry metricsRegistry, IReadOnlyCollection<ServiceForwarder> forwarders)
+        private ServiceForwarderHost(MetricsRegistry metrics, IReadOnlyCollection<ServiceForwarder> forwarders)
         {
-            _metricsRegistry = metricsRegistry;
+            _metrics = metrics;
             _forwarders = forwarders;
         }
 
-        public static ConsoleAgentHost Build(string[] args)
+        public static ConsoleAgentHost Build(string[] args, string sectionName = null)
         {
             var configuration = args.BuildConfiguration();
 
-            var forwarderHost = Create(configuration)
+            var forwarderHost = Create(configuration, sectionName)
                 .GetAwaiter()
                 .GetResult();
 
             return new ConsoleAgentHost(forwarderHost);
         }
 
-        public static async Task<IForwarder> Create(IConfiguration configuration)
+        public static async Task<IForwarder> Create(IConfiguration configuration, string sectionName = null)
         {
-            var options = configuration.GetSection("PortBridge").Get<ServiceAgentOptions>();
+            var options = configuration.GetSection(sectionName ?? DefaultConfigurationSectionName).Get<ServiceAgentOptions>();
 
             var logger = LoggerBuilder.Initialize(configuration);
 
@@ -59,16 +61,16 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
                 forwarder.Stop();
             }
 
-            _metricsRegistry.Dispose();
+            _metrics.Dispose();
         }
 
-        private static async Task<IReadOnlyCollection<ServiceForwarder>> BuildServiceForwarders(ILogger logger, MetricsRegistry metricsRegistry, ServiceAgentOptions options)
+        private static async Task<IReadOnlyCollection<ServiceForwarder>> BuildServiceForwarders(ILogger logger, MetricsRegistry metrics, ServiceAgentOptions options)
         {
             var forwarders = new List<ServiceForwarder>();
 
             foreach (var entityPath in options.EntityPaths)
             {
-                forwarders.Add(await ServiceForwarder.Create(logger, metricsRegistry, options.ServiceNamespace, entityPath));
+                forwarders.Add(await ServiceForwarder.Create(logger, metrics, options.ServiceNamespace, entityPath));
             }
 
             return forwarders;

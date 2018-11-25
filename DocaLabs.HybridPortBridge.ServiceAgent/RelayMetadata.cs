@@ -70,7 +70,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             if(!int.TryParse(parts[2], out var port))
                 throw new ConfigurationErrorException($"Wrong port format {parts[2]} for the endpoint {endpoint} value in the {listenerAddress} relay user metadata");
 
-            return new TcpLocalDataChannelFactory(new MetricTags(nameof(configurationKey), configurationKey.ToString()),  parts[1], port);
+            return new LocalTcpDataChannelFactory(new MetricTags(nameof(configurationKey), configurationKey.ToString()),  parts[1], port);
         }
     }
 }

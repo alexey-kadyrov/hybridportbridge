@@ -7,13 +7,13 @@ using Serilog;
 
 namespace DocaLabs.HybridPortBridge.ServiceAgent
 {
-    public class TcpLocalDataChannelFactory : ILocalDataChannelFactory
+    public class LocalTcpDataChannelFactory : ILocalDataChannelFactory
     {
         private readonly MetricTags _tags;
         private readonly string _host;
         private readonly int _port;
 
-        public TcpLocalDataChannelFactory(MetricTags tags, string host, int port)
+        public LocalTcpDataChannelFactory(MetricTags tags, string host, int port)
         {
             _tags = tags;
             _host = host;
