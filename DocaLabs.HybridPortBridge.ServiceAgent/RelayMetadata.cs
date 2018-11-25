@@ -19,7 +19,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             _channelFactories = channelFactories;
         }
 
-        public ILocalDataChannelFactory GetDataChannelFactory(int configurationKey)
+        public ILocalDataChannelFactory GetLocalDataChannelFactory(int configurationKey)
         {
             return _channelFactories.TryGetValue(configurationKey, out var factory)
                 ? factory

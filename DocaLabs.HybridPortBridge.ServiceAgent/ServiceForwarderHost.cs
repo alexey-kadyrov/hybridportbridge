@@ -12,9 +12,9 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
     public class ServiceForwarderHost : IForwarder
     {
         private readonly MetricsRegistry _metricsRegistry;
-        private readonly IReadOnlyCollection<ServiceConnectionForwarder> _forwarders;
+        private readonly IReadOnlyCollection<ServiceForwarder> _forwarders;
 
-        private ServiceForwarderHost(MetricsRegistry metricsRegistry, IReadOnlyCollection<ServiceConnectionForwarder> forwarders)
+        private ServiceForwarderHost(MetricsRegistry metricsRegistry, IReadOnlyCollection<ServiceForwarder> forwarders)
         {
             _metricsRegistry = metricsRegistry;
             _forwarders = forwarders;
@@ -62,13 +62,13 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             _metricsRegistry.Dispose();
         }
 
-        private static async Task<IReadOnlyCollection<ServiceConnectionForwarder>> BuildServiceForwarders(ILogger logger, MetricsRegistry metricsRegistry, ServiceAgentOptions options)
+        private static async Task<IReadOnlyCollection<ServiceForwarder>> BuildServiceForwarders(ILogger logger, MetricsRegistry metricsRegistry, ServiceAgentOptions options)
         {
-            var forwarders = new List<ServiceConnectionForwarder>();
+            var forwarders = new List<ServiceForwarder>();
 
             foreach (var entityPath in options.EntityPaths)
             {
-                forwarders.Add(await ServiceConnectionForwarder.Create(logger, metricsRegistry, options.ServiceNamespace, entityPath));
+                forwarders.Add(await ServiceForwarder.Create(logger, metricsRegistry, options.ServiceNamespace, entityPath));
             }
 
             return forwarders;
