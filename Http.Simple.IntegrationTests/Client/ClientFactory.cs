@@ -7,6 +7,17 @@ namespace Http.Simple.IntegrationTests.Client
 {
     internal static class ClientFactory
     {
+        public static IService CreateFailingRequest()
+        {
+            var baseAddress = new Uri(TestEnvironmentSetup.FailingServiceBaseAddress);
+
+            // Ensure that each test gets it's own http client as their setting vary between tests
+            return RestService.For<IService>(new HttpClient
+            {
+                BaseAddress = baseAddress
+            });
+        }
+
         public static IService CreateRequest()
         {
             var baseAddress = new Uri(TestEnvironmentSetup.ServiceBaseAddressForClientAgent);

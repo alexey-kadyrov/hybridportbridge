@@ -25,9 +25,11 @@ namespace Http.Simple.IntegrationTests
         private const int ServiceRequiringClientCertificatePort = 5010;
 
         // port mapping 5021 to 5011
+        public const string FailingServiceBaseAddress = "http://localhost:5022";
         public const string ServiceBaseAddressForClientAgent = "http://localhost:5021";
         private const string ServiceBaseAddress = "http://localhost:5011/";
         private const int ServicePort = 5011;
+        private const int FailingServicePort = 5012;
 
         private const string EntityPath = "simple";
         private const string EntityPathRequiringClientCertificate = "client-cert";
@@ -132,7 +134,19 @@ namespace Http.Simple.IntegrationTests
                                 }
                             }
                         }
-                    }
+                        ,
+                        {
+                            "5022", new PortMappingOptions
+                            {
+                                EntityPath = EntityPath,
+                                RemoteConfigurationKey = FailingServicePort,
+                                RelayConnectionTtlSeconds = 12,
+                                AcceptFromIpAddresses =
+                                {
+                                    "127.0.0.1"
+                                }
+                            }
+                        }                    }
                 }
             });
 
