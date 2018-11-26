@@ -15,6 +15,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
         private readonly TcpClient _endpoint;
         private readonly Stream _stream;
         private readonly byte[] _buffer;
+        private bool _disposed;
 
         public LocalTcpDataChannel(ILogger log, LocalDataChannelMetrics metrics, string instance, TcpClient endpoint)
         {
@@ -29,8 +30,13 @@ namespace DocaLabs.HybridPortBridge.DataChannels
 
         protected override void Dispose(bool disposing)
         {
-            if(disposing)
-                _endpoint.IgnoreException(x => x.Dispose());
+            if (!disposing)
+                return;
+
+            _log.Debug("Disposing local data channel {localTags}, was already disposed={wasDisposed}?", _metrics, _disposed);
+            _endpoint.IgnoreException(x => x.Dispose());
+
+            _disposed = true;
         }
 
         public override async Task WriteAsync(Frame frame)

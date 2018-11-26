@@ -15,6 +15,7 @@ namespace DocaLabs.HybridPortBridge.DataChannels
         private readonly RemoteDataChannelMetrics _metrics;
         private readonly SemaphoreSlim _writeLock;
         private readonly HybridConnectionStream _dataChannel;
+        private bool _disposed;
 
         public RemoteRelayDataChannel(ILogger logger, RemoteDataChannelMetrics metrics, HybridConnectionStream dataChannel)
         {
@@ -26,9 +27,13 @@ namespace DocaLabs.HybridPortBridge.DataChannels
 
         public void Dispose()
         {
+            _log.Debug("Disposing remote relay data channel {relayTags}, was already disposed={wasDisposed}?", _metrics, _disposed);
+
             _dataChannel.IgnoreException(x => x.Dispose());
 
             _writeLock.IgnoreException(x => x.Dispose());
+
+            _disposed = true;
         }
 
         public async Task<Frame> ReadAsync()

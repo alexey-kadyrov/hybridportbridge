@@ -27,7 +27,8 @@ namespace DocaLabs.HybridPortBridge.Metrics
          public TunnelMetrics(MetricsRegistry registry, MetricTags tags)
          {
              _tags = tags;
-             var metrics = registry.Merge(tags);
+
+             var metrics = registry.Merge(_tags);
              
              Local = new LocalDataChannelMetrics(metrics);
              Remote = new RemoteDataChannelMetrics(metrics);
