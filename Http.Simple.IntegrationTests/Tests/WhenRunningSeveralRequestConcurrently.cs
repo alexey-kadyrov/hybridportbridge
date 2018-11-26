@@ -48,7 +48,7 @@ namespace Http.Simple.IntegrationTests.Tests
                 Do("Mix-2", 2500, i => Mix(i, _client2)),
                 Do("Mix-with-client-cert", 2500, i => Mix(i, _clientWithCert)),
 
-                Do("Failing Requests", 2000, i => Fail(_failingClient)),
+                Do("Failing Requests", 500, i => Fail(_failingClient)),
 
                 // be conservative here in order not to exhaust the socket connections
                 Do("IndividualMix-1", 50, IndividualMix),
