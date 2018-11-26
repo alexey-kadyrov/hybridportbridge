@@ -34,7 +34,7 @@
       "AccessRuleKey": "LuEC/iWBITNz/V/dzqeG7iY+jg3Y1RemGUf/3FOgcIk="
     },
     "EntityPaths": [
-      "ovc-cicd-test-sql"
+      "sql"
     ]
   }
 }

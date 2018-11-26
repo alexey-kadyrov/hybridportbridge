@@ -22,7 +22,7 @@ namespace Resilience.IntegrationTests
         public const string ServiceBaseAddressForClientAgent = "http://localhost:5021";
         private const string ServiceBaseAddress = "http://localhost:5011/";
 
-        private const string EntityPath = "ovc-cicd-relay-echo";
+        private const string EntityPath = "simple";
 
         private const string ClientAgentName = "ClientAgent";
         private const string ServiceAgentName = "ServiceAgent";

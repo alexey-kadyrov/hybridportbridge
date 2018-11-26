@@ -13,7 +13,7 @@ namespace SqlSever.IntegrationTests
     [SetUpFixture]
     public class TestEnvironmentSetup
     {
-        private const string EntityPath = "ovc-cicd-test-sql";
+        private const string EntityPath = "sql";
         private const string ClientAgentName = "SQLServer.ClientAgent";
         private const string ServiceAgentName = "SQLServer.MySqlServiceAgent";
 
