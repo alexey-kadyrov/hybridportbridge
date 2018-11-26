@@ -34,6 +34,7 @@ Function PullRelayAccessKey {
     $Namespace = "docalabs-hybridportbridge-cicd"
 
     $Info = Get-AzureRmRelayKey -ResourceGroupName $ResourceGroupName -Namespace $Namespace -Name $Name
+    $PrimaryKey = $Info.PrimaryKey
 
     $variableName = "PortBridge:ServiceNamespace:ServiceNamespace"
     Write-Host "##vso[task.setvariable variable=$variableName;]docalabs-hybridportbridge-cicd.servicebus.windows.net"    
@@ -42,7 +43,7 @@ Function PullRelayAccessKey {
     Write-Host "##vso[task.setvariable variable=$variableName;]RootManageSharedAccessKey"    
 
     $variableName = "PortBridge:ServiceNamespace:AccessRuleKey"
-    Write-Host "##vso[task.setvariable variable=$variableName;]$Info.PrimaryKey"    
+    Write-Host "##vso[task.setvariable variable=$variableName;]$PrimaryKey"    
 }
 
 CreatePostgreSQL
