@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using App.Metrics;
 
 namespace DocaLabs.HybridPortBridge
 {
@@ -46,6 +48,33 @@ namespace DocaLabs.HybridPortBridge
                     // intentional
                 }
             }
+        }
+
+        public static string AsString(this MetricTags tags)
+        {
+            var keys = tags.Keys;
+            if (keys == null)
+                return "none";
+
+            var values = tags.Values;
+            if (values == null)
+                return "none";
+
+            var builder = new StringBuilder();
+
+            var length = keys.Length < values.Length
+                ? keys.Length
+                : values.Length;
+
+            for (var i = 0; i < length; ++i)
+            {
+                if (builder.Length > 0)
+                    builder.Append("; ");
+
+                builder.Append(keys[i]).Append("=").Append(values[i]);
+            }
+
+            return builder.ToString();
         }
 
         private static void DisposeItems<T>(this ICollection<T> items) where T : class, IDisposable

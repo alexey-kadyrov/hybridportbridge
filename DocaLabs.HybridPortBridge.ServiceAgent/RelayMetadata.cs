@@ -7,6 +7,7 @@ using App.Metrics;
 using DocaLabs.HybridPortBridge.Config;
 using Microsoft.Azure.Relay;
 using Newtonsoft.Json.Linq;
+using Serilog;
 
 namespace DocaLabs.HybridPortBridge.ServiceAgent
 {
@@ -26,7 +27,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
                 : null;
         }
 
-        public static async Task<RelayMetadata> Parse(HybridConnectionListener listener)
+        public static async Task<RelayMetadata> Parse(ILogger logger, HybridConnectionListener listener)
         {
             var info = await listener.GetRuntimeInformationAsync(default(CancellationToken));
 
@@ -42,7 +43,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
                     if(!int.TryParse(key, out var configurationKey))
                         continue;
 
-                    var factory = ParseEndpoint(configurationKey, item["value"].Value<string>(), listener.Address);
+                    var factory = ParseEndpoint(logger, configurationKey, item["value"].Value<string>(), listener.Address);
                     if (factory != null)
                         channelFactories[configurationKey] = factory;
                 }
@@ -58,7 +59,8 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             }
         }
 
-        private static ILocalDataChannelFactory ParseEndpoint(int configurationKey, string endpoint, Uri listenerAddress)
+        private static ILocalDataChannelFactory ParseEndpoint(ILogger logger, int configurationKey, string endpoint,
+            Uri listenerAddress)
         {
             var parts = endpoint.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length != 3)
@@ -70,7 +72,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             if(!int.TryParse(parts[2], out var port))
                 throw new ConfigurationErrorException($"Wrong port format {parts[2]} for the endpoint {endpoint} value in the {listenerAddress} relay user metadata");
 
-            return new LocalTcpDataChannelFactory(new MetricTags(nameof(configurationKey), configurationKey.ToString()),  parts[1], port);
+            return new LocalTcpDataChannelFactory(logger, new MetricTags(nameof(configurationKey), configurationKey.ToString()),  parts[1], port);
         }
     }
 }

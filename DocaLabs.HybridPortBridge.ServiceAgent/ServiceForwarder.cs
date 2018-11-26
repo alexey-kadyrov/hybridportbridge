@@ -47,7 +47,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
             var relayListener = new HybridConnectionListener(endpointVia, tokenProvider);
 
-            var metadata = await RelayMetadata.Parse(relayListener);
+            var metadata = await RelayMetadata.Parse(logger, relayListener);
 
             return new ServiceForwarder(logger, metricsRegistry, forwarderIdx, relayListener, metadata, entityPath);
         }

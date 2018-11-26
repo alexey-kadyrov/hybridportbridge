@@ -39,6 +39,8 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             {
                 await _stream.WriteAsync(frame.Buffer, 0, frame.Size);
 
+                _log.Verbose("ConnectId: {connectionId}. Written {frameSize}", frame.ConnectionId, frame.Size);
+
                 _metrics.FrameWritten(frame.Size);
             }
             catch (Exception e)

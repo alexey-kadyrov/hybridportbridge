@@ -148,7 +148,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             {
                 _log.Information("Relay: {relay}. Closing the data channel", _relay);
 
-                _frameDispatcher.Drain();
+                _frameDispatcher.Dispose();
                 _downlinkPump?.Stop();
                 _downlinkPump = null;
 
@@ -161,6 +161,8 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
                 _canAcceptUntil = DateTime.MaxValue;
 
                 OnDataChannelClosed?.Invoke(this);
+
+                _log.Debug("Relay: {relay}. The data channel was closed", _relay);
             }
             catch
             {
