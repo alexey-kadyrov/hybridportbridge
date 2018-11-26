@@ -1,8 +1,8 @@
-$ResourceGroupName = "docalabs.hybridportbridge.cicd",
+$ResourceGroupName = "docalabs.hybridportbridge.cicd"
 
 Function CreatePostgreSQL() {
 
-    $Name = "test-postgresql",
+    $Name = "test-postgresql"
     $Image = "postgres:11.1-alpine"
     $DnsName = "docalabs-portbridge-postgresql"
 
@@ -16,7 +16,7 @@ Function CreatePostgreSQL() {
 
 Function CreateSQLServer() {
     
-    $Name = "test-sql",
+    $Name = "test-sql"
     $Image = "mcr.microsoft.com/mssql/server:2017-latest"
     $DnsName = "docalabs-portbridge-sqlserver"
 
