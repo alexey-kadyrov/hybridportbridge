@@ -21,7 +21,7 @@ namespace Http.Simple.IntegrationTests
 
             for (var i = 0; i < 5; i++)
             {
-                var count = random.Next(125531, 337459);
+                var count = random.Next(137531, 183459);
 
                 var data = new byte[count];
 
@@ -30,10 +30,10 @@ namespace Http.Simple.IntegrationTests
                 Data.Add(data);
             }
 
-            var c = random.Next(125531, 337459);
+            var c = random.Next(125531, 153753);
             Data.Add(new byte[c]);
 
-            c = random.Next(125531, 337459);
+            c = random.Next(125531, 153753);
             var d = new byte[c];
             for (var i = 0; i < c; i++)
             {
