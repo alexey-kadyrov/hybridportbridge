@@ -22,7 +22,7 @@ The Service Agents’s job is to accept for incoming connections from the Client
 establish a connection with the Client Agent, and pump the data from the Client Agent 
 to the actual listening service – and vice versa. 
 
-![figure1](Doc/figure_1.png)
+![figure1](Doc/hybridportbrodge.png)
 
 In the picture above you see that the Service Agent is configured to connect to a SQL Server 
 listening at the SQL Server default port 1433 and that the Client Agent – running on 
