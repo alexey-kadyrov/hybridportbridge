@@ -9,6 +9,6 @@ namespace DocaLabs.HybridPortBridge.ClientAgent.Config
         public string BindToAddress { get; set; }
         public List<string> AcceptFromIpAddresses { get; } = new List<string>();
         public int RelayChannelCount { get; set; } = 4;
-        public int RelayConnectionTtlSeconds { get; set; } = 30;
+        public int RelayConnectionTtlSeconds { get; set; } = 300;
     }
 }

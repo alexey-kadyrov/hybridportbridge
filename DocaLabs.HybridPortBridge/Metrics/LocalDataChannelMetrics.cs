@@ -76,7 +76,7 @@ namespace DocaLabs.HybridPortBridge.Metrics
 
         public override string ToString()
         {
-            return _registry.Tags.AsString();
+            return _registry.ToString();
         }
     }
 }

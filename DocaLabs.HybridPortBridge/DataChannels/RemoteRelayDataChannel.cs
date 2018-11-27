@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using DocaLabs.HybridPortBridge.Metrics;
@@ -106,29 +107,42 @@ namespace DocaLabs.HybridPortBridge.DataChannels
 
         private async Task<Preamble> ReadPreambleAsync()
         {
-            var buffer = new byte[PreambleByteSize];
-
-            var bytesRead = await _dataChannel.ReadAsync(buffer, 0, PreambleByteSize);
-
-            if (bytesRead == 0)
+            try
             {
-                _metrics.FrameRead(0);
-                _log.Debug("Received empty frame");
-                return null;
-            }
+                var buffer = new byte[PreambleByteSize];
 
-            while (bytesRead < PreambleByteSize)
+                var bytesRead = await _dataChannel.ReadAsync(buffer, 0, PreambleByteSize);
+
+                if (bytesRead == 0)
+                {
+                    _metrics.FrameRead(0);
+                    _log.Debug("Received empty frame");
+                    return null;
+                }
+
+                while (bytesRead < PreambleByteSize)
+                {
+                    bytesRead += await _dataChannel.ReadAsync(buffer, bytesRead, PreambleByteSize - bytesRead);
+                }
+
+                var connectionId = ConnectionId.ReadFrom(buffer);
+
+                var frameSize = BitConverter.ToUInt16(buffer, ConnectionId.ByteSize);
+
+                _metrics.FrameRead(frameSize);
+
+                return new Preamble(connectionId, frameSize);
+            }
+            catch (Exception e)
             {
-                bytesRead += await _dataChannel.ReadAsync(buffer, bytesRead, PreambleByteSize - bytesRead);
+                if (e.Find<SocketException>(x => x.ErrorCode.In(10054)) != null)
+                {
+                    _log.Information("Remote: {relayTags}. {message}", _metrics, e.Message);
+                    return null;
+                }
+
+                throw;
             }
-
-            var connectionId = ConnectionId.ReadFrom(buffer);
-
-            var frameSize = BitConverter.ToUInt16(buffer, ConnectionId.ByteSize);
-
-            _metrics.FrameRead(frameSize);
-
-            return new Preamble(connectionId, frameSize);
         }
 
         private static void CopyPreamble(ConnectionId connectionId, int count, byte[] buffer)

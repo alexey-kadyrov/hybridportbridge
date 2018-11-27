@@ -10,13 +10,13 @@ namespace DocaLabs.HybridPortBridge.Metrics
     {
         private readonly IMetricsRoot _metrics;
         private readonly IMeasureMeterMetrics _meters;
-        public MetricTags Tags { get; }
+        private readonly MetricTags _tags;
         
         private ReportScheduler _reportScheduler;
 
         private MetricsRegistry(IMetricsRoot metrics, MetricTags tags)
         {
-            Tags = MetricTags.Concat(Tags, tags);
+            _tags = MetricTags.Concat(_tags, tags);
             _metrics = metrics;
             _meters = _metrics.Measure.Meter;
         }
@@ -70,12 +70,17 @@ namespace DocaLabs.HybridPortBridge.Metrics
 
         public MeterMetric MakeMeter(MeterOptions options)
         {
-            return new MeterMetric(_meters, options, Tags);
+            return new MeterMetric(_meters, options, _tags);
         }
 
         public void Dispose()
         {
             _reportScheduler?.Stop();
+        }
+
+        public override string ToString()
+        {
+            return _tags.AsString();
         }
     }
 }

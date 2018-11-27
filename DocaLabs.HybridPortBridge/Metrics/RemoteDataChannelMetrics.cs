@@ -35,6 +35,7 @@ namespace DocaLabs.HybridPortBridge.Metrics
             MeasurementUnit = Unit.Bytes
         };
 
+        private readonly MetricsRegistry _registry;
         private readonly MeterMetric _failures;
         private readonly MeterMetric _frameRead;
         private readonly MeterMetric _frameWritten;
@@ -43,11 +44,12 @@ namespace DocaLabs.HybridPortBridge.Metrics
 
         public RemoteDataChannelMetrics(MetricsRegistry registry)
         {
-            _failures = registry.MakeMeter(RemoteFailuresOptions);
-            _frameRead = registry.MakeMeter(RemoteFrameReadOptions);
-            _frameWritten = registry.MakeMeter(RemoteFrameWrittenOptions);
-            _bytesRead = registry.MakeMeter(RemoteBytesReadOptions);
-            _bytesWritten = registry.MakeMeter(RemoteBytesWrittenOptions);
+            _registry = registry;
+            _failures = _registry.MakeMeter(RemoteFailuresOptions);
+            _frameRead = _registry.MakeMeter(RemoteFrameReadOptions);
+            _frameWritten = _registry.MakeMeter(RemoteFrameWrittenOptions);
+            _bytesRead = _registry.MakeMeter(RemoteBytesReadOptions);
+            _bytesWritten = _registry.MakeMeter(RemoteBytesWrittenOptions);
         }
 
         public void FrameWritten(int size)
@@ -65,6 +67,11 @@ namespace DocaLabs.HybridPortBridge.Metrics
         public void Failed()
         {
             _failures.Increment();
+        }
+
+        public override string ToString()
+        {
+            return _registry.ToString();
         }
     }
 }

@@ -10,11 +10,20 @@ namespace DocaLabs.HybridPortBridge
     {
         public static TException Find<TException>(this Exception exception, Func<TException, bool> predicate) where TException : Exception
         {
-            return exception is AggregateException aggregate
-                ? aggregate.InnerExceptions.FirstOrDefault(e => e is TException e1 && predicate(e1)) as TException
-                : exception is TException e2 && predicate(e2)
-                    ? e2
-                    : null;
+            switch (exception)
+            {
+                case null:
+                    return null;
+
+                case AggregateException aggregate:
+                    return aggregate.InnerExceptions.FirstOrDefault(x => x.Find(predicate) != null) as TException;
+
+                case TException e when predicate(e):
+                    return e;
+
+                default:
+                    return exception.InnerException.Find(predicate);
+            }
         }
 
         public static bool In<T>(this T value, params T[] values)

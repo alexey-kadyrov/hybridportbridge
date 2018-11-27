@@ -71,6 +71,12 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             }
             catch (Exception e)
             {
+                if (e.Find<SocketException>(x => x.ErrorCode.In(10054)) != null)
+                {
+                    _log.Information("Local: {localInstance}. {message}", _instance, e.Message);
+                    return (0, _buffer);
+                }
+
                 _metrics.Failed();
 
                 _log.Error(e, "Local: {localInstance}. Failed to read", _instance);

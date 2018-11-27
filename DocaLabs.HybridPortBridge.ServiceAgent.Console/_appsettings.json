@@ -28,13 +28,8 @@
   },
 
   "PortBridge": {
-    "ServiceNamespace": {
-      "ServiceNamespace": "ovc-cicd-relay.servicebus.windows.net",
-      "AccessRuleName": "RootManageSharedAccessKey",
-      "AccessRuleKey": "LuEC/iWBITNz/V/dzqeG7iY+jg3Y1RemGUf/3FOgcIk="
-    },
     "EntityPaths": [
-      "sql"
+      "ldap"
     ]
   }
 }
