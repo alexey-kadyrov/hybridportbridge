@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="../common.props" />
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <ProjectGuid>A86F5D19-B48E-4095-81E1-DF1CE54C45D5</ProjectGuid>
+    <DebugType>Full</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="5.5.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.11.0" />
+    <PackageReference Include="Refit" Version="4.6.48" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DocaLabs.HybridPortBridge.ClientAgent\DocaLabs.HybridPortBridge.ClientAgent.csproj" />
+    <ProjectReference Include="..\DocaLabs.HybridPortBridge.ServiceAgent\DocaLabs.HybridPortBridge.ServiceAgent.csproj" />
+    <ProjectReference Include="..\DocaLabs.Qa\DocaLabs.Qa.csproj" />
+  </ItemGroup>
+
+</Project>

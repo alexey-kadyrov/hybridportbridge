@@ -1,0 +1,40 @@
+{
+  "Serilog": {
+    "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.RollingFile" ],
+    "MinimumLevel": {
+      "Default": "Verbose",
+      "Override": {
+        "Microsoft": "Warning"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Console",
+        "Args": { "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level}] <{SourceContext}> {Message}{NewLine}{Exception}" }
+      },
+      {
+        "Name": "RollingFile",
+        "Args": {
+          "pathFormat": "./logs/log-{Date}.txt",
+          "fileSizeLimitBytes": "10240",
+          "retainedFileCountLimit": 5,
+          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] [{SourceContext}] {Message}{NewLine}{Exception}"
+        }
+      }
+    ],
+    "Properties": {
+      "Application": "Azure.Relay.ReverseProxy"
+    }
+  },
+
+  "PortBridge": {
+    "ServiceNamespace": {
+      "ServiceNamespace": "ovc-cicd-relay.servicebus.windows.net",
+      "AccessRuleName": "RootManageSharedAccessKey",
+      "AccessRuleKey": "LuEC/iWBITNz/V/dzqeG7iY+jg3Y1RemGUf/3FOgcIk="
+    },
+    "EntityPaths": [
+      "sql"
+    ]
+  }
+}

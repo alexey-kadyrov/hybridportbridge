@@ -1,0 +1,1 @@
+docker run --name test-sql -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=MyEdition2017!' -p 14333:1433 -d microsoft/mssql-server-linux:2017-CU12

@@ -1,0 +1,13 @@
+<Project>
+  <Import Project="version.xml"/>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <RepositoryUrl></RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Company>DocaLabs</Company>
+    <Authors>DocaLabs</Authors>
+    <Product>Azure Hybrid Connection Relay</Product>
+    <Copyright>Copyright © 2019 DocaLabs</Copyright>
+	<PackageLicenseUrl></PackageLicenseUrl>
+  </PropertyGroup>
+</Project>

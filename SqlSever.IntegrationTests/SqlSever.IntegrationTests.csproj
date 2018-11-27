@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <Import Project="../common.props" />
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.1</TargetFramework>
+        <ProjectGuid>2CAE104A-3F43-4DC9-90B7-AD3FA31367EA</ProjectGuid>
+        <DebugType>Full</DebugType>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FluentAssertions" Version="5.5.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.4" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+        <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
+        <PackageReference Include="NUnit" Version="3.11.0" />
+        <PackageReference Include="NUnit3TestAdapter" Version="3.11.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DocaLabs.HybridPortBridge.ClientAgent\DocaLabs.HybridPortBridge.ClientAgent.csproj" />
+        <ProjectReference Include="..\DocaLabs.HybridPortBridge.ServiceAgent\DocaLabs.HybridPortBridge.ServiceAgent.csproj" />
+        <ProjectReference Include="..\DocaLabs.Qa\DocaLabs.Qa.csproj" />
+    </ItemGroup>
+
+</Project>
