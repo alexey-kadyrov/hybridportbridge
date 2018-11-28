@@ -46,11 +46,11 @@ There are several packages that can be used:
 * DocaLabs.HybridPortBridge.ClientAgent.WindowsService targeting .Net v4.72
 * DocaLabs.HybridPortBridge.ServiceAgent.WindowsService targeting .Net v4.72
 
-### Service Agent
+The Windows Service executables are both a console app and a Windows Service.
+By default they start as a Windows service, you can force console-mode with 
+the –-console command line option.
 
-The DocaLabs.HybridPortBridge.ServiceAgent.WindowsService executables file
-is both a console app and a Windows Service. By default it starts as a Windows service,
-you can force console-mode with the –-console command line option.
+### Service Agent
 
 The appsettings.json file on the Service Side specifies what Service Bus Relay entities
 it must listen to. The ports and host names which you want to project a configured in
@@ -116,10 +116,6 @@ executables are looking for the '/settings/appsettings.json' and
 '/secrets/appsettings.json' files so you can map a volumes in Docker at runtime.
 
 ### Client Agent
-
-The DocaLabs.HybridPortBridge.ClientAgent.WindowsService executable file
-is both a console app and a Windows Service. By default it starts as a Windows service,
-you can force console-mode with the –-console command line option..
 
 The appsettings.json file on the Client Agent side specifies which ports you want to project
 into the Service Agent machine.
