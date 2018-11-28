@@ -116,6 +116,7 @@ namespace Http.Simple.IntegrationTests
                                 EntityPath = EntityPath,
                                 RemoteConfigurationKey = ServiceRequiringClientCertificatePort,
                                 RelayConnectionTtlSeconds = 12,
+                                RelayChannelCount = 2,
                                 AcceptFromIpAddresses =
                                 {
                                     "127.0.0.1"
@@ -128,25 +129,27 @@ namespace Http.Simple.IntegrationTests
                                 EntityPath = EntityPath,
                                 RemoteConfigurationKey = ServicePort,
                                 RelayConnectionTtlSeconds = 12,
+                                RelayChannelCount = 2,
                                 AcceptFromIpAddresses =
                                 {
                                     "127.0.0.1"
                                 }
                             }
-                        }
-                        ,
+                        },
                         {
                             "5022", new PortMappingOptions
                             {
                                 EntityPath = EntityPath,
                                 RemoteConfigurationKey = FailingServicePort,
                                 RelayConnectionTtlSeconds = 12,
+                                RelayChannelCount = 2,
                                 AcceptFromIpAddresses =
                                 {
                                     "127.0.0.1"
                                 }
                             }
-                        }                    }
+                        }
+                    }
                 }
             });
 

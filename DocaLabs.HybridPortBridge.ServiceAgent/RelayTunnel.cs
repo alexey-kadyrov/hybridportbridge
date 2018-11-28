@@ -42,7 +42,7 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             {
                 _log.Information("Closing the data channel {relayTags}", _metrics);
 
-                _frameDispatcher.Dispose();
+                _frameDispatcher.Clear();
                 _uplinkPumps.DisposeAndClear();
                 _downlinkPump?.Stop();
                 _downlinkPump.IgnoreException(x => x.Dispose());

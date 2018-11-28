@@ -24,9 +24,11 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             _frames = new ConcurrentQueue<Frame>();
         }
 
-        public Task ProcessAsync(Frame newFrame)
+        public Task ProcessAsync(Frame frame)
         {
-            _frames.Enqueue(newFrame);
+            _log.Verbose("ConnectId: {connectionId}. Enqueue frame {frameSize}", frame.ConnectionId, frame.Size);
+
+            _frames.Enqueue(frame);
 
             return DequeueAsync();
         }
@@ -40,6 +42,8 @@ namespace DocaLabs.HybridPortBridge.DataChannels
                 while (_frames.TryDequeue(out var frame))
                 {
                     var completeWriteBack = frame.Size == 0;
+
+                    _log.Verbose("ConnectId: {connectionId}. Dequeue frame {frameSize}", frame.ConnectionId, frame.Size);
 
                     try
                     {

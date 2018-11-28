@@ -108,7 +108,9 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             _downlinkPump = new DownlinkPump(_log, _dataChannel, _frameDispatcher);
 
             _metrics.RemoteEstablishedTunnels.Increment();
-            
+
+            _log.Verbose("Downlink pump is created and starting");
+
             _downlinkPump.RunAsync().ContinueWith(OnDownlinkPumpCompleted);
         }
 
@@ -123,7 +125,9 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             _frameDispatcher.AddQueue(connectionId, localDataChannel);
 
             _metrics.LocalEstablishedConnections.Increment();
-            
+
+            _log.Verbose("ConnectionId {connectionId}. uplink pump is created", connectionId);
+
             uplinkPump.RunAsync().ContinueWith(OnUplinkPumpCompleted);
         }
 
@@ -157,7 +161,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             {
                 _log.Information("Relay: {relay}. Closing the data channel", _relay);
 
-                _frameDispatcher.Dispose();
+                _frameDispatcher.Clear();
                 _uplinkPumps.DisposeAndClear();
                 _downlinkPump?.Stop();
                 _downlinkPump = null;
