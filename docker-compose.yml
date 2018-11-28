@@ -5,11 +5,13 @@ services:
     image: ${DOCKER_REGISTRY-}docalabshybridportbridgeclientagentconsole
     build:
       context: .
+      platform: linux
       dockerfile: DocaLabs.HybridPortBridge.ClientAgent.Console/Dockerfile
 
   docalabs.hybridportbridge.serviceagent.console:
     image: ${DOCKER_REGISTRY-}docalabshybridportbridgeserviceagentconsole
     build:
       context: .
+      platform: linux
       dockerfile: DocaLabs.HybridPortBridge.ServiceAgent.Console/Dockerfile
 
