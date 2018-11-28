@@ -31,11 +31,6 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             _remoteReader.IgnoreException(x => x.Dispose());
         }
 
-        public void Stop()
-        {
-            _stopped = true;
-        }
-
         public void AddDispatchQueue(ConnectionId connectionId, ILocalDataChannelWriter writer)
         {
             _frameDispatcher.AddQueue(connectionId, writer);

@@ -161,7 +161,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
 
                 _uplinkPumps.DisposeAndClear();
 
-                _downlinkPump?.Stop();
+                _downlinkPump.IgnoreException(x => x.Dispose());
                 _downlinkPump = null;
 
                 if (_dataChannel != null)
