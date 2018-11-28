@@ -20,7 +20,6 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
         private RemoteRelayDataChannel _dataChannel;
         private DownlinkPump _downlinkPump;
         private readonly ConcurrentDictionary<object, UplinkPump> _uplinkPumps;
-        private readonly FrameDispatcher _frameDispatcher;
         private readonly TimeSpan _ttl;
         private DateTime _canAcceptUntil;
         private readonly TunnelPreamble _tunnelPreamble;
@@ -40,7 +39,6 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             _establishLock = new SemaphoreSlim(1, 1);
             _relay = new UriBuilder("sb", serviceNamespace.ServiceNamespace, -1, entityPath).Uri;
             _tokenProvider = serviceNamespace.CreateSasTokenProvider();
-            _frameDispatcher = new FrameDispatcher(_log);
             _ttl = TimeSpan.FromSeconds(ttlSeconds);
             _tunnelPreamble = new TunnelPreamble(remoteConfigurationKey);
             _canAcceptUntil = DateTime.MaxValue;
@@ -105,7 +103,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
         {
             _dataChannel = new RemoteRelayDataChannel(_log, _metrics.Remote, stream);
 
-            _downlinkPump = new DownlinkPump(_log, _dataChannel, _frameDispatcher);
+            _downlinkPump = new DownlinkPump(_log, _dataChannel);
 
             _metrics.RemoteEstablishedTunnels.Increment();
 
@@ -122,7 +120,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
 
             _uplinkPumps[uplinkPump] = uplinkPump;
 
-            _frameDispatcher.AddQueue(connectionId, localDataChannel);
+            _downlinkPump?.AddDispatchQueue(connectionId, localDataChannel);
 
             _metrics.LocalEstablishedConnections.Increment();
 
@@ -149,7 +147,7 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
         {
             _log.Verbose("ConnectionId {connectionId}. Uplink pump completed", prev.Result.ConnectionId);
 
-            _frameDispatcher.RemoveQueue(prev.Result.ConnectionId);
+            _downlinkPump?.RemoveDispatchQueue(prev.Result.ConnectionId);
 
             if (_uplinkPumps.TryRemove(prev.Result, out _))
                 prev.Result.IgnoreException(x => x.Dispose());
@@ -161,8 +159,8 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             {
                 _log.Information("Relay: {relay}. Closing the data channel", _relay);
 
-                _frameDispatcher.Clear();
                 _uplinkPumps.DisposeAndClear();
+
                 _downlinkPump?.Stop();
                 _downlinkPump = null;
 
