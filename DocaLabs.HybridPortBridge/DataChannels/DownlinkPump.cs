@@ -9,7 +9,6 @@ namespace DocaLabs.HybridPortBridge.DataChannels
         private readonly ILogger _log;
         private readonly IRemoteDataChannelReader _remoteReader;
         private readonly FrameDispatcher _frameDispatcher;
-        private bool _stopped;
 
         public DownlinkPump(ILogger logger, IRemoteDataChannelReader remoteReader)
         {
@@ -49,12 +48,6 @@ namespace DocaLabs.HybridPortBridge.DataChannels
 
                 while ((frame = await _remoteReader.ReadAsync()) != null)
                 {
-                    if (_stopped)
-                    {
-                        _log.Debug("Downlink pump has been stopped");
-                        return this;
-                    }
-
                     _frameDispatcher.DispatchFrame(frame);
                 }
             }
@@ -64,8 +57,6 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             }
 
             _log.Debug("Downlink pump completed");
-
-            _stopped = true;
 
             return this;
         }
