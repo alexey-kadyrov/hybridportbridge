@@ -30,7 +30,7 @@ namespace Resilience.IntegrationTests.Tests
 
         protected override async Task When()
         {
-            await ExecuteSuccessfulRequest();
+            await ExecuteSuccessfulRequests();
 
             TestEnvironmentSetup.StopServiceAgent();
 
@@ -44,26 +44,29 @@ namespace Resilience.IntegrationTests.Tests
         }
 
         [Then]
-        public async Task It_should_execute_request_after_service_agent_restarted()
+        public async Task It_should_execute_requests_after_service_agent_restarted()
         {
-            await ExecuteSuccessfulRequest();
+            await ExecuteSuccessfulRequests();
         }
 
-        private async Task ExecuteSuccessfulRequest()
+        private async Task ExecuteSuccessfulRequests()
         {
-            var result = await Service.PostProductAsync(new Product
+            for (var i = 0; i < 10; i++)
             {
-                Id = 1,
-                Category = "Hello",
-                Name = "World",
-                Price = 9.49M
-            });
+                var result = await Service.PostProductAsync(new Product
+                {
+                    Id = 1,
+                    Category = "Hello",
+                    Name = "World",
+                    Price = 9.49M
+                });
 
-            result.Should().NotBeNull();
-            result.Id.Should().Be(1);
-            result.Category.Should().Be("Hello");
-            result.Name.Should().Be("World");
-            result.Price.Should().Be(9.49M);
+                result.Should().NotBeNull();
+                result.Id.Should().Be(1);
+                result.Category.Should().Be("Hello");
+                result.Name.Should().Be("World");
+                result.Price.Should().Be(9.49M);
+            }
         }
 
         private Task ExecuteFailingRequest()

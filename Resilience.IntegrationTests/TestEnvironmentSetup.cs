@@ -95,6 +95,7 @@ namespace Resilience.IntegrationTests
                             {
                                 EntityPath = EntityPath,
                                 RemoteConfigurationKey = 5011,
+                                RelayChannelCount = 2,
                                 AcceptFromIpAddresses =
                                 {
                                     "127.0.0.1"
