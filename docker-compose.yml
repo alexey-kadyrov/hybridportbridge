@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+  docalabs.hybridportbridge.clientagent.console:
+    image: ${DOCKER_REGISTRY-}docalabshybridportbridgeclientagentconsole
+    build:
+      context: .
+      dockerfile: DocaLabs.HybridPortBridge.ClientAgent.Console/Dockerfile
+
+  docalabs.hybridportbridge.serviceagent.console:
+    image: ${DOCKER_REGISTRY-}docalabshybridportbridgeserviceagentconsole
+    build:
+      context: .
+      dockerfile: DocaLabs.HybridPortBridge.ServiceAgent.Console/Dockerfile
+

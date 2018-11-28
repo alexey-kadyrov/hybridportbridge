@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocaLabs.HybridPortBridge.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocaLabs.HybridPortBridge.ServiceAgent.WindowsService", "DocaLabs.HybridPortBridge.ServiceAgent.WindowsService\DocaLabs.HybridPortBridge.ServiceAgent.WindowsService.csproj", "{0381FCD7-D995-4BB3-9A40-4579F3F9107F}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{B94F829C-3AA0-4738-9902-77A1499CE0AE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +87,10 @@ Global
 		{0381FCD7-D995-4BB3-9A40-4579F3F9107F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0381FCD7-D995-4BB3-9A40-4579F3F9107F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0381FCD7-D995-4BB3-9A40-4579F3F9107F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B94F829C-3AA0-4738-9902-77A1499CE0AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B94F829C-3AA0-4738-9902-77A1499CE0AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B94F829C-3AA0-4738-9902-77A1499CE0AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B94F829C-3AA0-4738-9902-77A1499CE0AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
