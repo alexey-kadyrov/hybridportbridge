@@ -8,6 +8,8 @@ using DocaLabs.Qa;
 using FluentAssertions;
 using Http.Simple.IntegrationTests.Client;
 using NUnit.Framework;
+using Polly;
+using Refit;
 
 namespace Http.Simple.IntegrationTests.Tests
 {
@@ -66,18 +68,26 @@ namespace Http.Simple.IntegrationTests.Tests
         [Then]
         public void Is_should_complete_all_requests_successfully()
         {
-            TestContext.WriteLine(string.Join(Environment.NewLine, _results.Select(t => t.Result)));
+            var message = string.Join(Environment.NewLine, _results.Select(t => t.Result));
 
             var total = _results.Sum(t => t.Result.TotalIterations);
             var failed = _results.Sum(t => t.Result.FailedIterations);
+            var retries = _results.Sum(t => t.Result.Retries);
 
-            // small amount (2 out of 20K+) is acceptable as there is real networking goes on and the clients are deliberately not configured for retry
+            string preamble;
+            // with retries there shouldn't be any failures, there is real networking goes on
             if (failed == 0)
-                Assert.Pass($"Test completed for {total} iterations in {_elapsedMilliseconds} milliseconds");
-            else if (failed <= 2)
-                Assert.Pass($"Test completed with some failures but considered successful, fail {failed} times out of {total} iterations, which gives {(1.0 - (double)failed / total) * 100.0}% Success Rate, Run for {_elapsedMilliseconds} milliseconds");
+            {
+                preamble = $"Test completed for {total} iterations in {_elapsedMilliseconds} milliseconds. Retries={retries}.";
+                TestContext.WriteLine($"{preamble}{Environment.NewLine}{message}");
+                Assert.Pass(preamble);
+            }
             else
-                Assert.Fail($"Fail {failed} times out of {total} iterations, which gives {(1.0 - (double)failed / total) * 100.0}% Success Rate, Run for {_elapsedMilliseconds} milliseconds");
+            {
+                preamble = $"Fail {failed} times out of {total} iterations, which gives {(1.0 - (double) failed / total) * 100.0}% Success Rate, Run for {_elapsedMilliseconds} milliseconds. Retries={retries}.";
+                TestContext.WriteLine($"{preamble}{Environment.NewLine}{message}");
+                Assert.Fail(preamble);
+            }
         }
 
         private static async Task<TestOutcome> Do(string testCase, int iterations, Func<int, Task> action)
@@ -96,7 +106,12 @@ namespace Http.Simple.IntegrationTests.Tests
             {
                 try
                 {
-                    await action(i);
+                    var ii = i;
+                    
+                    await Policy
+                        .Handle<ApiException>()
+                        .RetryAsync(3, (exception, retry) => outcome.Retries ++)
+                        .ExecuteAndCaptureAsync(() => action(ii));                    
                 }
                 catch (Exception e)
                 {
@@ -302,12 +317,13 @@ namespace Http.Simple.IntegrationTests.Tests
                     }
             }
         }
-
+        
         private struct TestOutcome
         {
             public string TestCase;
             public int TotalIterations;
             public int FailedIterations;
+            public int Retries;
             public int FirstFailed;
             public int LastFailed;
             public string FirstError;
