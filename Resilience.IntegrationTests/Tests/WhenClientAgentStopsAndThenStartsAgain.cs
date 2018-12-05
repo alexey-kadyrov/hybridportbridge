@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using DocaLabs.Qa;
-using FluentAssertions;
 using NUnit.Framework;
 using Resilience.IntegrationTests.Client;
 
@@ -30,13 +29,13 @@ namespace Resilience.IntegrationTests.Tests
 
         protected override async Task When()
         {
-            await ExecuteSuccessfulRequests();
+            await Helpers.ExecuteSuccessfulRequests(Service);
 
             TestEnvironmentSetup.StopClientAgent();
 
             await Task.Delay(TimeSpan.FromSeconds(5));
 
-            await ExecuteFailingRequest();
+            await Helpers.ExecuteFailingRequest(Service);
 
             TestEnvironmentSetup.StartClientAgent();
 
@@ -46,42 +45,7 @@ namespace Resilience.IntegrationTests.Tests
         [Then]
         public async Task It_should_execute_requests_after_client_agent_restarted()
         {
-            await ExecuteSuccessfulRequests();
-        }
-
-        private async Task ExecuteSuccessfulRequests()
-        {
-            for (var i = 0; i < 10; i++)
-            {
-                var result = await Service.PostProductAsync(new Product
-                {
-                    Id = 1,
-                    Category = "Hello",
-                    Name = "World",
-                    Price = 9.49M
-                });
-
-                result.Should().NotBeNull();
-                result.Id.Should().Be(1);
-                result.Category.Should().Be("Hello");
-                result.Name.Should().Be("World");
-                result.Price.Should().Be(9.49M);
-            }
-        }
-
-        private Task ExecuteFailingRequest()
-        {
-            var exception = Assert.CatchAsync(() => Service.PostProductAsync(new Product
-            {
-                Id = 1,
-                Category = "Hello",
-                Name = "World",
-                Price = 9.49M
-            }));
-
-            exception.Should().NotBeNull();
-
-            return Task.CompletedTask;
+            await Helpers.ExecuteSuccessfulRequests(Service);
         }
     }
 }

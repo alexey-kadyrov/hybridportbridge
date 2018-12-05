@@ -82,6 +82,12 @@ namespace Http.Simple.IntegrationTests.Tests
                 TestContext.WriteLine($"{preamble}{Environment.NewLine}{message}");
                 Assert.Pass(preamble);
             }
+            else if(1.0 - (double)retries / total < 99.95 )
+            {
+                preamble = $"Too many retries. Retried {retries} times out of {total} iterations, which gives {(1.0 - (double)retries / total) * 100.0}% Success Rate, Run for {_elapsedMilliseconds} milliseconds.";
+                TestContext.WriteLine($"{preamble}{Environment.NewLine}{message}");
+                Assert.Fail(preamble);
+            }
             else
             {
                 preamble = $"Fail {failed} times out of {total} iterations, which gives {(1.0 - (double) failed / total) * 100.0}% Success Rate, Run for {_elapsedMilliseconds} milliseconds. Retries={retries}.";

@@ -14,6 +14,7 @@
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
     <PackageReference Include="NUnit" Version="3.11.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.11.2" />
+    <PackageReference Include="Polly" Version="6.1.2" />
     <PackageReference Include="Refit" Version="4.6.58" />
   </ItemGroup>
 
@@ -21,6 +22,12 @@
     <ProjectReference Include="..\DocaLabs.HybridPortBridge.ClientAgent\DocaLabs.HybridPortBridge.ClientAgent.csproj" />
     <ProjectReference Include="..\DocaLabs.HybridPortBridge.ServiceAgent\DocaLabs.HybridPortBridge.ServiceAgent.csproj" />
     <ProjectReference Include="..\DocaLabs.Qa\DocaLabs.Qa.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Polly">
+      <HintPath>..\..\..\Users\akadyrov\.nuget\packages\polly\6.1.2\lib\netstandard2.0\Polly.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
