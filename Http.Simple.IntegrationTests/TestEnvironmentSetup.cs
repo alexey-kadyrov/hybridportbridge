@@ -66,10 +66,8 @@ namespace Http.Simple.IntegrationTests
                         ReportingFlushIntervalSeconds = 30,
                         ReportFile = Path.Combine(AppContext.BaseDirectory, "metrics-service.txt")
                     }
-                }
-            })
-            .MergeConfigurationArgs(new
-            {
+                },
+
                 PortBridge = new ServiceAgentOptions
                 {
                     EntityPaths =
@@ -102,10 +100,8 @@ namespace Http.Simple.IntegrationTests
                         ReportingFlushIntervalSeconds = 30,
                         ReportFile = Path.Combine(AppContext.BaseDirectory, "metrics-client.txt")
                     }
-                }
-            })
-            .MergeConfigurationArgs(new
-            {
+                },
+
                 PortBridge = new ClientAgentOptions
                 {
                     PortMappings =

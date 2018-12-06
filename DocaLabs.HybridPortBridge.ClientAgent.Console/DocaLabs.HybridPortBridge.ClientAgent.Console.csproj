@@ -10,12 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="_appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\DocaLabs.HybridPortBridge.ClientAgent\DocaLabs.HybridPortBridge.ClientAgent.csproj" />
   </ItemGroup>
 
