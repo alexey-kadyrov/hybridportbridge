@@ -1,12 +1,11 @@
 Param
 (
-    [Parameter(Mandatory=$False, HelpMessage="The style of the environment variables for the realy access")]
+    [Parameter(Mandatory=$False, HelpMessage="The style of the environment variables for the relay access")]
     [bool] $LinuxStyleEnvVariables = $False,
     
     [Parameter(Mandatory=$False, HelpMessage="The resource group name where the resources should be allocated for tests")]
     [string] $ResourceGroupName = "docalabs.hybridportbridge.cicd"
 )
-
 
 Function SetRelayAccessKeyEnvVariables {
 
