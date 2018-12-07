@@ -26,3 +26,17 @@ Function CopySettings([string]$Src, [string]$Dst) {
 CopySettings -Src "$SourceFolder\Build\service-agent-config\appsettings.json" -Dst "$PublishedFolder\published-apps\DocaLabs.HybridPortBridge.ServiceAgent.WindowsService\appsettings.json"
 
 CopySettings -Src "$SourceFolder\Build\client-agent-config\appsettings.json" -Dst "$PublishedFolder\published-apps\DocaLabs.HybridPortBridge.ClientAgent.WindowsService\appsettings.json"
+
+
+$command = "$PublishedFolder\published-apps\DocaLabs.HybridPortBridge.ServiceAgent.WindowsService\DocaLabs.HybridPortBridge.ServiceAgent.WindowsService.exe install --networkservice"
+Invoke-Expression $command
+
+$command = "$PublishedFolder\published-apps\DocaLabs.HybridPortBridge.ServiceAgent.WindowsService\DocaLabs.HybridPortBridge.ServiceAgent.WindowsService.exe start"
+Invoke-Expression $command
+
+
+$command = "$PublishedFolder\published-apps\DocaLabs.HybridPortBridge.ClientAgent.WindowsService\DocaLabs.HybridPortBridge.ClientAgent.WindowsService.exe install --networkservice"
+Invoke-Expression $command
+
+$command = "$PublishedFolder\published-apps\DocaLabs.HybridPortBridge.ClientAgent.WindowsService\DocaLabs.HybridPortBridge.ClientAgent.WindowsService.exe start"
+Invoke-Expression $command
