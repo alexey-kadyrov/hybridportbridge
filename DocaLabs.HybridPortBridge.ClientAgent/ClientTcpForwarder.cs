@@ -31,6 +31,8 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
                 new [] {"entityPath", "fromPort" }, new [] { portMappings.EntityPath, fromPort.ToString() }));
 
             _relayFactory = new RelayTunnelFactory(logger, metrics, serviceNamespace, portMappings);
+
+            _log.Information("TCP Forwarder for port {port} initialized", fromPort);
         }
 
         public void Start()
@@ -39,6 +41,8 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             {
                 if (string.IsNullOrEmpty(_bindTo) || !IPAddress.TryParse(_bindTo, out var bindToAddress))
                     bindToAddress = IPAddress.Any;
+
+                _log.Information("Opening listener on port {port}", _fromPort);
 
                 _endpointListener = new TcpListener(bindToAddress, _fromPort);
 
@@ -55,6 +59,8 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
 
         public void Stop()
         {
+            _log.Information("Stopping listener on port {port}", _fromPort);
+
             _endpointListener.IgnoreException(x => x.Stop());
 
             Dispose();

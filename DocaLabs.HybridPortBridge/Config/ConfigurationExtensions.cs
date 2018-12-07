@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 
@@ -16,9 +18,12 @@ namespace DocaLabs.HybridPortBridge.Config
         public static IConfigurationBuilder BuildConfiguration(this IConfigurationBuilder builder, string[] args)
         {
             var environmentName = Environment.GetEnvironmentVariable("Hosting:Environment");
-            
+
+            var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
+            var pathToContentRoot = Path.GetDirectoryName(pathToExe);
+
             builder
-                .SetBasePath(AppContext.BaseDirectory)
+                .SetBasePath(pathToContentRoot)
                 .AddJsonFile("appsettings.json", true)
                 .AddJsonFile("/settings/appsettings.json", true)
                 .AddJsonFile("/secrets/appsettings.json", true);
