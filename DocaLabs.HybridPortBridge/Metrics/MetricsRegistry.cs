@@ -32,7 +32,7 @@ namespace DocaLabs.HybridPortBridge.Metrics
             var options = configuration.GetSection("AgentMetrics")?.Get<AgentMetricsOptions>() ?? new AgentMetricsOptions();
 
             var builder = new MetricsBuilder()
-                .Configuration.Configure(options.MetricsOptions);
+                .Configuration.Configure(options.MetricsOptions.ToMetricsOptions());
 
             BuildReporting(builder, options.ReportingOptions);
 

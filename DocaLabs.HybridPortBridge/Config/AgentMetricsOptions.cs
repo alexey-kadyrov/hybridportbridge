@@ -4,7 +4,7 @@ namespace DocaLabs.HybridPortBridge.Config
 {
     public class AgentMetricsOptions
     {
-        public MetricsOptions MetricsOptions { get; } = new MetricsOptions();
+        public MetricsConfigurationOptions MetricsOptions { get; } = new MetricsConfigurationOptions();
         public MetricsReportingOptions ReportingOptions { get; } = new MetricsReportingOptions();
     }
 }
