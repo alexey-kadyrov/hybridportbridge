@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace DocaLabs.HybridPortBridge.Hosting
+namespace DocaLabs.HybridPortBridge
 {
     public class ConsoleAgentHost
     {

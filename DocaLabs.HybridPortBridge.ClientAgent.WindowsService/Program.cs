@@ -1,5 +1,4 @@
 ﻿using System;
-using DocaLabs.HybridPortBridge.Hosting;
 using Topshelf;
 
 namespace DocaLabs.HybridPortBridge.ClientAgent.WindowsService

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using DocaLabs.HybridPortBridge;
 using DocaLabs.HybridPortBridge.ClientAgent.Config;
 using DocaLabs.HybridPortBridge.Config;
-using DocaLabs.HybridPortBridge.Hosting;
 using DocaLabs.HybridPortBridge.ServiceAgent.Config;
 using DocaLabs.Qa;
 using NUnit.Framework;

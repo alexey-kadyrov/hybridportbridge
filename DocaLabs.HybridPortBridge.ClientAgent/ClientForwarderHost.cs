@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using DocaLabs.HybridPortBridge.ClientAgent.Config;
 using DocaLabs.HybridPortBridge.Config;
-using DocaLabs.HybridPortBridge.Hosting;
 using DocaLabs.HybridPortBridge.Metrics;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -31,6 +30,8 @@ namespace DocaLabs.HybridPortBridge.ClientAgent
             var options = configuration.GetSection("PortBridge").Get<ClientAgentOptions>();
 
             var logger = LoggerBuilder.Initialize(configuration);
+
+            logger.Information("Building Client Forwarders");
 
             var metricsRegistry = MetricsRegistry.CreateRoot(configuration);
 
