@@ -40,15 +40,12 @@ same relayed connection.
 
 There are several packages that can be used:
 
-* DocaLabs.HybridPortBridge.ClientAgent.Console targeting .Net Core
-* DocaLabs.HybridPortBridge.ServiceAgent.Console targeting .Net Core
 * Docker images for Linux and Windows for the above packages
 * DocaLabs.HybridPortBridge.ClientAgent.WindowsService targeting .Net v4.72
 * DocaLabs.HybridPortBridge.ServiceAgent.WindowsService targeting .Net v4.72
 
-The Windows Service executables are both a console app and a Windows Service.
-By default they start as a Windows service, you can force console-mode with 
-the –-console command line option.
+The Windows Service executables can be started as both a console app and a Windows Service.
+For details how to start see http://docs.topshelf-project.com/en/latest/overview/commandline.html#examples
 
 ### Service Agent
 
