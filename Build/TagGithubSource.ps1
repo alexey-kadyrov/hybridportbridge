@@ -1,10 +1,10 @@
 Param 
 (
     [Parameter(Mandatory=$True)] [string]$Tag,
-    [Parameter(Mandatory=$True)] [string]$Repo,
     [Parameter(Mandatory=$True)] [string]$Commit,
-    [Parameter(Mandatory=$True)] [string]$Owner,
-    [Parameter(Mandatory=$True)] [string]$AuthToken
+    [Parameter(Mandatory=$True)] [string]$AuthToken,
+    [Parameter(Mandatory=$False)] [string]$Repo = "hybridportbridge",
+    [Parameter(Mandatory=$False)] [string]$Owner = "alexey-kadyrov"
 )
 
 # See http://blog.travisgosselin.com/vsts-build-task-github-tag/
