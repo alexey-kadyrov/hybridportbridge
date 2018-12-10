@@ -104,8 +104,12 @@ namespace Resilience.IntegrationTests
 
 
         private IWebHost _serviceHost;
-        private static ConsoleAgentHost _serviceConsoleAgent;
+
+        private static ConsoleAgentHost _serviceAgent;
+        private static Thread _serviceAgentThread;
+
         private static ConsoleAgentHost _clientAgent;
+        private static Thread _clientAgentThread;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -159,16 +163,30 @@ namespace Resilience.IntegrationTests
 
         public static void StartServiceAgent()
         {
-            _serviceConsoleAgent = DocaLabs.HybridPortBridge.ServiceAgent.ServiceForwarderHost.Build(ServiceAgentArgs);
+            _serviceAgentThread = new Thread(() =>
+            {
+                _serviceAgent = DocaLabs.HybridPortBridge.ServiceAgent.ServiceForwarderHost.Build(ServiceAgentArgs);
+                _serviceAgent.Start();
+            })
+            {
+                IsBackground = true
+            };
 
-            _serviceConsoleAgent.Start();
+            _serviceAgentThread.Start();
         }
 
         public static void StartClientAgent()
         {
-            _clientAgent = DocaLabs.HybridPortBridge.ClientAgent.ClientForwarderHost.Build(ClientAgentArgs);
+            _clientAgentThread = new Thread(() =>
+            {
+                _clientAgent = DocaLabs.HybridPortBridge.ClientAgent.ClientForwarderHost.Build(ClientAgentArgs);
+                _clientAgent.Start();
+            })
+            {
+                IsBackground = true
+            };
 
-            _clientAgent.Start();
+            _clientAgentThread.Start();
         }
 
         private async Task StopService()
@@ -188,7 +206,10 @@ namespace Resilience.IntegrationTests
         {
             try
             {
-                _serviceConsoleAgent?.Stop();
+                _serviceAgent.Stop();
+
+                if (!_serviceAgentThread.Join(TimeSpan.FromSeconds(5)))
+                    _serviceAgentThread.Abort();
             }
             catch (Exception e)
             {
@@ -200,7 +221,10 @@ namespace Resilience.IntegrationTests
         {
             try
             {
-                _clientAgent?.Stop();
+                _clientAgent.Stop();
+
+                if (!_clientAgentThread.Join(TimeSpan.FromSeconds(5)))
+                    _clientAgentThread.Abort();
             }
             catch (Exception e)
             {

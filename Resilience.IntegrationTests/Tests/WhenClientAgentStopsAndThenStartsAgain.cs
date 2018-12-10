@@ -14,7 +14,7 @@ namespace Resilience.IntegrationTests.Tests
             TestEnvironmentSetup.StopClientAgent();
             TestEnvironmentSetup.StopServiceAgent();
 
-            await Task.Delay(TimeSpan.FromSeconds(10));
+            await Task.Delay(TimeSpan.FromSeconds(5));
 
             await base.Cleanup();
         }
@@ -24,7 +24,7 @@ namespace Resilience.IntegrationTests.Tests
             TestEnvironmentSetup.StartClientAgent();
             TestEnvironmentSetup.StartServiceAgent();
 
-            await Task.Delay(TimeSpan.FromSeconds(10));
+            await Task.Delay(TimeSpan.FromSeconds(5));
         }
 
         protected override async Task When()
@@ -33,13 +33,13 @@ namespace Resilience.IntegrationTests.Tests
 
             TestEnvironmentSetup.StopClientAgent();
 
-            await Task.Delay(TimeSpan.FromSeconds(10));
+            await Task.Delay(TimeSpan.FromSeconds(5));
 
             await Helpers.ExecuteFailingRequest(Service);
 
             TestEnvironmentSetup.StartClientAgent();
 
-            await Task.Delay(TimeSpan.FromSeconds(10));
+            await Task.Delay(TimeSpan.FromSeconds(5));
         }
 
         [Then]
