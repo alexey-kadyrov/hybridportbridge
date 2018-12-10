@@ -11,10 +11,10 @@ namespace Resilience.IntegrationTests
     {
         public static async Task ExecuteSuccessfulRequests(IService service)
         {
+            Product result = null;
+            
             for (var i = 0; i < 10; i++)
             {
-                Product result = null;
-
                 var errorMessage = "";
 
                 await Policy
