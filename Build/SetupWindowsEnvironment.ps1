@@ -1,8 +1,5 @@
 Param
 (
-    [Parameter(Mandatory=$False, HelpMessage="Where to drop the relay primary key")]
-    [string] $DropFolder,
-    
     [Parameter(Mandatory=$False, HelpMessage="The resource group name where the resources should be allocated for tests")]
     [string] $ResourceGroupName = "docalabs.hybridportbridge.cicd"
 )
@@ -21,9 +18,3 @@ Write-Host "##vso[task.setvariable variable=$variableName;]RootManageSharedAcces
 
 $variableName = "PortBridge:ServiceNamespace:AccessRuleKey"
 Write-Host "##vso[task.setvariable variable=$variableName;]$PrimaryKey"
-
-if([string]::IsNullOrWhiteSpace($DropFolder) -eq $False) {
-
-    $file = "$DropFolder/relay-primary-key.txt"
-    [System.IO.File]::WriteAllText($file, $PrimaryKey)
-}
