@@ -19,12 +19,12 @@ namespace Resilience.IntegrationTests.Tests
             await base.Cleanup();
         }
 
-        protected override Task Given()
+        protected override async Task Given()
         {
             TestEnvironmentSetup.StartClientAgent();
             TestEnvironmentSetup.StartServiceAgent();
 
-            return Task.CompletedTask;
+            await Task.Delay(TimeSpan.FromSeconds(5));
         }
 
         protected override async Task When()
