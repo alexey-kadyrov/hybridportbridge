@@ -24,7 +24,7 @@ namespace Resilience.IntegrationTests.Tests
             TestEnvironmentSetup.StartClientAgent();
             TestEnvironmentSetup.StartServiceAgent();
 
-            await Task.Delay(TimeSpan.FromSeconds(5));
+            await Task.Delay(TimeSpan.FromSeconds(30));
         }
 
         protected override async Task When()
@@ -39,7 +39,7 @@ namespace Resilience.IntegrationTests.Tests
 
             TestEnvironmentSetup.StartServiceAgent();
 
-            await Task.Delay(TimeSpan.FromSeconds(5));
+            await Task.Delay(TimeSpan.FromSeconds(30));
         }
 
         [Then]
