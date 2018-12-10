@@ -15,9 +15,11 @@ namespace Resilience.IntegrationTests
             {
                 Product result = null;
 
+                var errorMessage = "";
+
                 await Policy
                     .Handle<ApiException>()
-                    .RetryAsync(3)
+                    .RetryAsync(3, (exception, r) => errorMessage += $"{Environment.NewLine}Failed in {r} with: {exception}")
                     .ExecuteAndCaptureAsync(async () =>
                     {
                         result = await service.PostProductAsync(new Product
@@ -29,7 +31,7 @@ namespace Resilience.IntegrationTests
                         });
                     });
 
-                result.Should().NotBeNull();
+                result.Should().NotBeNull(errorMessage);
                 result.Id.Should().Be(1);
                 result.Category.Should().Be("Hello");
                 result.Name.Should().Be("World");
