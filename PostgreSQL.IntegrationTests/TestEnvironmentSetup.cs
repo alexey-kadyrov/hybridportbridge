@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using DocaLabs.HybridPortBridge;
 using DocaLabs.HybridPortBridge.ClientAgent.Config;
@@ -93,8 +94,11 @@ namespace PostgreSQL.IntegrationTests
             });
 
 
-        private ConsoleAgentHost _serviceConsoleAgent;
+        private ConsoleAgentHost _serviceAgent;
+        private Thread _serviceAgentThread;
+
         private ConsoleAgentHost _clientAgent;
+        private Thread _clientAgentThread;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -128,23 +132,40 @@ namespace PostgreSQL.IntegrationTests
 
         private void StartServiceAgent()
         {
-            _serviceConsoleAgent = DocaLabs.HybridPortBridge.ServiceAgent.ServiceForwarderHost.Build(ServiceAgentArgs);
+            _serviceAgentThread = new Thread(() =>
+            {
+                _serviceAgent = DocaLabs.HybridPortBridge.ServiceAgent.ServiceForwarderHost.Build(ServiceAgentArgs);
+                _serviceAgent.Start();
+            })
+            {
+                IsBackground = true
+            };
 
-            _serviceConsoleAgent.Start();
+            _serviceAgentThread.Start();
         }
 
         private void StartClientAgent()
         {
-            _clientAgent = DocaLabs.HybridPortBridge.ClientAgent.ClientForwarderHost.Build(ClientAgentArgs);
+            _clientAgentThread = new Thread(() =>
+            {
+                _clientAgent = DocaLabs.HybridPortBridge.ClientAgent.ClientForwarderHost.Build(ClientAgentArgs);
+                _clientAgent.Start();
+            })
+            {
+                IsBackground = true
+            };
 
-            _clientAgent.Start();
+            _clientAgentThread.Start();
         }
 
         private void StopServiceAgent()
         {
             try
             {
-                _serviceConsoleAgent?.Stop();
+                _serviceAgent.Stop();
+
+                if (!_serviceAgentThread.Join(TimeSpan.FromSeconds(5)))
+                    _serviceAgentThread.Abort();
             }
             catch (Exception e)
             {
@@ -156,7 +177,10 @@ namespace PostgreSQL.IntegrationTests
         {
             try
             {
-                _clientAgent?.Stop();
+                _clientAgent.Stop();
+
+                if (!_clientAgentThread.Join(TimeSpan.FromSeconds(5)))
+                    _clientAgentThread.Abort();
             }
             catch (Exception e)
             {
