@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using NUnit.Framework;
 using Polly;
 using Refit;
 using Resilience.IntegrationTests.Client;
@@ -11,15 +12,17 @@ namespace Resilience.IntegrationTests
     {
         public static async Task ExecuteSuccessfulRequests(IService service)
         {
-            Product result = null;
-            
             for (var i = 0; i < 10; i++)
             {
-                var errorMessage = "";
+                Product result = null;
+            
+                var errorMessage = $"Error{Environment.NewLine}";
 
+                var ii = i;
+                
                 await Policy
-                    .Handle<ApiException>()
-                    .RetryAsync(3, (exception, r) => errorMessage += $"{Environment.NewLine}Failed in {r} with: {exception}")
+                    .Handle<Exception>()
+                    .RetryAsync(3, (exception, r) => errorMessage += $"{Environment.NewLine}Failed in {ii}:{r} with: {exception}")
                     .ExecuteAndCaptureAsync(async () =>
                     {
                         result = await service.PostProductAsync(new Product
@@ -31,7 +34,7 @@ namespace Resilience.IntegrationTests
                         });
                     });
 
-                result.Should().NotBeNull(errorMessage);
+                Assert.IsNotNull(result, errorMessage);
                 result.Id.Should().Be(1);
                 result.Category.Should().Be("Hello");
                 result.Name.Should().Be("World");
