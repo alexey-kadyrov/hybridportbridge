@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using DocaLabs.Qa;
-using FluentAssertions;
 using NUnit.Framework;
 using Resilience.IntegrationTests.Client;
 
@@ -20,23 +19,23 @@ namespace Resilience.IntegrationTests.Tests
             await base.Cleanup();
         }
 
-        protected override Task Given()
+        protected override async Task Given()
         {
             TestEnvironmentSetup.StartClientAgent();
             TestEnvironmentSetup.StartServiceAgent();
 
-            return Task.CompletedTask;
+            await Task.Delay(TimeSpan.FromSeconds(5));
         }
 
         protected override async Task When()
         {
-            await ExecuteSuccessfulRequest();
+            await Helpers.ExecuteSuccessfulRequests(Service);
 
             TestEnvironmentSetup.StopServiceAgent();
 
             await Task.Delay(TimeSpan.FromSeconds(5));
 
-            await ExecuteFailingRequest();
+            await Helpers.ExecuteFailingRequest(Service);
 
             TestEnvironmentSetup.StartServiceAgent();
 
@@ -44,41 +43,9 @@ namespace Resilience.IntegrationTests.Tests
         }
 
         [Then]
-        public async Task It_should_execute_request_after_service_agent_restarted()
+        public async Task It_should_execute_requests_after_service_agent_restarted()
         {
-            await ExecuteSuccessfulRequest();
-        }
-
-        private async Task ExecuteSuccessfulRequest()
-        {
-            var result = await Service.PostProductAsync(new Product
-            {
-                Id = 1,
-                Category = "Hello",
-                Name = "World",
-                Price = 9.49M
-            });
-
-            result.Should().NotBeNull();
-            result.Id.Should().Be(1);
-            result.Category.Should().Be("Hello");
-            result.Name.Should().Be("World");
-            result.Price.Should().Be(9.49M);
-        }
-
-        private Task ExecuteFailingRequest()
-        {
-            var exception = Assert.CatchAsync(() => Service.PostProductAsync(new Product
-            {
-                Id = 1,
-                Category = "Hello",
-                Name = "World",
-                Price = 9.49M
-            }));
-
-            exception.Should().NotBeNull();
-
-            return Task.CompletedTask;
+            await Helpers.ExecuteSuccessfulRequests(Service);
         }
     }
 }

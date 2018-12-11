@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using DocaLabs.HybridPortBridge;
 using DocaLabs.HybridPortBridge.ClientAgent.Config;
 using DocaLabs.HybridPortBridge.Config;
-using DocaLabs.HybridPortBridge.Hosting;
 using DocaLabs.HybridPortBridge.ServiceAgent.Config;
 using DocaLabs.Qa;
 using NUnit.Framework;
@@ -38,10 +38,8 @@ namespace SqlSever.IntegrationTests
                         ReportingFlushIntervalSeconds = 30,
                         ReportFile = Path.Combine(AppContext.BaseDirectory, "metrics-service.txt")
                     }
-                }
-            })
-            .MergeConfigurationArgs(new
-            {
+                },
+
                 PortBridge = new ServiceAgentOptions
                 {
                     EntityPaths =
@@ -72,10 +70,8 @@ namespace SqlSever.IntegrationTests
                         ReportingFlushIntervalSeconds = 30,
                         ReportFile = Path.Combine(AppContext.BaseDirectory, "metrics-client.txt")
                     }
-                }
-            })
-            .MergeConfigurationArgs(new
-            {
+                },
+
                 PortBridge = new ClientAgentOptions
                 {
                     PortMappings =

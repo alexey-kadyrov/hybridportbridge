@@ -1,6 +1,5 @@
-﻿using System.Diagnostics;
-using System.Linq;
-using DocaLabs.HybridPortBridge.Hosting;
+﻿using System;
+using Topshelf;
 
 namespace DocaLabs.HybridPortBridge.ServiceAgent.WindowsService
 {
@@ -8,22 +7,26 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent.WindowsService
     {
         private static void Main(string[] args)
         {
-            System.Console.Title = "DocaLabs.HybridPortBridge.ServiceAgent.WindowsService";
-
-            var asService = !(Debugger.IsAttached || args.Contains("--console"));
-
-            args = args
-                .Where(x => x != "--console")
-                .ToArray();
-            
-            if (asService)
+            var rc = HostFactory.Run(x =>
             {
-                ConfigureWindowsServiceHostBuilder.Configure(args, c => ServiceForwarderHost.Create(c).GetAwaiter().GetResult()).RunAsServiceAsync();
-            }
-            else
-            {
-                ServiceForwarderHost.Build(args).Run();
-            }
+                x.Service<ConsoleAgentHost>(sc =>
+                {
+                    sc.ConstructUsing(() => ServiceForwarderHost.Build(args));
+                    sc.WhenStarted(s => s.Start());
+                    sc.WhenStopped(s => s.Stop());
+                });
+
+                x.SetDisplayName("DocaLabs.HybridPortBridge.ServiceAgent.WindowsService");
+                x.SetServiceName("DocaLabs.HybridPortBridge.ServiceAgent.WindowsService");
+
+                x.EnableServiceRecovery(r =>
+                {
+                    r.RestartService(TimeSpan.FromSeconds(5));
+                });
+            });
+
+            var exitCode = (int)Convert.ChangeType(rc, rc.GetTypeCode());
+            Environment.ExitCode = exitCode;
         }
     }
 }

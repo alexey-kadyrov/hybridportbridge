@@ -5,9 +5,9 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using DocaLabs.HybridPortBridge;
 using DocaLabs.HybridPortBridge.ClientAgent.Config;
 using DocaLabs.HybridPortBridge.Config;
-using DocaLabs.HybridPortBridge.Hosting;
 using DocaLabs.HybridPortBridge.ServiceAgent.Config;
 using DocaLabs.Qa;
 using Microsoft.AspNetCore;
@@ -66,10 +66,8 @@ namespace Http.Simple.IntegrationTests
                         ReportingFlushIntervalSeconds = 30,
                         ReportFile = Path.Combine(AppContext.BaseDirectory, "metrics-service.txt")
                     }
-                }
-            })
-            .MergeConfigurationArgs(new
-            {
+                },
+
                 PortBridge = new ServiceAgentOptions
                 {
                     EntityPaths =
@@ -102,10 +100,8 @@ namespace Http.Simple.IntegrationTests
                         ReportingFlushIntervalSeconds = 30,
                         ReportFile = Path.Combine(AppContext.BaseDirectory, "metrics-client.txt")
                     }
-                }
-            })
-            .MergeConfigurationArgs(new
-            {
+                },
+
                 PortBridge = new ClientAgentOptions
                 {
                     PortMappings =
@@ -116,6 +112,7 @@ namespace Http.Simple.IntegrationTests
                                 EntityPath = EntityPath,
                                 RemoteConfigurationKey = ServiceRequiringClientCertificatePort,
                                 RelayConnectionTtlSeconds = 12,
+                                RelayChannelCount = 2,
                                 AcceptFromIpAddresses =
                                 {
                                     "127.0.0.1"
@@ -128,25 +125,27 @@ namespace Http.Simple.IntegrationTests
                                 EntityPath = EntityPath,
                                 RemoteConfigurationKey = ServicePort,
                                 RelayConnectionTtlSeconds = 12,
+                                RelayChannelCount = 2,
                                 AcceptFromIpAddresses =
                                 {
                                     "127.0.0.1"
                                 }
                             }
-                        }
-                        ,
+                        },
                         {
                             "5022", new PortMappingOptions
                             {
                                 EntityPath = EntityPath,
                                 RemoteConfigurationKey = FailingServicePort,
                                 RelayConnectionTtlSeconds = 12,
+                                RelayChannelCount = 2,
                                 AcceptFromIpAddresses =
                                 {
                                     "127.0.0.1"
                                 }
                             }
-                        }                    }
+                        }
+                    }
                 }
             });
 

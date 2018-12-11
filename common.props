@@ -2,7 +2,7 @@
   <Import Project="version.xml"/>
   <PropertyGroup>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <RepositoryUrl></RepositoryUrl>
+    <RepositoryUrl>https://github.com/alexey-kadyrov/hybridportbridge</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Company>DocaLabs</Company>
     <Authors>DocaLabs</Authors>

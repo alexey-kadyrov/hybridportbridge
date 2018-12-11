@@ -10,12 +10,11 @@ namespace DocaLabs.HybridPortBridge.DataChannels
     public delegate Task<ILocalDataChannelWriter> LocalWriterFactory(ConnectionId id);
     public delegate void CompleteLocalWriter(ConnectionId id);
 
-    public sealed class FrameDispatcher : IDisposable
+    public sealed class FrameDispatcher
     {
         private readonly ILogger _log;
         private readonly LocalWriterFactory _localWriterFactory;
         private readonly ConcurrentDictionary<ConnectionId, FrameQueue> _queues;
-        private bool _stopped;
 
         public FrameDispatcher(ILogger logger, LocalWriterFactory localWriterFactory)
             : this(logger)
@@ -41,11 +40,13 @@ namespace DocaLabs.HybridPortBridge.DataChannels
 
         public void DispatchFrame(Frame frame)
         {
-            if(_stopped)
-                return;
-            
-            var queue = _queues.GetOrAdd(frame.ConnectionId,
-                k => new FrameQueue(_log, _localWriterFactory(frame.ConnectionId).GetAwaiter().GetResult(), CompleteLocalWriter));
+            _log.Verbose("ConnectionId {connectionId}. Dispatching frame, size {frameSize}", frame.ConnectionId, frame.Size);
+
+            var queue = _queues.GetOrAdd(frame.ConnectionId, k =>
+            {
+                _log.Verbose("ConnectionId {connectionId}. Requesting local writer, frame size {frameSize}", frame.ConnectionId, frame.Size);
+                return new FrameQueue(_log, _localWriterFactory(frame.ConnectionId).GetAwaiter().GetResult(), CompleteLocalWriter);
+            });
 
             queue.ProcessAsync(frame);
         }
@@ -64,14 +65,11 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             }
         }
 
-        public void Drain()
+        private void Drain()
         {
             try
             {
-                if(_stopped)
-                    return;
-                
-                _stopped = true;
+                _log.Verbose("Frame dispatcher is draining.");
 
                 var tokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
                 
@@ -87,11 +85,13 @@ namespace DocaLabs.HybridPortBridge.DataChannels
             }
         }
 
-        public void Dispose()
+        public void Clear()
         {
             Drain();
             
             _queues.DisposeAndClear();
+
+            _log.Verbose("Frame dispatcher cleared.");
         }
     }
 }

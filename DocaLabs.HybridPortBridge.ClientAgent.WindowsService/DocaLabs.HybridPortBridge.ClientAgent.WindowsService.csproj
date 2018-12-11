@@ -8,6 +8,10 @@
         <ProjectGuid>6E87022A-FCB3-4BB1-B322-71EA54809E5D</ProjectGuid>
         <DebugType>Full</DebugType>
     </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Topshelf" Version="4.1.0" />
+    </ItemGroup>
     
     <ItemGroup>
       <ProjectReference Include="..\DocaLabs.HybridPortBridge.ClientAgent\DocaLabs.HybridPortBridge.ClientAgent.csproj" />

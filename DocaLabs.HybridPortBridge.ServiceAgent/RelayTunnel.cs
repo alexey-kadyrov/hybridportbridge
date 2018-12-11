@@ -18,7 +18,6 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
         private readonly DownlinkPump _downlinkPump;
         private readonly RemoteRelayDataChannel _relayDataChannel;
         private readonly ConcurrentDictionary<object, UplinkPump> _uplinkPumps;
-        private readonly FrameDispatcher _frameDispatcher;
         private readonly TunnelMetrics _metrics;
 
         public RelayTunnel(ILogger logger, TunnelMetrics metrics, HybridConnectionStream relayStream, ILocalDataChannelFactory localFactory, TunnelCompleted tunnelCompleted)
@@ -28,12 +27,11 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             _uplinkPumps = new ConcurrentDictionary<object, UplinkPump>();
             _localDataChannelFactory = localFactory;
             _tunnelCompleted = tunnelCompleted;
-            _frameDispatcher = new FrameDispatcher(_log, CreateLocalDataChannel);
             _metrics = metrics;
             
             _relayDataChannel = new RemoteRelayDataChannel(logger, metrics.Remote, relayStream);
 
-            _downlinkPump = new DownlinkPump(logger, _relayDataChannel, _frameDispatcher);
+            _downlinkPump = new DownlinkPump(logger, _relayDataChannel, CreateLocalDataChannel);
         }
 
         public void Dispose()
@@ -42,9 +40,8 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
             {
                 _log.Information("Closing the data channel {relayTags}", _metrics);
 
-                _frameDispatcher.Dispose();
                 _uplinkPumps.DisposeAndClear();
-                _downlinkPump?.Stop();
+
                 _downlinkPump.IgnoreException(x => x.Dispose());
 
                 _log.Debug("The data channel was closed {relayTags}", _metrics);
@@ -90,8 +87,8 @@ namespace DocaLabs.HybridPortBridge.ServiceAgent
 
             if(_uplinkPumps.TryRemove(uplinkPump, out _))
                 uplinkPump.IgnoreException(x => x.Dispose());
-            
-            _frameDispatcher.RemoveQueue(uplinkPump.ConnectionId);
+
+            _downlinkPump?.RemoveDispatchQueue(uplinkPump.ConnectionId);
         }
     }
 }
