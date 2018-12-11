@@ -41,8 +41,8 @@ same relayed connection.
 There are several packages that can be used:
 
 * Docker images for Linux and Windows for the above packages, can be found:
-** https://hub.docker.com/r/alexeikadyrov/hybrid-port-bridge-service-agent/
-** https://hub.docker.com/r/alexeikadyrov/hybrid-port-bridge-client-agent/
+  * https://hub.docker.com/r/alexeikadyrov/hybrid-port-bridge-service-agent/
+  * https://hub.docker.com/r/alexeikadyrov/hybrid-port-bridge-client-agent/
 * DocaLabs.HybridPortBridge.ClientAgent.WindowsService targeting .Net v4.72
 * DocaLabs.HybridPortBridge.ServiceAgent.WindowsService targeting .Net v4.72
 
