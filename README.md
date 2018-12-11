@@ -40,12 +40,16 @@ same relayed connection.
 
 There are several packages that can be used:
 
-* Docker images for Linux and Windows for the above packages
+* Docker images for Linux and Windows for the above packages, can be found:
+** https://hub.docker.com/r/alexeikadyrov/hybrid-port-bridge-service-agent/
+** https://hub.docker.com/r/alexeikadyrov/hybrid-port-bridge-client-agent/
 * DocaLabs.HybridPortBridge.ClientAgent.WindowsService targeting .Net v4.72
 * DocaLabs.HybridPortBridge.ServiceAgent.WindowsService targeting .Net v4.72
 
 The Windows Service executables can be started as both a console app and a Windows Service.
-For details how to start see http://docs.topshelf-project.com/en/latest/overview/commandline.html#examples
+Their releases can be found here: https://github.com/alexey-kadyrov/hybridportbridge/releases
+It's xcopy type release. Copy where you want add the appsetting.json file with the settings
+and follow the instructions how to start here http://docs.topshelf-project.com/en/latest/overview/commandline.html#examples.
 
 ### Service Agent
 
