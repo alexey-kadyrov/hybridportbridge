@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 using Polly;
-using Refit;
 using Resilience.IntegrationTests.Client;
 
 namespace Resilience.IntegrationTests
