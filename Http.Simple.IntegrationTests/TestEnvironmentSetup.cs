@@ -20,17 +20,17 @@ namespace Http.Simple.IntegrationTests
     [SetUpFixture]
     public class TestEnvironmentSetup
     {
-        // port mapping 5020 to 5010
         public const string ServiceRequiringClientCertificateBaseAddressForClientAgent = "https://localhost:5020";
         private const int ServiceRequiringClientCertificatePort = 5010;
 
-        // port mapping 5021 to 5011
         public const string FailingServiceBaseAddress = "http://localhost:5022";
         public const string ServiceBaseAddressForClientAgent = "http://localhost:5021";
+        public const string ServiceBaseAddressForLocalHostEntityPathClientAgent = "http://localhost:5111";
         private const string ServiceBaseAddress = "http://localhost:5011/";
         private const int ServicePort = 5011;
         private const int FailingServicePort = 5012;
 
+        private const string LocalHostEntityPath = "localhost";
         private const string EntityPath = "simple";
         private const string EntityPathRequiringClientCertificate = "client-cert";
 
@@ -74,7 +74,8 @@ namespace Http.Simple.IntegrationTests
                     {
                         EntityPath,
                         EntityPath,
-                        EntityPathRequiringClientCertificate
+                        EntityPathRequiringClientCertificate,
+                        LocalHostEntityPath
                     }
                 }
             });
@@ -139,6 +140,17 @@ namespace Http.Simple.IntegrationTests
                                 RemoteConfigurationKey = FailingServicePort,
                                 RelayConnectionTtlSeconds = 12,
                                 RelayChannelCount = 2,
+                                AcceptFromIpAddresses =
+                                {
+                                    "127.0.0.1"
+                                }
+                            }
+                        },
+                        {
+                            "5111", new PortMappingOptions
+                            {
+                                EntityPath = LocalHostEntityPath,
+                                RemoteConfigurationKey = 5111,
                                 AcceptFromIpAddresses =
                                 {
                                     "127.0.0.1"

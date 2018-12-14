@@ -29,6 +29,17 @@ namespace Http.Simple.IntegrationTests.Client
             });
         }
 
+        public static IService CreateRequestForLocalhostEntity()
+        {
+            var baseAddress = new Uri(TestEnvironmentSetup.ServiceBaseAddressForLocalHostEntityPathClientAgent);
+
+            // Ensure that each test gets it's own http client as their setting vary between tests
+            return RestService.For<IService>(new HttpClient
+            {
+                BaseAddress = baseAddress
+            });
+        }
+
         public static IService CreateRequestWithClientCertificate(string certificate = TestEnvironmentSetup.ClientCertificate, string password = TestEnvironmentSetup.ClientCertificatePassword)
         {
             var baseAddress = new Uri(TestEnvironmentSetup.ServiceRequiringClientCertificateBaseAddressForClientAgent);
