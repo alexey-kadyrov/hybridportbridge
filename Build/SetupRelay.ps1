@@ -21,6 +21,9 @@ New-AzureRmRelayHybridConnection -ResourceGroupName $ResourceGroupName -Namespac
 $m = '[{"key":"5111","value":"tcp:$(e):5011"}]'
 New-AzureRmRelayHybridConnection -ResourceGroupName $ResourceGroupName -Namespace $Namespace -Name "localhost" -UserMetadata $m | Out-Null
 
+$m = '[{"key":"5010","value":"tcp:localhost:5010"}]'
+New-AzureRmRelayHybridConnection -ResourceGroupName $ResourceGroupName -Namespace $Namespace -Name "client-cert" -UserMetadata $m | Out-Null
+
 
 $Info = Get-AzureRmRelayKey -ResourceGroupName $ResourceGroupName -Namespace $Namespace -Name $RuleName
 $PrimaryKey = $Info.PrimaryKey
