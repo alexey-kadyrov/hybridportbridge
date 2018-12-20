@@ -12,8 +12,6 @@ If($Namespace.EndsWith(".servicebus.windows.net") -eq $True) {
     $Namespace = $Namespace.Substring(0, $Namespace.Length - ".servicebus.windows.net".Length)
 }
 
-$RuleName = (Get-ChildItem Env:PortBridge:ServiceNamespace:AccessRuleName).Value
-
 New-AzureRmRelayNamespace -ResourceGroupName $ResourceGroupName -Name $Namespace -Location $Location | Out-Null
 
 $m = '[{"key":"5010","value":"tcp:localhost:5010"},{"key":"5011","value":"tcp:localhost:5011"},{"key":"5012","value":"tcp:non-existing-host-abc-42187:80"},{"key":"key-to-ignore","value":"localhost:80"},{"key":"5013","value":"tcp:localhost:5013"}]'
@@ -28,12 +26,3 @@ New-AzureRmRelayHybridConnection -ResourceGroupName $ResourceGroupName -Namespac
 $m = '[{"key":"5010","value":"tcp:localhost:5010"}]'
 New-AzureRmRelayHybridConnection -ResourceGroupName $ResourceGroupName -Namespace $Namespace -Name "client-cert" -UserMetadata $m | Out-Null
 
-
-$Info = Get-AzureRmRelayKey -ResourceGroupName $ResourceGroupName -Namespace $Namespace -Name $RuleName
-$PrimaryKey = $Info.PrimaryKey
-
-$variableName = "PortBridge:ServiceNamespace:AccessRuleKey"
-Write-Host "##vso[task.setvariable variable=$variableName;]$PrimaryKey"
-
-$variableName = "PortBridge__ServiceNamespace__AccessRuleKey"
-Write-Host "##vso[task.setvariable variable=$variableName;]$PrimaryKey"
